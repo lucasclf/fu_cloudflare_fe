@@ -7,25 +7,37 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# Dependencies / build
+node_modules/
+dist/
+dist-ssr/
+coverage/
 *.local
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# wrangler files
-.wrangler
+# Wrangler / environment
+.wrangler/
 .dev.vars*
 !.dev.vars.example
 .env*
 !.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE
+.vscode
+.idea
+node_modules
+dist
