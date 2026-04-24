@@ -2,65 +2,66 @@ import type { ItemType } from "../types/item";
 import { ITEM_TYPE_LABELS, ITEM_TYPE_OPTIONS } from "../types/item";
 
 type Props = {
-  selectedTypes: ItemType[];
-  onToggleType: (itemType: ItemType) => void;
-  onClearTypes: () => void;
+  selectedType: ItemType | null;
+  onSelectType: (itemType: ItemType | null) => void;
 };
 
 export function ItemCategoryFilterSidebar({
-  selectedTypes,
-  onToggleType,
-  onClearTypes,
+  selectedType,
+  onSelectType,
 }: Props) {
   return (
-    <div>
-      <button onClick={onClearTypes} style={styles.clearButton}>
-        Mostrar todas
+    <div style={styles.list}>
+      <button
+        onClick={() => onSelectType(null)}
+        style={{
+          ...styles.optionButton,
+          ...(selectedType === null ? styles.optionButtonActive : {}),
+        }}
+      >
+        Todas
       </button>
 
-      <div style={styles.list}>
-        {ITEM_TYPE_OPTIONS.map((itemType) => {
-          const checked = selectedTypes.includes(itemType);
+      {ITEM_TYPE_OPTIONS.map((itemType) => {
+        const isActive = selectedType === itemType;
 
-          return (
-            <label key={itemType} style={styles.option}>
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => onToggleType(itemType)}
-              />
-              <span>{ITEM_TYPE_LABELS[itemType]}</span>
-            </label>
-          );
-        })}
-      </div>
+        return (
+          <button
+            key={itemType}
+            onClick={() => onSelectType(itemType)}
+            style={{
+              ...styles.optionButton,
+              ...(isActive ? styles.optionButtonActive : {}),
+            }}
+          >
+            {ITEM_TYPE_LABELS[itemType]}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  clearButton: {
-    width: "calc(100% - 24px)",
-    margin: "0 12px 10px",
-    padding: "8px 10px",
-    background: "transparent",
-    border: "1px solid #7a5a22",
-    color: "#c9963a",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
   list: {
     display: "flex",
     flexDirection: "column",
-    gap: "4px",
+    gap: "8px",
     padding: "0 12px 12px",
   },
-  option: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "8px 4px",
+  optionButton: {
+    width: "100%",
+    textAlign: "left",
+    padding: "10px 12px",
+    background: "transparent",
+    border: "1px solid #3a2e22",
     color: "#d4c9b0",
+    borderRadius: "6px",
     cursor: "pointer",
+  },
+  optionButtonActive: {
+    background: "#1e1a16",
+    border: "1px solid #7a5a22",
+    color: "#e8c875",
   },
 };

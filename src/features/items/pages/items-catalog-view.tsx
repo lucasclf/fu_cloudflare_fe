@@ -18,7 +18,7 @@ export function ItemsCatalogView({
 }: ItemsCatalogViewProps) {
   const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
-  const [selectedTypes, setSelectedTypes] = useState<ItemType[]>([]);
+  const [selectedType, setSelectedType] = useState<ItemType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,28 +44,14 @@ export function ItemsCatalogView({
 
     return items.filter((item) => {
       const matchesType =
-        selectedTypes.length === 0 || selectedTypes.includes(item.item_type);
+        selectedType === null || item.item_type === selectedType;
 
       const matchesSearch =
         !query || item.name.toLowerCase().includes(query);
 
       return matchesType && matchesSearch;
     });
-  }, [items, search, selectedTypes]);
-
-  function handleToggleType(itemType: ItemType) {
-    setSelectedTypes((current) => {
-      if (current.includes(itemType)) {
-        return current.filter((value) => value !== itemType);
-      }
-
-      return [...current, itemType];
-    });
-  }
-
-  function handleClearTypes() {
-    setSelectedTypes([]);
-  }
+  }, [items, search, selectedType]);
 
   return (
     <CatalogLayout
@@ -84,9 +70,8 @@ export function ItemsCatalogView({
           <div style={{ padding: "16px" }}>{error}</div>
         ) : (
           <ItemCategoryFilterSidebar
-            selectedTypes={selectedTypes}
-            onToggleType={handleToggleType}
-            onClearTypes={handleClearTypes}
+            selectedType={selectedType}
+            onSelectType={setSelectedType}
           />
         )
       }
@@ -96,7 +81,10 @@ export function ItemsCatalogView({
         ) : error ? (
           <div>{error}</div>
         ) : (
-          <ItemCardsPanel items={filteredItems} />
+          <ItemCardsPanel
+            items={filteredItems}
+            selectedType={selectedType}
+          />
         )
       }
     />
