@@ -3,5 +3,7 @@ import { API_BASE_URL } from "../../../shared/services/api";
 import type { Session } from "../types/session";
 
 export async function getPublicSessions(): Promise<Session[]> {
-  return httpGet<Session[]>(`${API_BASE_URL}/public/sessions`);
+  const sessions = await httpGet<Session[]>(`${API_BASE_URL}/public/sessions`);
+  console.log("Sessões públicas carregadas:", sessions);
+  return sessions;
 }
