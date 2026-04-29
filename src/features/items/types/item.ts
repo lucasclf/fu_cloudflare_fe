@@ -37,7 +37,7 @@ export type Item = {
   id: number;
   name: string;
   item_type: ItemType;
-  url_key: string | null;
+  img_key: string | null;
 
   weapon_category: WeaponCategory | null;
   damage: string | null;

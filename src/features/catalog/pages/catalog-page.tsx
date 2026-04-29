@@ -1,5 +1,7 @@
 import { ItemsCatalogView } from "../../items/pages/items-catalog-view";
+import { JobsCatalogView } from "../../jobs/pages/jobs-catalog-view";
 import { SessionsCatalogView } from "../../sessions/pages/sessions-catalog-view";
+import { SpellsCatalogView } from "../../spells/pages/spells-catalog-view";
 import type { CatalogCategory } from "../types/category";
 
 type CatalogPageProps = {
@@ -28,12 +30,27 @@ export function CatalogPage({
         />
       );
 
+    case "classes":
+      return (
+        <JobsCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
+    
+    case "spells":
+      return (
+        <SpellsCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
+
     case "characters":
     case "npcs":
     case "bestiary":
     case "villains":
     case "spells":
-    case "classes":
     case "places":
       return (
         <div style={styles.comingSoon}>

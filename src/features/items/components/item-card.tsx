@@ -81,7 +81,7 @@ function renderValue(value: string | number | null): string {
 }
 
 export function ItemCard({ item }: Props) {
-  const imageSrc = getItemImageSrc(item.url_key);
+  const imageSrc = getItemImageSrc(item.img_key);
 
   return (
     <article style={styles.card}>

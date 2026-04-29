@@ -7,6 +7,7 @@ type Props = {
   searchValue: string;
   onSearchChange: (value: string) => void;
   categorySwitcher: ReactNode;
+  searchExtraContent?: ReactNode;
   sidebarContent: ReactNode;
   mainContent: ReactNode;
 };
@@ -18,6 +19,7 @@ export function CatalogLayout({
   searchValue,
   onSearchChange,
   categorySwitcher,
+  searchExtraContent,
   sidebarContent,
   mainContent,
 }: Props) {
@@ -38,6 +40,10 @@ export function CatalogLayout({
             onChange={(event) => onSearchChange(event.target.value)}
             style={styles.searchInput}
           />
+
+          {searchExtraContent ? (
+            <div style={styles.searchExtraContent}>{searchExtraContent}</div>
+          ) : null}
         </div>
 
         <div style={styles.sidebarList}>
@@ -94,6 +100,9 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid #3a2e22",
     color: "#d4c9b0",
     borderRadius: "4px",
+  },
+  searchExtraContent: {
+    marginTop: "10px",
   },
   sidebarList: {
     flex: 1,
