@@ -1,5 +1,9 @@
 import type { CSSProperties } from "react";
-import { isSpellOffensive, renderSpellValue } from "../lib/spell-formatters";
+import {
+  getSpellSourceName,
+  isSpellOffensive,
+  renderSpellValue,
+} from "../lib/spell-formatters";
 import type { Spell } from "../types/spell";
 
 type Props = {
@@ -26,12 +30,13 @@ type SpellCardProps = {
 
 function SpellCard({ spell }: SpellCardProps) {
   const offensive = isSpellOffensive(spell.is_offensive);
+  const sourceName = getSpellSourceName(spell);
 
   return (
     <article style={styles.card}>
       <div style={styles.header}>
         <div style={styles.badges}>
-          <span style={styles.jobBadge}>{spell.job_name}</span>
+          <span style={styles.jobBadge}>{sourceName}</span>
 
           <span
             style={{

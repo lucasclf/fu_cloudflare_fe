@@ -1,4 +1,4 @@
-import type { SpellFlagValue } from "../types/spell";
+import type { Spell, SpellFlagValue } from "../types/spell";
 
 export function normalizeSpellText(value: string): string {
   return value
@@ -18,4 +18,16 @@ export function renderSpellValue(value: string | null): string {
   }
 
   return value;
+}
+
+export function getSpellSourceName(spell: Spell): string {
+  if (spell.nature === "monster") {
+    return "Monstro";
+  }
+
+  return spell.job_name?.trim() || "Classe não informada";
+}
+
+export function isMonsterSpell(spell: Spell): boolean {
+  return spell.nature === "monster";
 }

@@ -6,8 +6,9 @@ export type CatalogCategory =
   | "bestiary"
   | "villains"
   | "spells"
+  | "powers"
   | "classes"
-  | "places";
+  | "scenario";
 
 export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
   sessions: "Sessões",
@@ -17,6 +18,7 @@ export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
   bestiary: "Bestiário",
   villains: "Vilões",
   spells: "Magias",
+  powers: "Poderes",
   classes: "Classes",
-  places: "Locais",
+  scenario: "Cenário",
 };

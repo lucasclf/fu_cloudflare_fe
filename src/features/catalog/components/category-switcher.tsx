@@ -14,8 +14,9 @@ const AVAILABLE_CATEGORIES: CatalogCategory[] = [
   "bestiary",
   "villains",
   "spells",
+  "powers",
   "classes",
-  "places",
+  "scenario",
 ];
 
 export function CategorySwitcher({ value, onChange }: Props) {

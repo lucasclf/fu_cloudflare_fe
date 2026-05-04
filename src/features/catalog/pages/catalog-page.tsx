@@ -2,6 +2,8 @@ import { ItemsCatalogView } from "../../items/pages/items-catalog-view";
 import { JobsCatalogView } from "../../jobs/pages/jobs-catalog-view";
 import { SessionsCatalogView } from "../../sessions/pages/sessions-catalog-view";
 import { SpellsCatalogView } from "../../spells/pages/spells-catalog-view";
+import { PowersCatalogView } from "../../powers/pages/powers-catalog-view";
+import { ScenarioCatalogView } from "../../scenario/pages/scenario-catalog-view";
 import type { CatalogCategory } from "../types/category";
 
 type CatalogPageProps = {
@@ -46,12 +48,24 @@ export function CatalogPage({
         />
       );
 
+    case "powers":
+      return (
+        <PowersCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
+    case "scenario":
+      return (
+        <ScenarioCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
     case "characters":
     case "npcs":
     case "bestiary":
     case "villains":
-    case "spells":
-    case "places":
       return (
         <div style={styles.comingSoon}>
           <h2 style={styles.title}>Em breve</h2>

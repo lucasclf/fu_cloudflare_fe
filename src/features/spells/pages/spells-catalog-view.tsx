@@ -5,9 +5,11 @@ import type { CatalogCategory } from "../../catalog/types/category";
 import { getPublicSpells } from "../api/get-public-spells";
 import { SpellCardsPanel } from "../components/spell-cards-panel";
 import { SpellOffensiveToggle } from "../components/spell-offensive-toggle";
-import { isSpellOffensive, normalizeSpellText } from "../lib/spell-formatters";
+import { getSpellSourceName, isSpellOffensive, normalizeSpellText } from "../lib/spell-formatters";
 import type { Spell } from "../types/spell";
 
+const MONSTER_SPELL_FILTER = "__MONSTER_SPELL_FILTER__";
+type SpellSourceFilterValue = string | typeof MONSTER_SPELL_FILTER | null;
 
 type SpellsCatalogViewProps = {
   category: CatalogCategory;
@@ -23,8 +25,7 @@ export function SpellsCatalogView({
   const [offensiveOnly, setOffensiveOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedJobName, setSelectedJobName] = useState<string | null>(null);
-
+  const [selectedSourceFilter, setSelectedSourceFilter] = useState<SpellSourceFilterValue>(null);
 
   useEffect(() => {
     async function loadSpells() {
@@ -46,18 +47,26 @@ export function SpellsCatalogView({
 
   function handleSearchChange(value: string) {
     setSearch(value);
-    setSelectedJobName(null);
+    setSelectedSourceFilter(null);
   }
 
-  function handleSelectJobName(jobName: string | null) {
-    setSelectedJobName(jobName);
+  function handleSelectSourceFilter(value: SpellSourceFilterValue) {
+    setSelectedSourceFilter(value);
     setSearch("");
   }
+
+  const monsterSpellCount = useMemo(() => {
+    return spells.filter((spell) => spell.nature === "monster").length;
+  }, [spells]);
 
   const jobSpellCounts = useMemo(() => {
     const counts = new Map<string, number>();
 
     for (const spell of spells) {
+      if (spell.nature === "monster") {
+        continue;
+      }
+
       const jobName = spell.job_name?.trim();
 
       if (!jobName) {
@@ -75,22 +84,27 @@ export function SpellsCatalogView({
       .sort((a, b) => a.jobName.localeCompare(b.jobName));
   }, [spells]);
 
-  const filteredSpells = useMemo(() => {
+const filteredSpells = useMemo(() => {
     const query = normalizeSpellText(search);
 
     return spells.filter((spell) => {
-      const matchesJobSearch =
-        !query || normalizeSpellText(spell.job_name).includes(query);
+      const sourceName = getSpellSourceName(spell);
 
-      const matchesSelectedJob =
-        !selectedJobName || spell.job_name === selectedJobName;
+      const matchesJobSearch =
+        !query || normalizeSpellText(sourceName).includes(query);
+
+      const matchesSelectedSource =
+        selectedSourceFilter === null ||
+        (selectedSourceFilter === MONSTER_SPELL_FILTER &&
+          spell.nature === "monster") ||
+        spell.job_name === selectedSourceFilter;
 
       const matchesOffensive =
         !offensiveOnly || isSpellOffensive(spell.is_offensive);
 
-      return matchesJobSearch && matchesSelectedJob && matchesOffensive;
+      return matchesJobSearch && matchesSelectedSource && matchesOffensive;
     });
-  }, [spells, search, selectedJobName, offensiveOnly]);
+  }, [spells, search, selectedSourceFilter, offensiveOnly]);
 
   return (
     <CatalogLayout
@@ -117,15 +131,31 @@ export function SpellsCatalogView({
           <div style={styles.sidebarContent}>
             <button
               type="button"
-              onClick={() => handleSelectJobName(null)}
+              onClick={() => handleSelectSourceFilter(null)}
               style={{
                 ...styles.jobFilterButton,
-                ...(selectedJobName === null ? styles.jobFilterButtonActive : {}),
+                ...(selectedSourceFilter === null ? styles.jobFilterButtonActive : {}),
               }}
             >
-              <span>Todas as classes</span>
+              <span>Todas as origens</span>
               <span style={styles.jobFilterCount}>
                 {formatSpellCount(spells.length)}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectSourceFilter(MONSTER_SPELL_FILTER)}
+              style={{
+                ...styles.jobFilterButton,
+                ...(selectedSourceFilter === MONSTER_SPELL_FILTER
+                  ? styles.jobFilterButtonActive
+                  : {}),
+              }}
+            >
+              <span>Monstro</span>
+              <span style={styles.jobFilterCount}>
+                {formatSpellCount(monsterSpellCount)}
               </span>
             </button>
 
@@ -133,10 +163,10 @@ export function SpellsCatalogView({
               <button
                 key={jobName}
                 type="button"
-                onClick={() => handleSelectJobName(jobName)}
+                onClick={() => handleSelectSourceFilter(jobName)}
                 style={{
                   ...styles.jobFilterButton,
-                  ...(selectedJobName === jobName
+                  ...(selectedSourceFilter === jobName
                     ? styles.jobFilterButtonActive
                     : {}),
                 }}
