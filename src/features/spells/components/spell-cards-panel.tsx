@@ -18,7 +18,7 @@ export function SpellCardsPanel({ spells }: Props) {
   return (
     <div style={styles.wrapper}>
       {spells.map((spell) => (
-        <SpellCard key={spell.id} spell={spell} />
+        <SpellCard key={getSpellCardKey(spell)} spell={spell} />
       ))}
     </div>
   );
@@ -27,6 +27,14 @@ export function SpellCardsPanel({ spells }: Props) {
 type SpellCardProps = {
   spell: Spell;
 };
+
+function getSpellCardKey(spell: Spell): string {
+  if (spell.nature === "monster") {
+    return `monster-${spell.id}`;
+  }
+
+  return `job-${spell.job_id ?? "unknown"}-${spell.id}`;
+}
 
 function SpellCard({ spell }: SpellCardProps) {
   const offensive = isSpellOffensive(spell.is_offensive);

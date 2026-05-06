@@ -20,14 +20,18 @@ export function renderSpellValue(value: string | null): string {
   return value;
 }
 
+export function isMonsterSpell(spell: Spell): boolean {
+  return String(spell.nature).trim().toLowerCase() === "monster";
+}
+
+export function isJobSpell(spell: Spell): boolean {
+  return String(spell.nature).trim().toLowerCase() === "job";
+}
+
 export function getSpellSourceName(spell: Spell): string {
-  if (spell.nature === "monster") {
-    return "Monstro";
+  if (isMonsterSpell(spell)) {
+    return "Monstros";
   }
 
   return spell.job_name?.trim() || "Classe não informada";
-}
-
-export function isMonsterSpell(spell: Spell): boolean {
-  return spell.nature === "monster";
 }
