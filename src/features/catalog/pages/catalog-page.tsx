@@ -5,6 +5,7 @@ import { SpellsCatalogView } from "../../spells/pages/spells-catalog-view";
 import { PowersCatalogView } from "../../powers/pages/powers-catalog-view";
 import { ScenarioCatalogView } from "../../scenario/pages/scenario-catalog-view";
 import type { CatalogCategory } from "../types/category";
+import { MonstersCatalogView } from "../../monsters/pages/monsters-catalog-view";
 
 type CatalogPageProps = {
   category: CatalogCategory;
@@ -62,9 +63,15 @@ export function CatalogPage({
           onCategoryChange={onCategoryChange}
         />
       );
+    case "bestiary":
+      return (
+        <MonstersCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
     case "characters":
     case "npcs":
-    case "bestiary":
     case "villains":
       return (
         <div style={styles.comingSoon}>
