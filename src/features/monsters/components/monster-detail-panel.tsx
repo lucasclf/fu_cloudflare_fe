@@ -71,30 +71,34 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
         </div>
 
         <div style={styles.heroContent}>
-            <div style={styles.badges}>
+            <div style={styles.heroInfoBlock}>
+                <div style={styles.badges}>
                 <span style={styles.typeBadge}>
-                {formatMonsterType(monster.monster_type)}
+                    {formatMonsterType(monster.monster_type)}
                 </span>
 
                 <span style={styles.levelBadge}>Nível {monster.level}</span>
-            </div>
+                </div>
 
-            <h2 style={styles.title}>{monster.name}</h2>
+                <h2 style={styles.title}>{monster.name}</h2>
 
-            <p style={styles.description}>
+                <p style={styles.description}>
                 {renderMonsterValue(monster.description)}
-            </p>
+                </p>
 
-            <CompactStats monster={monster} />
-
-            <div style={styles.traits}>
+                <div style={styles.traits}>
                 {monster.traits.map((trait) => (
-                <span key={trait.trait} style={styles.traitBadge}>
+                    <span key={trait.trait} style={styles.traitBadge}>
                     {trait.trait}
-                </span>
+                    </span>
                 ))}
+                </div>
             </div>
+
+            <div style={styles.heroStatsBlock}>
+                <CompactStats monster={monster} />
             </div>
+        </div>
       </article>
 
       <section style={styles.section}>
@@ -237,17 +241,24 @@ function getActionInfoItems(action: MonsterAction) {
 function CompactStats({ monster }: { monster: MonsterDetail }) {
   return (
     <div style={styles.compactStats}>
-      <CompactStat label="DES" value={monster.dexterity_die} />
-      <CompactStat label="AST" value={monster.insight_die} />
-      <CompactStat label="VIG" value={monster.might_die} />
-      <CompactStat label="VON" value={monster.willpower_die} />
+      <div style={styles.compactStatRowFour}>
+        <CompactStat label="DES" value={monster.dexterity_die} />
+        <CompactStat label="AST" value={monster.insight_die} />
+        <CompactStat label="VIG" value={monster.might_die} />
+        <CompactStat label="VON" value={monster.willpower_die} />
+      </div>
 
-      <CompactStat label="PV" value={monster.hp} />
-      <CompactStat label="Crise" value={monster.crisis_hp} />
-      <CompactStat label="PM" value={monster.mp} />
-      <CompactStat label="INI" value={monster.initiative} />
-      <CompactStat label="DEF" value={monster.defense} />
-      <CompactStat label="DM" value={monster.magic_defense} />
+      <div style={styles.compactStatRowThree}>
+        <CompactStat label="PV" value={monster.hp} />
+        <CompactStat label="Crise" value={monster.crisis_hp} />
+        <CompactStat label="PM" value={monster.mp} />
+      </div>
+
+      <div style={styles.compactStatRowThree}>
+        <CompactStat label="DEF" value={monster.defense} />
+        <CompactStat label="DEF M." value={monster.magic_defense} />
+        <CompactStat label="INI" value={monster.initiative} />
+      </div>
     </div>
   );
 }
@@ -269,15 +280,6 @@ function CompactStat({
 
 function SectionTitle({ children }: { children: string }) {
   return <h2 style={styles.sectionTitle}>{children}</h2>;
-}
-
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div style={styles.stat}>
-      <span style={styles.statLabel}>{label}</span>
-      <span style={styles.statValue}>{value}</span>
-    </div>
-  );
 }
 
 function Info({
@@ -320,12 +322,12 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "12px",
     overflow: "hidden",
     display: "grid",
-    gridTemplateColumns: "minmax(260px, 34%) minmax(0, 1fr)",
-    minHeight: "360px",
+    gridTemplateColumns: "1fr 2fr",
+    minHeight: "420px",
   },
 
-  imageFrame: {
-    minHeight: "360px",
+    imageFrame: {
+    minHeight: "420px",
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
     overflow: "hidden",
@@ -351,11 +353,24 @@ const styles: Record<string, CSSProperties> = {
   },
 
   heroContent: {
-    padding: "26px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
+  display: "grid",
+  gridTemplateRows: "1fr 1fr",
+  minHeight: "420px",
+},
+
+heroInfoBlock: {
+  padding: "26px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "14px",
+  borderBottom: "1px solid #3a2e22",
+},
+
+heroStatsBlock: {
+  padding: "22px 26px",
+  display: "flex",
+  alignItems: "center",
+},
 
   badges: {
     display: "flex",
@@ -556,35 +571,45 @@ const styles: Record<string, CSSProperties> = {
     fontStyle: "italic",
   },
 
-  compactStats: {
-    border: "1px solid #34291f",
-    borderRadius: "10px",
-    background: "#110e0c",
-    padding: "10px",
-    display: "grid",
-    gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-    gap: "8px",
-    },
+compactStats: {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "14px",
+},
 
-    compactStat: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "3px",
-    minWidth: 0,
-    },
+compactStatRowFour: {
+  display: "grid",
+  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+  gap: "10px",
+},
+
+compactStatRowThree: {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+  gap: "10px",
+},
+
+compactStat: {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "5px",
+  minWidth: 0,
+},
 
 compactStatLabel: {
   color: "#7a6e5a",
-  fontSize: "10px",
+  fontSize: "11px",
   fontWeight: 800,
   textTransform: "uppercase",
-  letterSpacing: "0.04em",
+  letterSpacing: "0.06em",
 },
 
 compactStatValue: {
   color: "#f5efe2",
-  fontSize: "15px",
+  fontSize: "18px",
   fontWeight: 900,
   lineHeight: 1,
 },

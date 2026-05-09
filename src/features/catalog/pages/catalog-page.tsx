@@ -6,6 +6,7 @@ import { PowersCatalogView } from "../../powers/pages/powers-catalog-view";
 import { ScenarioCatalogView } from "../../scenario/pages/scenario-catalog-view";
 import type { CatalogCategory } from "../types/category";
 import { MonstersCatalogView } from "../../monsters/pages/monsters-catalog-view";
+import { NpcsCatalogView } from "../../npcs/pages/npcs-catalog-view";
 
 type CatalogPageProps = {
   category: CatalogCategory;
@@ -70,8 +71,14 @@ export function CatalogPage({
           onCategoryChange={onCategoryChange}
         />
       );
+      case "npcs":
+        return (
+          <NpcsCatalogView
+            category={category}
+            onCategoryChange={onCategoryChange}
+          />
+        );
     case "characters":
-    case "npcs":
     case "villains":
       return (
         <div style={styles.comingSoon}>

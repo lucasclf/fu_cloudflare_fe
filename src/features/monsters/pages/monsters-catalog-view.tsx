@@ -27,6 +27,7 @@ export function MonstersCatalogView({
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [minLevel, setMinLevel] = useState("");
   const [maxLevel, setMaxLevel] = useState("");
+  const [search, setSearch] = useState("");
   const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(
     null,
   );
@@ -61,10 +62,15 @@ export function MonstersCatalogView({
   }, [monsters]);
 
   const filteredMonsters = useMemo(() => {
+    const query = normalizeMonsterText(search);
+
     const min = minLevel.trim() === "" ? null : Number(minLevel);
     const max = maxLevel.trim() === "" ? null : Number(maxLevel);
 
     return monsters.filter((monster) => {
+      const matchesSearch =
+        !query || normalizeMonsterText(monster.name).includes(query);
+
       const matchesType =
         selectedType === null || monster.monster_type === selectedType;
 
@@ -74,9 +80,9 @@ export function MonstersCatalogView({
       const matchesMax =
         max === null || !Number.isFinite(max) || monster.level <= max;
 
-      return matchesType && matchesMin && matchesMax;
+      return matchesSearch && matchesType && matchesMin && matchesMax;
     });
-  }, [monsters, selectedType, minLevel, maxLevel]);
+  }, [monsters, search, selectedType, minLevel, maxLevel]);
 
   async function handleSelectMonster(monsterId: number) {
     try {
@@ -101,9 +107,36 @@ export function MonstersCatalogView({
   }
 
   function handleResetFilters() {
+    setSearch("");
     setSelectedType(null);
     setMinLevel("");
     setMaxLevel("");
+    handleBackToList();
+  }
+
+  function handleSearchChange(value: string) {
+  setSearch(value);
+  setSelectedType(null);
+  setMinLevel("");
+  setMaxLevel("");
+  handleBackToList();
+}
+
+  function handleSelectType(type: string | null) {
+    setSelectedType(type);
+    setSearch("");
+    handleBackToList();
+  }
+
+  function handleMinLevelChange(value: string) {
+    setMinLevel(value);
+    setSearch("");
+    handleBackToList();
+  }
+
+  function handleMaxLevelChange(value: string) {
+    setMaxLevel(value);
+    setSearch("");
     handleBackToList();
   }
 
@@ -112,8 +145,8 @@ export function MonstersCatalogView({
       sidebarHeaderTitle="Bestiário"
       sidebarHeaderSubtitle="Criaturas e ameaças"
       searchPlaceholder="Buscar monstro..."
-      searchValue=""
-      onSearchChange={() => undefined}
+      searchValue={search}
+      onSearchChange={handleSearchChange}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
@@ -122,14 +155,8 @@ export function MonstersCatalogView({
           <MonsterLevelFilter
             minLevel={minLevel}
             maxLevel={maxLevel}
-            onMinLevelChange={(value) => {
-              setMinLevel(value);
-              handleBackToList();
-            }}
-            onMaxLevelChange={(value) => {
-              setMaxLevel(value);
-              handleBackToList();
-            }}
+            onMinLevelChange={handleMinLevelChange}
+            onMaxLevelChange={handleMaxLevelChange}
           />
 
           <button
@@ -151,10 +178,7 @@ export function MonstersCatalogView({
             typeCounts={typeCounts}
             selectedType={selectedType}
             totalCount={monsters.length}
-            onSelectType={(type) => {
-              setSelectedType(type);
-              handleBackToList();
-            }}
+            onSelectType={handleSelectType}
           />
         )
       }
