@@ -3,15 +3,24 @@ import { getNpcImageSrc } from "../lib/get-npc-image-src";
 import {
   formatEquipmentSlot,
   formatInventoryRelationType,
+  formatNpcCurrency,
+  formatNpcItemType,
+  formatDamageType,
+  formatMartialValue,
+  formatNpcItemValue,
   formatSpecialRuleType,
+  formatWeaponDistance,
+  formatWeaponGrip,
   renderNpcValue,
 } from "../lib/npc-formatters";
 import type {
   NpcDetail,
   NpcEquipmentItem,
   NpcInventoryItem,
+  NpcItem,
   NpcSpecialRule,
 } from "../types/npc";
+import { getItemImageSrc } from "../../items/lib/get-item-image-src";
 
 type Props = {
   npc: NpcDetail;
@@ -72,7 +81,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
           <div style={styles.itemGrid}>
             {npc.inventory.map((item) => (
               <InventoryCard
-                key={`${item.item_id}-${item.relation_type}`}
+                key={`${item.item.id}-${item.relation_type}`}
                 item={item}
               />
             ))}
@@ -87,7 +96,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
           <div style={styles.itemGrid}>
             {npc.equipment.map((item) => (
               <EquipmentCard
-                key={`${item.item_id}-${item.slot}`}
+                key={`${item.item.id}-${item.slot}`}
                 item={item}
               />
             ))}
@@ -165,29 +174,148 @@ function SpecialRuleCard({ rule }: { rule: NpcSpecialRule }) {
 }
 
 function InventoryCard({ item }: { item: NpcInventoryItem }) {
+  const shouldShowPrice = item.relation_type === "shop_stock";
+
   return (
-    <article style={styles.itemCard}>
-      <span style={styles.itemLabel}>
-        {formatInventoryRelationType(item.relation_type)}
-      </span>
-
-      <strong style={styles.itemTitle}>Item #{item.item_id}</strong>
-
-      <span style={styles.itemMeta}>
-        Quantidade: {renderNpcValue(item.quantity)}
-      </span>
-    </article>
+    <NpcItemCard
+      item={item.item}
+      headerLabel={formatInventoryRelationType(item.relation_type)}
+      imageTopLabel={`Quantidade: ${renderNpcValue(item.quantity)}`}
+      imageBottomLabel={
+        shouldShowPrice ? formatNpcCurrency(item.item.cost) : undefined
+      }
+    />
   );
 }
 
 function EquipmentCard({ item }: { item: NpcEquipmentItem }) {
   return (
-    <article style={styles.itemCard}>
-      <span style={styles.itemLabel}>{formatEquipmentSlot(item.slot)}</span>
+    <NpcItemCard
+      item={item.item}
+      headerLabel={formatEquipmentSlot(item.slot)}
+    />
+  );
+}
 
-      <strong style={styles.itemTitle}>Item #{item.item_id}</strong>
+function NpcItemCard({
+  item,
+  headerLabel,
+  imageTopLabel,
+  imageBottomLabel,
+}: {
+  item: NpcItem;
+  headerLabel: string;
+  imageTopLabel?: string;
+  imageBottomLabel?: string;
+}) {
+  const imageSrc = getItemImageSrc(item.img_key);
+  const details = getNpcItemCompactDetails(item);
+
+  return (
+    <article style={styles.itemCard}>
+      <div style={styles.itemImageColumn}>
+        {imageTopLabel ? (
+          <div style={styles.itemImageTopLabel}>{imageTopLabel}</div>
+        ) : null}
+
+        <div style={styles.itemImageFrame}>
+          <img src={imageSrc} alt={item.name} style={styles.itemImage} />
+        </div>
+
+        {imageBottomLabel ? (
+          <div style={styles.itemImageBottomLabel}>{imageBottomLabel}</div>
+        ) : null}
+      </div>
+
+      <div style={styles.itemContent}>
+        <div style={styles.itemTopLine}>
+          <strong style={styles.itemTitle}>{item.name}</strong>
+
+          <span style={styles.itemTypeBadge}>
+            {formatNpcItemType(item.item_type)}
+          </span>
+        </div>
+
+        <div style={styles.itemSubLine}>
+          <span>{headerLabel}</span>
+        </div>
+
+        {details.length > 0 ? (
+          <div style={styles.itemDetailsLine}>
+            {details.map((detail, index) => (
+              <span
+                key={`${detail.label}-${index}`}
+                style={styles.itemDetailText}
+              >
+                {detail.value}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </article>
   );
+}
+
+function getNpcItemCompactDetails(item: NpcItem): Array<{
+  label: string;
+  value: string;
+}> {
+  if (item.item_type === "arma") {
+    return [
+      {
+        label: "Categoria",
+        value: formatNpcItemValue(item.weapon_category),
+      },
+      {
+        label: "Precisão",
+        value: formatNpcItemValue(item.accuracy),
+      },
+      {
+        label: "Dano",
+        value: formatNpcItemValue(item.damage),
+      },
+      {
+        label: "Tipo",
+        value: formatDamageType(item.damage_type),
+      },
+      {
+        label: "Empunhadura",
+        value: formatWeaponGrip(item.grip),
+      },
+      {
+        label: "Alcance",
+        value: formatWeaponDistance(item.distance),
+      },
+      {
+        label: "Uso",
+        value: formatMartialValue(item.is_martial),
+      },
+    ].filter((detail) => detail.value !== "???");
+  }
+
+  if (item.item_type === "armadura" || item.item_type === "escudo") {
+    return [
+      {
+        label: "Defesa",
+        value: item.defense ? `DEF ${item.defense}` : "???",
+      },
+      {
+        label: "Def. Mágica",
+        value: item.magic_defense ? `DM ${item.magic_defense}` : "???",
+      },
+      {
+        label: "Iniciativa",
+        value: item.initiative ? `INI ${item.initiative}` : "???",
+      },
+      {
+        label: "Uso",
+        value: formatMartialValue(item.is_martial),
+      },
+    ].filter((detail) => detail.value !== "???");
+  }
+
+  return [];
 }
 
 function SectionTitle({ children }: { children: string }) {
@@ -416,33 +544,142 @@ const styles: Record<string, CSSProperties> = {
   itemGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "12px",
+    gap: "10px",
   },
 
   itemCard: {
     background: "#161210",
     border: "1px solid #3a2e22",
-    borderRadius: "10px",
-    padding: "14px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
+    borderRadius: "9px",
+    overflow: "hidden",
+    display: "grid",
+    gridTemplateColumns: "72px minmax(0, 1fr)",
+    minHeight: "104px",
   },
 
-  itemLabel: {
+  itemImageColumn: {
+    background: "#0e0c0a",
+    borderRight: "1px solid #3a2e22",
+    display: "grid",
+    gridTemplateRows: "auto 1fr auto",
+    alignItems: "center",
+    justifyItems: "center",
+    padding: "6px",
+    gap: "4px",
+  },
+
+  itemImageFrame: {
+    width: "100%",
+    minHeight: "42px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  itemImageTopLabel: {
     color: "#9f8f73",
-    fontSize: "12px",
+    fontSize: "10px",
     fontWeight: 800,
+    lineHeight: 1.15,
+    textAlign: "center",
+  },
+
+  itemImageBottomLabel: {
+    color: "#c9963a",
+    fontSize: "10px",
+    fontWeight: 900,
+    lineHeight: 1.15,
+    textAlign: "center",
+  },
+
+  itemImage: {
+    width: "100%",
+    height: "100%",
+    maxHeight: "48px",
+    objectFit: "contain",
+    display: "block",
+  },
+
+  itemContent: {
+    padding: "9px 10px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    minWidth: 0,
+  },
+
+  itemTopLine: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "8px",
+    minWidth: 0,
   },
 
   itemTitle: {
     color: "#f5efe2",
-    fontSize: "15px",
+    fontSize: "13px",
+    fontWeight: 800,
+    lineHeight: 1.15,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+
+  itemTypeBadge: {
+    border: "1px solid #34291f",
+    borderRadius: "999px",
+    background: "#110e0c",
+    color: "#c9963a",
+    padding: "2px 7px",
+    fontSize: "10px",
+    fontWeight: 800,
+    whiteSpace: "nowrap",
+    flexShrink: 0,
+  },
+
+  itemSubLine: {
+    display: "flex",
+    alignItems: "center",
+    gap: "5px",
+    color: "#9f8f73",
+    fontSize: "11px",
+    fontWeight: 700,
+    minWidth: 0,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  },
+
+  separator: {
+    color: "#5f574c",
+  },
+
+  itemCost: {
+    color: "#7a6e5a",
+    fontSize: "11px",
+    fontWeight: 700,
+  },
+
+  itemDetailsLine: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "4px 8px",
+    color: "#d4c9b0",
+    fontSize: "11px",
+    fontWeight: 700,
+    lineHeight: 1.25,
+  },
+
+  itemDetailText: {
+    display: "inline-flex",
+    alignItems: "center",
   },
 
   itemMeta: {
     color: "#7a6e5a",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: 700,
   },
+
 };

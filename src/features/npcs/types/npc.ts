@@ -25,14 +25,14 @@ export type NpcSpecialRule = {
 
 export type NpcInventoryItem = {
   npc_id: number;
-  item_id: number;
+  item: NpcItem;
   relation_type: string;
   quantity: number | null;
 };
 
 export type NpcEquipmentItem = {
   npc_id: number;
-  item_id: number;
+  item: NpcItem;
   slot: string;
 };
 
@@ -48,4 +48,29 @@ export type NpcDetail = NpcSummary & {
   specialRules: NpcSpecialRule[];
   inventory: NpcInventoryItem[];
   equipment: NpcEquipmentItem[];
+};
+
+export type NpcItem = {
+  id: number;
+  name: string;
+  item_type: string;
+  description: string | null;
+  img_key: string | null;
+  cost: number | null;
+
+  weapon_category: string | null;
+  accuracy: string | null;
+  damage: string | null;
+  damage_type: string | null;
+  grip: string | null;
+  distance: string | null;
+
+  defense: string | null;
+  magic_defense: string | null;
+  initiative: string | null;
+
+  is_martial: boolean | null;
+
+  created_at: string;
+  updated_at: string | null;
 };
