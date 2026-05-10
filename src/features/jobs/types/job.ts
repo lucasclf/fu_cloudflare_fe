@@ -69,6 +69,16 @@ export type Job = JobCatalogItem & {
   aliases?: JobAlias[];
   powers?: JobPower[];
   spells?: JobSpell[];
+  arcanas?: JobArcana[];
   created_at?: string;
   updated_at?: string | null;
+};
+
+export type JobArcana = {
+  id: number;
+  name: string;
+  domain: string;
+  merge_effect?: string | null;
+  dismiss_effect?: string | null;
+  special_rule?: string | null;
 };

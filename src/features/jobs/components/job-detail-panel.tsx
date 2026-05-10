@@ -9,7 +9,7 @@ import {
   renderOptionalValue,
   renderTokenLabel,
 } from "../lib/job-formatters";
-import type { Job, JobPower, JobSpell } from "../types/job";
+import type { Job, JobPower, JobSpell, JobArcana} from "../types/job";
 import type { ReactNode } from "react";
 
 type Props = {
@@ -63,6 +63,7 @@ export function JobDetailPanel({ job, loading, error }: Props) {
         <>
           <BackgroundSection job={job} />
           <PowersSection powers={job.powers} />
+          <ArcanasSection arcanas={job.arcanas} />
           <SpellsSection spells={job.spells} />
         </>
       ) : null}
@@ -251,6 +252,96 @@ function PowersSection({ powers }: PowersSectionProps) {
   );
 }
 
+function ArcanasSection({ arcanas }: { arcanas?: JobArcana[] }) {
+  if (!arcanas || arcanas.length === 0) {
+    return null;
+  }
+
+  return (
+    <section style={styles.section}>
+      <SectionTitle>Arcanas</SectionTitle>
+
+      <div style={styles.arcanaGrid}>
+        {arcanas.map((arcana) => (
+          <ArcanaCard key={arcana.id} arcana={arcana} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ArcanaCard({ arcana }: { arcana: JobArcana }) {
+  const details = getArcanaDetails(arcana);
+
+  return (
+    <article style={styles.arcanaCard}>
+      <div style={styles.arcanaHeader}>
+        <h3 style={styles.arcanaTitle}>{arcana.name}</h3>
+
+        <div style={styles.arcanaDomainList}>
+          {getArcanaDomains(arcana.domain).map((domain) => (
+            <span key={domain} style={styles.arcanaDomainBadge}>
+              {domain}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {details.length > 0 ? (
+        <div style={styles.arcanaDetails}>
+          {details.map((detail) => (
+            <div key={detail.label} style={styles.arcanaDetailBlock}>
+              <div style={styles.arcanaDetailLabel}>{detail.label}</div>
+              <p style={styles.arcanaDetailText}>{detail.value}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function getArcanaDetails(arcana: JobArcana): Array<{
+  label: string;
+  value: string;
+}> {
+  return [
+    {
+      label: "Efeito de Fusão",
+      value: arcana.merge_effect,
+    },
+    {
+      label: "Efeito de Dispensa",
+      value: arcana.dismiss_effect,
+    },
+    {
+      label: "Regra Especial",
+      value: arcana.special_rule,
+    },
+  ].filter((detail): detail is { label: string; value: string } =>
+    hasArcanaText(detail.value),
+  );
+}
+
+function hasArcanaText(value: string | null | undefined): value is string {
+  return value !== null && value !== undefined && value.trim().length > 0;
+}
+
+function getArcanaDomains(domain: string): string[] {
+  return domain
+    .split(",")
+    .map((item) => capitalizeFirstLetter(item.trim()))
+    .filter((item) => item.length > 0);
+}
+
+function capitalizeFirstLetter(value: string): string {
+  if (value.length === 0) {
+    return value;
+  }
+
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 type SpellsSectionProps = {
   spells: JobSpell[] | undefined;
 };
@@ -311,6 +402,10 @@ function Info({ label, value }: InfoProps) {
       <div style={styles.infoValue}>{value}</div>
     </div>
   );
+}
+
+function SectionTitle({ children }: { children: string }) {
+  return <h2 style={styles.sectionTitle}>{children}</h2>;
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -531,5 +626,79 @@ const styles: Record<string, React.CSSProperties> = {
     border: "1px solid #3a2e22",
     borderRadius: "4px",
     padding: "8px 10px",
+  },
+
+  arcanaGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: "16px",
+  },
+
+  arcanaCard: {
+    background: "#161210",
+    border: "1px solid #3a2e22",
+    borderRadius: "10px",
+    padding: "16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+  },
+
+  arcanaHeader: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+
+  arcanaTitle: {
+    margin: 0,
+    color: "#e8c875",
+    fontSize: "20px",
+    lineHeight: 1.15,
+  },
+
+  arcanaDomainList: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "6px",
+  },
+
+  arcanaDomainBadge: {
+    border: "1px solid #7a5a22",
+    borderRadius: "999px",
+    background: "#1e1a16",
+    color: "#c9963a",
+    padding: "4px 10px",
+    fontSize: "12px",
+    fontWeight: 800,
+    lineHeight: 1.2,
+  },
+
+  arcanaDetails: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+
+  arcanaDetailBlock: {
+    borderTop: "1px solid #34291f",
+    paddingTop: "10px",
+  },
+
+  arcanaDetailLabel: {
+    color: "#9f8f73",
+    fontSize: "11px",
+    fontWeight: 900,
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
+    marginBottom: "6px",
+  },
+
+  arcanaDetailText: {
+    margin: 0,
+    color: "#d4c9b0",
+    fontSize: "14px",
+    lineHeight: 1.55,
+    whiteSpace: "pre-line",
   },
 };
