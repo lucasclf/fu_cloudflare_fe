@@ -1,3 +1,4 @@
+import { useState, type CSSProperties, type ReactNode } from "react";
 import { getJobImageSrc } from "../lib/get-job-image-src";
 import {
   ALLOWANCE_DEFINITIONS,
@@ -9,8 +10,7 @@ import {
   renderOptionalValue,
   renderTokenLabel,
 } from "../lib/job-formatters";
-import type { Job, JobPower, JobSpell, JobArcana} from "../types/job";
-import type { ReactNode } from "react";
+import type { Job, JobArcana, JobPower, JobSpell } from "../types/job";
 
 type Props = {
   job: Job;
@@ -18,18 +18,12 @@ type Props = {
   error: string | null;
 };
 
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
-}
-
-function hasItems<T>(items: T[] | undefined): items is T[] {
-  return Array.isArray(items) && items.length > 0;
-}
+type CollapsibleSectionProps = {
+  title: string;
+  count?: number;
+  defaultOpen?: boolean;
+  children: ReactNode;
+};
 
 export function JobDetailPanel({ job, loading, error }: Props) {
   const imageSrc = getJobImageSrc(job.img_key);
@@ -49,14 +43,20 @@ export function JobDetailPanel({ job, loading, error }: Props) {
           <div style={styles.heroText}>
             <div style={styles.badge}>Classe</div>
             <h2 style={styles.heroTitle}>{job.name}</h2>
-            {job.tagline ? <p style={styles.tagline}>{job.tagline}</p> : null}
+
+            {job.tagline ? (
+              <p style={styles.tagline}>{job.tagline}</p>
+            ) : null}
           </div>
         </div>
 
         <HeroAllowanceIcons job={job} />
       </section>
 
-      {loading ? <div style={styles.message}>Carregando detalhes...</div> : null}
+      {loading ? (
+        <div style={styles.message}>Carregando detalhes...</div>
+      ) : null}
+
       {error ? <div style={styles.message}>{error}</div> : null}
 
       {!loading && !error ? (
@@ -71,6 +71,55 @@ export function JobDetailPanel({ job, loading, error }: Props) {
   );
 }
 
+function CollapsibleSection({
+  title,
+  count,
+  defaultOpen = true,
+  children,
+}: CollapsibleSectionProps) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <section style={styles.collapsibleSection}>
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        style={styles.collapsibleHeader}
+      >
+        <span style={styles.collapsibleHeaderMain}>
+          <span style={styles.collapsibleChevron}>{open ? "▾" : "▸"}</span>
+
+          <span style={styles.collapsibleTitle}>{title}</span>
+
+          {typeof count === "number" ? (
+            <span style={styles.collapsibleCount}>{count}</span>
+          ) : null}
+        </span>
+
+        <span style={styles.collapsibleAction}>
+          {open ? "Fechar" : "Abrir"}
+        </span>
+      </button>
+
+      {open ? <div style={styles.collapsibleContent}>{children}</div> : null}
+    </section>
+  );
+}
+
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
+
+function hasItems<T>(items: T[] | undefined): items is T[] {
+  return Array.isArray(items) && items.length > 0;
+}
+
 type HeroAllowanceIconsProps = {
   job: Job;
 };
@@ -82,11 +131,6 @@ type BonusDefinition = {
   label: string;
   icon: ReactNode;
 };
-
-function getPositiveBonus(value: unknown): number {
-  const bonus = Number(value);
-  return Number.isFinite(bonus) && bonus > 0 ? bonus : 0;
-}
 
 const BONUS_DEFINITIONS: BonusDefinition[] = [
   {
@@ -127,6 +171,11 @@ const BONUS_DEFINITIONS: BonusDefinition[] = [
   },
 ];
 
+function getPositiveBonus(value: unknown): number {
+  const bonus = Number(value);
+  return Number.isFinite(bonus) && bonus > 0 ? bonus : 0;
+}
+
 function HeroAllowanceIcons({ job }: HeroAllowanceIconsProps) {
   const enabledAllowances = ALLOWANCE_DEFINITIONS.filter(({ key }) =>
     isJobAllowanceEnabled(job[key]),
@@ -142,7 +191,10 @@ function HeroAllowanceIcons({ job }: HeroAllowanceIconsProps) {
   }
 
   return (
-    <div style={styles.heroAllowanceWrapper} aria-label="Características da classe">
+    <div
+      style={styles.heroAllowanceWrapper}
+      aria-label="Características da classe"
+    >
       <div style={styles.heroAllowanceBar}>
         {enabledAllowances.map(({ key, label, icon }) => (
           <span
@@ -174,99 +226,106 @@ function HeroAllowanceIcons({ job }: HeroAllowanceIconsProps) {
   );
 }
 
-type BackgroundSectionProps = {
-  job: Job;
-};
+function BackgroundSection({ job }: { job: Job }) {
+  const aliases = job.aliases ?? [];
+  const questions = job.questions ?? [];
+  const count = aliases.length + questions.length;
 
-function BackgroundSection({ job }: BackgroundSectionProps) {
-  const hasAliases = hasItems(job.aliases);
-  const hasQuestions = hasItems(job.questions);
-
-  if (!hasAliases && !hasQuestions) {
+  if (count === 0) {
     return null;
   }
 
   return (
-    <section style={styles.section}>
-      <h3 style={styles.sectionTitle}>Background</h3>
+    <CollapsibleSection title="Background" defaultOpen={false}>
+      <div style={styles.backgroundContent}>
+        {aliases.length > 0 ? (
+          <div style={styles.subsection}>
+            <h3 style={styles.subsectionTitle}>Também conhecido como</h3>
 
-      {hasAliases ? (
-        <div style={styles.aliases}>
-          {(job.aliases ?? []).map((alias) => (
-            <span key={alias.id} style={styles.aliasBadge}>
-              {getAliasText(alias)}
-            </span>
-          ))}
-        </div>
-      ) : null}
-
-      {hasQuestions ? (
-        <div style={styles.list}>
-          {(job.questions ?? []).map((question, index) => (
-            <div key={question.id} style={styles.infoBox}>
-              <div style={styles.infoLabel}>Pergunta {index + 1}</div>
-              <div style={styles.infoValue}>{getQuestionText(question)}</div>
+            <div style={styles.aliases}>
+              {aliases.map((alias) => (
+                <span key={alias.id} style={styles.aliasBadge}>
+                  {getAliasText(alias)}
+                </span>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : null}
-    </section>
+          </div>
+        ) : null}
+
+        {questions.length > 0 ? (
+          <div style={styles.subsection}>
+            <h3 style={styles.subsectionTitle}>Perguntas</h3>
+
+            <div style={styles.list}>
+              {questions.map((question, index) => (
+                <div key={question.id} style={styles.infoBox}>
+                  <div style={styles.infoLabel}>Pergunta {index + 1}</div>
+                  <div style={styles.infoValue}>
+                    {getQuestionText(question)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </CollapsibleSection>
   );
 }
 
-type PowersSectionProps = {
-  powers: JobPower[] | undefined;
-};
-
-function PowersSection({ powers }: PowersSectionProps) {
+function PowersSection({ powers }: { powers: JobPower[] | undefined }) {
   if (!hasItems(powers)) {
     return null;
   }
 
   return (
-    <section style={styles.section}>
-      <h3 style={styles.sectionTitle}>Poderes</h3>
+    <CollapsibleSection title="Poderes" count={powers.length} defaultOpen={false}>
       <div style={styles.list}>
         {powers.map((power) => (
           <article key={power.id} style={styles.infoBox}>
             <div style={styles.cardHeader}>
               <h4 style={styles.cardTitle}>{power.name}</h4>
+
               <div style={styles.inlineBadges}>
                 {power.type ? (
                   <span style={styles.secondaryBadge}>
                     {renderTokenLabel(power.type)}
                   </span>
                 ) : null}
+
                 {power.max_level ? (
                   <span style={styles.secondaryBadge}>
                     Nível máximo {power.max_level}
                   </span>
                 ) : null}
+
+                {power.is_global ? (
+                  <span style={styles.secondaryBadge}>Global</span>
+                ) : null}
               </div>
             </div>
+
             <p style={styles.text}>{power.description}</p>
           </article>
         ))}
       </div>
-    </section>
+    </CollapsibleSection>
   );
 }
 
 function ArcanasSection({ arcanas }: { arcanas?: JobArcana[] }) {
-  if (!arcanas || arcanas.length === 0) {
+  if (!hasItems(arcanas)) {
     return null;
   }
 
   return (
-    <section style={styles.section}>
-      <SectionTitle>Arcanas</SectionTitle>
-
+    <CollapsibleSection title="Arcanas" count={arcanas.length} defaultOpen={false}>
       <div style={styles.arcanaGrid}>
         {arcanas.map((arcana) => (
           <ArcanaCard key={arcana.id} arcana={arcana} />
         ))}
       </div>
-    </section>
+    </CollapsibleSection>
   );
 }
 
@@ -319,12 +378,8 @@ function getArcanaDetails(arcana: JobArcana): Array<{
       value: arcana.special_rule,
     },
   ].filter((detail): detail is { label: string; value: string } =>
-    hasArcanaText(detail.value),
+    hasText(detail.value),
   );
-}
-
-function hasArcanaText(value: string | null | undefined): value is string {
-  return value !== null && value !== undefined && value.trim().length > 0;
 }
 
 function getArcanaDomains(domain: string): string[] {
@@ -342,43 +397,53 @@ function capitalizeFirstLetter(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-type SpellsSectionProps = {
-  spells: JobSpell[] | undefined;
-};
-
-function SpellsSection({ spells }: SpellsSectionProps) {
+function SpellsSection({ spells }: { spells: JobSpell[] | undefined }) {
   if (!hasItems(spells)) {
     return null;
   }
 
   return (
-    <section style={styles.section}>
-      <h3 style={styles.sectionTitle}>Magias</h3>
+    <CollapsibleSection title="Magias" count={spells.length} defaultOpen={false}>
       <div style={styles.list}>
         {spells.map((spell) => (
           <article key={spell.id} style={styles.infoBox}>
             <div style={styles.cardHeader}>
               <h4 style={styles.cardTitle}>{spell.name}</h4>
+
               <div style={styles.inlineBadges}>
-                {spell.type ? (
+                {getSpellType(spell) ? (
                   <span style={styles.secondaryBadge}>
-                    {renderTokenLabel(spell.type)}
+                    {renderTokenLabel(getSpellType(spell))}
                   </span>
                 ) : null}
-                {spell.mp_cost !== undefined ? (
+
+                {getSpellCost(spell) !== undefined ? (
                   <span style={styles.secondaryBadge}>
-                    MP {renderOptionalValue(spell.mp_cost)}
+                    Custo {renderOptionalValue(getSpellCost(spell))}
+                  </span>
+                ) : null}
+
+                {isSpellOffensive(spell) !== null ? (
+                  <span style={styles.secondaryBadge}>
+                    {isSpellOffensive(spell) ? "Ofensiva" : "Não ofensiva"}
                   </span>
                 ) : null}
               </div>
             </div>
 
             <div style={styles.spellMetaGrid}>
-              {spell.target !== undefined ? (
-                <Info label="Alvo" value={renderOptionalValue(spell.target)} />
+              {getSpellTarget(spell) !== undefined ? (
+                <Info
+                  label="Alvo"
+                  value={renderOptionalValue(getSpellTarget(spell))}
+                />
               ) : null}
-              {spell.duration !== undefined ? (
-                <Info label="Duração" value={renderOptionalValue(spell.duration)} />
+
+              {getSpellDuration(spell) !== undefined ? (
+                <Info
+                  label="Duração"
+                  value={renderOptionalValue(getSpellDuration(spell))}
+                />
               ) : null}
             </div>
 
@@ -386,16 +451,76 @@ function SpellsSection({ spells }: SpellsSectionProps) {
           </article>
         ))}
       </div>
-    </section>
+    </CollapsibleSection>
   );
 }
 
-type InfoProps = {
-  label: string;
-  value: string;
-};
+function getSpellType(spell: JobSpell): string | undefined {
+  return readString(spell, "type");
+}
 
-function Info({ label, value }: InfoProps) {
+function getSpellCost(spell: JobSpell): string | number | undefined {
+  return readValue(spell, "cost") ?? readValue(spell, "mp_cost");
+}
+
+function getSpellTarget(spell: JobSpell): string | number | undefined {
+  return readValue(spell, "target");
+}
+
+function getSpellDuration(spell: JobSpell): string | number | undefined {
+  return readValue(spell, "duration");
+}
+
+function isSpellOffensive(spell: JobSpell): boolean | null {
+  const value = readValue(spell, "is_offensive");
+
+  if (value === true || value === 1 || value === "1") {
+    return true;
+  }
+
+  if (value === false || value === 0 || value === "0") {
+    return false;
+  }
+
+  return null;
+}
+
+function readValue(
+  source: unknown,
+  key: string,
+): string | number | boolean | undefined {
+  if (!source || typeof source !== "object") {
+    return undefined;
+  }
+
+  const value = (source as Record<string, unknown>)[key];
+
+  if (value === null || value === undefined || String(value).trim() === "") {
+    return undefined;
+  }
+
+  if (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+  ) {
+    return value;
+  }
+
+  return undefined;
+}
+
+function readString(source: unknown, key: string): string | undefined {
+  const value = readValue(source, key);
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return undefined;
+}
+
+function Info({ label, value }: { label: string; value: string }) {
   return (
     <div style={styles.compactInfo}>
       <div style={styles.infoLabel}>{label}</div>
@@ -404,16 +529,17 @@ function Info({ label, value }: InfoProps) {
   );
 }
 
-function SectionTitle({ children }: { children: string }) {
-  return <h2 style={styles.sectionTitle}>{children}</h2>;
+function hasText(value: string | null | undefined): value is string {
+  return value !== null && value !== undefined && value.trim().length > 0;
 }
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, CSSProperties> = {
   wrapper: {
     display: "flex",
     flexDirection: "column",
     gap: "18px",
   },
+
   hero: {
     background: "#161210",
     border: "1px solid #3a2e22",
@@ -425,12 +551,14 @@ const styles: Record<string, React.CSSProperties> = {
     gap: "20px",
     flexWrap: "wrap",
   },
+
   heroMain: {
     display: "flex",
     alignItems: "center",
     gap: "20px",
     minWidth: 0,
   },
+
   heroImageWrapper: {
     width: "112px",
     height: "112px",
@@ -444,20 +572,24 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     padding: "10px",
   },
+
   heroImage: {
     maxWidth: "100%",
     maxHeight: "100%",
     objectFit: "contain",
     display: "block",
   },
+
   heroInitials: {
     color: "#c9963a",
     fontWeight: 700,
     fontSize: "32px",
   },
+
   heroText: {
     minWidth: 0,
   },
+
   heroAllowanceWrapper: {
     marginLeft: "auto",
     minWidth: "220px",
@@ -467,12 +599,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "flex-end",
     gap: "8px",
   },
-  heroAllowanceTitle: {
-    color: "#7a6e5a",
-    fontSize: "11px",
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-  },
+
   heroAllowanceBar: {
     display: "flex",
     alignItems: "center",
@@ -480,6 +607,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: "8px",
     flexWrap: "wrap",
   },
+
   heroAllowanceChip: {
     minHeight: "30px",
     border: "1px solid #7b694b",
@@ -493,6 +621,7 @@ const styles: Record<string, React.CSSProperties> = {
     padding: "6px 10px",
     boxShadow: "0 0 12px rgba(232, 200, 117, 0.12)",
   },
+
   heroAllowanceIcon: {
     width: "16px",
     height: "16px",
@@ -502,12 +631,14 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: "center",
     color: "inherit",
   },
+
   heroAllowanceText: {
     color: "#d4c9b0",
     fontSize: "12px",
     lineHeight: 1,
     whiteSpace: "nowrap",
   },
+
   badge: {
     display: "inline-block",
     padding: "4px 10px",
@@ -518,39 +649,122 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "12px",
     marginBottom: "10px",
   },
+
   heroTitle: {
     margin: 0,
     fontSize: "30px",
     color: "#e8c875",
   },
+
   tagline: {
     marginTop: "8px",
     color: "#d4c9b0",
     lineHeight: 1.6,
   },
+
   message: {
     color: "#7a6e5a",
     fontStyle: "italic",
   },
-  section: {
-    background: "#120f0d",
+
+  collapsibleSection: {
     border: "1px solid #3a2e22",
-    borderRadius: "8px",
-    padding: "18px",
+    borderRadius: "10px",
+    background: "#120f0d",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
   },
-  sectionTitle: {
-    margin: "0 0 14px",
+
+  collapsibleHeader: {
+    width: "100%",
+    border: 0,
+    borderBottom: "1px solid #3a2e22",
+    background: "#1a1512",
+    color: "#f5efe2",
+    padding: "13px 16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px",
+    cursor: "pointer",
+    textAlign: "left",
+  },
+
+  collapsibleHeaderMain: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    minWidth: 0,
+  },
+
+  collapsibleChevron: {
     color: "#c9963a",
-    fontSize: "15px",
+    fontSize: "16px",
+    lineHeight: 1,
+    width: "16px",
+    display: "inline-flex",
+    justifyContent: "center",
+  },
+
+  collapsibleTitle: {
+    color: "#e8c875",
+    fontSize: "16px",
+    fontWeight: 800,
     letterSpacing: "0.12em",
     textTransform: "uppercase",
+    lineHeight: 1.1,
   },
+
+  collapsibleCount: {
+    border: "1px solid #4c3922",
+    borderRadius: "999px",
+    background: "#110e0c",
+    color: "#9f8f73",
+    padding: "2px 8px",
+    fontSize: "11px",
+    fontWeight: 800,
+  },
+
+  collapsibleAction: {
+    color: "#7a6e5a",
+    fontSize: "12px",
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+    flexShrink: 0,
+  },
+
+  collapsibleContent: {
+    padding: "16px",
+  },
+
+  backgroundContent: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "18px",
+  },
+
+  subsection: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+  },
+
+  subsectionTitle: {
+    margin: 0,
+    color: "#c9963a",
+    fontSize: "13px",
+    letterSpacing: "0.1em",
+    textTransform: "uppercase",
+  },
+
   aliases: {
     display: "flex",
     flexWrap: "wrap",
     gap: "8px",
-    marginBottom: "14px",
   },
+
   aliasBadge: {
     display: "inline-block",
     padding: "4px 10px",
@@ -560,17 +774,20 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#d4c9b0",
     fontSize: "12px",
   },
+
   list: {
     display: "flex",
     flexDirection: "column",
     gap: "12px",
   },
+
   infoBox: {
     background: "#1e1a16",
     border: "1px solid #3a2e22",
     borderRadius: "6px",
     padding: "14px",
   },
+
   infoLabel: {
     fontSize: "12px",
     color: "#7a6e5a",
@@ -578,10 +795,12 @@ const styles: Record<string, React.CSSProperties> = {
     letterSpacing: "0.08em",
     marginBottom: "4px",
   },
+
   infoValue: {
     color: "#d4c9b0",
     whiteSpace: "pre-wrap",
   },
+
   cardHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -590,16 +809,19 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: "10px",
     flexWrap: "wrap",
   },
+
   cardTitle: {
     margin: 0,
     color: "#e8c875",
     fontSize: "18px",
   },
+
   inlineBadges: {
     display: "flex",
     gap: "8px",
     flexWrap: "wrap",
   },
+
   secondaryBadge: {
     display: "inline-block",
     padding: "4px 10px",
@@ -609,18 +831,21 @@ const styles: Record<string, React.CSSProperties> = {
     color: "#d4c9b0",
     fontSize: "12px",
   },
+
   text: {
     margin: 0,
     lineHeight: 1.7,
     color: "#d4c9b0",
     whiteSpace: "pre-wrap",
   },
+
   spellMetaGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: "10px",
     marginBottom: "10px",
   },
+
   compactInfo: {
     background: "#161210",
     border: "1px solid #3a2e22",
