@@ -12,7 +12,6 @@ const AVAILABLE_CATEGORIES: CatalogCategory[] = [
   "characters",
   "npcs",
   "bestiary",
-  "villains",
   "spells",
   "powers",
   "classes",

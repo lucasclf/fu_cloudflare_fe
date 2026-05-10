@@ -47,6 +47,7 @@ export type JobPower = {
   description: string;
   type: string | null;
   max_level: number | null;
+  is_global: boolean;
   created_at?: string;
   updated_at?: string | null;
 };

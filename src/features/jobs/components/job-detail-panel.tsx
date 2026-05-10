@@ -460,15 +460,15 @@ function getSpellType(spell: JobSpell): string | undefined {
 }
 
 function getSpellCost(spell: JobSpell): string | number | undefined {
-  return readValue(spell, "cost") ?? readValue(spell, "mp_cost");
+  return readTextOrNumber(spell, "cost") ?? readTextOrNumber(spell, "mp_cost");
 }
 
 function getSpellTarget(spell: JobSpell): string | number | undefined {
-  return readValue(spell, "target");
+  return readTextOrNumber(spell, "target");
 }
 
 function getSpellDuration(spell: JobSpell): string | number | undefined {
-  return readValue(spell, "duration");
+  return readTextOrNumber(spell, "duration");
 }
 
 function isSpellOffensive(spell: JobSpell): boolean | null {
@@ -483,6 +483,19 @@ function isSpellOffensive(spell: JobSpell): boolean | null {
   }
 
   return null;
+}
+
+function readTextOrNumber(
+  source: unknown,
+  key: string,
+): string | number | undefined {
+  const value = readValue(source, key);
+
+  if (typeof value === "string" || typeof value === "number") {
+    return value;
+  }
+
+  return undefined;
 }
 
 function readValue(
