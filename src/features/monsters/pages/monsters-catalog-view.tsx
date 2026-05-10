@@ -10,6 +10,7 @@ import { MonsterLevelFilter } from "../components/monster-level-filter";
 import { MonsterTypeFilter } from "../components/monster-type-filter";
 import {
   getMonsterTypeCounts,
+  isMonsterVillain,
   normalizeMonsterText,
 } from "../lib/monster-formatters";
 import type { MonsterDetail, MonsterSummary } from "../types/monster";
@@ -28,6 +29,7 @@ export function MonstersCatalogView({
   const [minLevel, setMinLevel] = useState("");
   const [maxLevel, setMaxLevel] = useState("");
   const [search, setSearch] = useState("");
+  const [villainOnly, setVillainOnly] = useState(false);
   const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(
     null,
   );
@@ -80,9 +82,18 @@ export function MonstersCatalogView({
       const matchesMax =
         max === null || !Number.isFinite(max) || monster.level <= max;
 
-      return matchesSearch && matchesType && matchesMin && matchesMax;
+      const matchesVillain =
+        !villainOnly || isMonsterVillain(monster.is_villain);
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesMin &&
+        matchesMax &&
+        matchesVillain
+      );
     });
-  }, [monsters, search, selectedType, minLevel, maxLevel]);
+  }, [monsters, search, selectedType, minLevel, maxLevel, villainOnly]);
 
   async function handleSelectMonster(monsterId: number) {
     try {
@@ -111,16 +122,18 @@ export function MonstersCatalogView({
     setSelectedType(null);
     setMinLevel("");
     setMaxLevel("");
+    setVillainOnly(false);
     handleBackToList();
   }
 
   function handleSearchChange(value: string) {
-  setSearch(value);
-  setSelectedType(null);
-  setMinLevel("");
-  setMaxLevel("");
-  handleBackToList();
-}
+    setSearch(value);
+    setSelectedType(null);
+    setMinLevel("");
+    setMaxLevel("");
+    setVillainOnly(false);
+    handleBackToList();
+  }
 
   function handleSelectType(type: string | null) {
     setSelectedType(type);
@@ -136,6 +149,12 @@ export function MonstersCatalogView({
 
   function handleMaxLevelChange(value: string) {
     setMaxLevel(value);
+    setSearch("");
+    handleBackToList();
+  }
+
+  function handleToggleVillainOnly() {
+    setVillainOnly((current) => !current);
     setSearch("");
     handleBackToList();
   }
@@ -158,6 +177,18 @@ export function MonstersCatalogView({
             onMinLevelChange={handleMinLevelChange}
             onMaxLevelChange={handleMaxLevelChange}
           />
+
+          <button
+            type="button"
+            aria-pressed={villainOnly}
+            onClick={handleToggleVillainOnly}
+            style={{
+              ...styles.villainFilterButton,
+              ...(villainOnly ? styles.villainFilterButtonActive : {}),
+            }}
+          >
+            Vilões
+          </button>
 
           <button
             type="button"
@@ -226,5 +257,25 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "13px",
     fontWeight: 800,
     textAlign: "center",
+  },
+
+  villainFilterButton: {
+    width: "100%",
+    border: "1px solid #4c2422",
+    borderRadius: "8px",
+    background: "#160d0c",
+    color: "#b46b64",
+    padding: "9px 10px",
+    cursor: "pointer",
+    fontSize: "13px",
+    fontWeight: 800,
+    textAlign: "center",
+  },
+
+  villainFilterButtonActive: {
+    background: "#2a1210",
+    color: "#ffb3a8",
+    borderColor: "#b94a3f",
+    boxShadow: "0 0 0 1px rgba(185, 74, 63, 0.24)",
   },
 };

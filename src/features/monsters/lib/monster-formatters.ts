@@ -129,3 +129,19 @@ function formatFallbackLabel(value: string): string {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
+
+export function isMonsterVillain(
+  value: boolean | 0 | 1 | "0" | "1" | null | undefined,
+): boolean {
+  return value === true || value === 1 || value === "1";
+}
+
+export function hasMonsterDetailValue(
+  value: string | number | null | undefined,
+): boolean {
+  if (value === null || value === undefined) {
+    return false;
+  }
+
+  return String(value).trim().length > 0;
+}

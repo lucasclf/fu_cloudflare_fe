@@ -6,7 +6,9 @@ import {
   formatAffinityType,
   formatAffinityValue,
   formatMonsterType,
+  hasMonsterDetailValue,
   isMonsterActionOffensive,
+  isMonsterVillain,
   renderMonsterValue,
 } from "../lib/monster-formatters";
 import type {
@@ -73,18 +75,26 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
         <div style={styles.heroContent}>
             <div style={styles.heroInfoBlock}>
                 <div style={styles.badges}>
-                <span style={styles.typeBadge}>
-                    {formatMonsterType(monster.monster_type)}
-                </span>
+                  {isMonsterVillain(monster.is_villain) ? (
+                    <span style={styles.villainBadge}>Vilão</span>
+                  ) : null}
 
-                <span style={styles.levelBadge}>Nível {monster.level}</span>
+                  <span style={styles.typeBadge}>
+                    {formatMonsterType(monster.monster_type)}
+                  </span>
+
+                  <span style={styles.levelBadge}>Nível {monster.level}</span>
                 </div>
 
                 <h2 style={styles.title}>{monster.name}</h2>
 
                 <p style={styles.description}>
-                {renderMonsterValue(monster.description)}
+                  {renderMonsterValue(monster.description)}
                 </p>
+
+                {isMonsterVillain(monster.is_villain) ? (
+                  <VillainInfo monster={monster} />
+                ) : null}
 
                 <div style={styles.traits}>
                 {monster.traits.map((trait) => (
@@ -153,6 +163,35 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
             <div style={styles.empty}>Nenhuma ação cadastrada.</div>
         )}
         </section>
+    </div>
+  );
+}
+
+function VillainInfo({ monster }: { monster: MonsterDetail }) {
+  const showUltimaPoints = hasMonsterDetailValue(monster.ultima_points);
+  const showStrategy = hasMonsterDetailValue(monster.strategy);
+
+  if (!showUltimaPoints && !showStrategy) {
+    return null;
+  }
+
+  return (
+    <div style={styles.villainInfo}>
+      {showUltimaPoints ? (
+        <div style={styles.villainInfoItem}>
+          <span style={styles.villainInfoLabel}>Pontos Ultima</span>
+          <span style={styles.villainInfoValue}>
+            {monster.ultima_points}
+          </span>
+        </div>
+      ) : null}
+
+      {showStrategy ? (
+        <div style={styles.villainStrategy}>
+          <span style={styles.villainInfoLabel}>Estratégia</span>
+          <p style={styles.villainStrategyText}>{monster.strategy}</p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -571,70 +610,124 @@ heroStatsBlock: {
     fontStyle: "italic",
   },
 
-compactStats: {
-  width: "100%",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-},
+  compactStats: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+  },
 
-compactStatRowFour: {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-  gap: "10px",
-},
+  compactStatRowFour: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: "10px",
+  },
 
-compactStatRowThree: {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  gap: "10px",
-},
+  compactStatRowThree: {
+    display: "grid",
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gap: "10px",
+  },
 
-compactStat: {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "5px",
-  minWidth: 0,
-},
+  compactStat: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "5px",
+    minWidth: 0,
+  },
 
-compactStatLabel: {
-  color: "#7a6e5a",
-  fontSize: "11px",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  letterSpacing: "0.06em",
-},
+  compactStatLabel: {
+    color: "#7a6e5a",
+    fontSize: "11px",
+    fontWeight: 800,
+    textTransform: "uppercase",
+    letterSpacing: "0.06em",
+  },
 
-compactStatValue: {
-  color: "#f5efe2",
-  fontSize: "18px",
-  fontWeight: 900,
-  lineHeight: 1,
-},
+  compactStatValue: {
+    color: "#f5efe2",
+    fontSize: "18px",
+    fontWeight: 900,
+    lineHeight: 1,
+  },
 
-actionGroups: {
-  display: "flex",
-  flexDirection: "column",
-  gap: "24px",
-},
+  actionGroups: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "24px",
+  },
 
-actionGroup: {
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-},
+  actionGroup: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
 
-actionGroupTitle: {
-  margin: 0,
-  color: "#d7c7a8",
-  fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
-  fontSize: "19px",
-  fontWeight: 700,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  borderBottom: "1px solid #3a2e22",
-  paddingBottom: "8px",
-},
+  actionGroupTitle: {
+    margin: 0,
+    color: "#d7c7a8",
+    fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
+    fontSize: "19px",
+    fontWeight: 700,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    borderBottom: "1px solid #3a2e22",
+    paddingBottom: "8px",
+  },
+
+  villainBadge: {
+    border: "1px solid #b94a3f",
+    borderRadius: "999px",
+    background: "#2a1210",
+    color: "#ffb3a8",
+    padding: "4px 10px",
+    fontSize: "12px",
+    fontWeight: 900,
+    letterSpacing: "0.06em",
+  },
+
+  villainInfo: {
+    borderLeft: "3px solid #b94a3f",
+    background: "#1d100f",
+    padding: "10px 12px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+
+  villainInfoItem: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: "12px",
+  },
+
+  villainInfoLabel: {
+    color: "#b46b64",
+    fontSize: "11px",
+    fontWeight: 900,
+    letterSpacing: "0.08em",
+  },
+
+  villainInfoValue: {
+    color: "#ffddd8",
+    fontSize: "16px",
+    fontWeight: 900,
+  },
+
+  villainStrategy: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+  },
+
+  villainStrategyText: {
+    margin: 0,
+    color: "#f0c9c3",
+    fontSize: "13px",
+    lineHeight: 1.45,
+    whiteSpace: "pre-line",
+  },
 };

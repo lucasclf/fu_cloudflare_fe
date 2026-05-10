@@ -8,6 +8,7 @@ export type MonsterSummary = {
   might_die: string;
   willpower_die: string;
   img_key: string | null;
+  is_villain: boolean | 0 | 1 | "0" | "1" | null;
 };
 
 export type MonsterTrait = {
@@ -63,6 +64,11 @@ export type MonsterDetail = MonsterSummary & {
   magic_defense: number;
   created_at: string;
   updated_at: string | null;
+
+  is_villain: boolean | 0 | 1 | "0" | "1" | null;
+  ultima_points: number | null;
+  strategy: string | null;
+
   traits: MonsterTrait[];
   affinities: MonsterAffinity[];
   actions: MonsterAction[];

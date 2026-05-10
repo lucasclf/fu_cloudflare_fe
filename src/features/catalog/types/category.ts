@@ -4,7 +4,6 @@ export type CatalogCategory =
   | "characters"
   | "npcs"
   | "bestiary"
-  | "villains"
   | "spells"
   | "powers"
   | "classes"
@@ -16,7 +15,6 @@ export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
   characters: "Jogadores",
   npcs: "NPC's",
   bestiary: "Bestiário",
-  villains: "Vilões",
   spells: "Magias",
   powers: "Poderes",
   classes: "Classes",

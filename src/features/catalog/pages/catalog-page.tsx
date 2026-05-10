@@ -79,7 +79,6 @@ export function CatalogPage({
           />
         );
     case "characters":
-    case "villains":
       return (
         <div style={styles.comingSoon}>
           <h2 style={styles.title}>Em breve</h2>
