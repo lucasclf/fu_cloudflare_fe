@@ -65,8 +65,10 @@ export type NpcItem = {
   grip: string | null;
   distance: string | null;
 
-  defense: string | null;
-  magic_defense: string | null;
+  defense_dice: string | null;
+  defense_bonus: number | null;
+  magic_defense_dice: string | null;
+  magic_defense_bonus: number | null;
   initiative: string | null;
 
   is_martial: boolean | null;

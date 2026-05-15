@@ -1,6 +1,7 @@
 import type { Item } from "../types/item";
 import { ITEM_TYPE_LABELS } from "../types/item";
 import { getItemImageSrc } from "../lib/get-item-image-src";
+import { formatItemDefenseValue } from "../lib/item-formatters.ts";
 
 type Props = {
   item: Item;
@@ -72,6 +73,14 @@ function renderDistanceValue(value: string | null): string {
   return value;
 }
 
+function hasMagicDefenseValue(item: Item): boolean {
+  return item.magic_defense_bonus !== null || item.magic_defense_dice !== null;
+}
+
+function hasDefenseValue(item: Item): boolean {
+  return item.defense_bonus !== null || item.defense_dice !== null;
+}
+
 function hasDescription(value: string | null): value is string {
   return value !== null && value.trim().length > 0;
 }
@@ -133,6 +142,18 @@ export function ItemCard({ item }: Props) {
               label="Alcance"
               value={renderDistanceValue(item.distance)}
             />
+            {hasDefenseValue(item) ? (
+              <Info label="Defesa"
+              value={formatItemDefenseValue(item.defense_dice, item.defense_bonus)}/>
+            ) : null}
+
+            {hasMagicDefenseValue(item) ? (
+              <Info label="Defesa mágica"
+              value={formatItemDefenseValue(
+                item.magic_defense_dice,
+                item.magic_defense_bonus,
+              )} />
+            ) : null}
             {hasDescription(item.description) ? (
               <Info label="Especial" value={item.description} fullWidth />
             ) : null}
@@ -142,8 +163,18 @@ export function ItemCard({ item }: Props) {
         {item.item_type === "armadura" || item.item_type === "escudo" ? (
   <>
           <div style={styles.statsGridThreeColumns}>
-            <Info label="Defesa" value={renderValue(item.defense)} />
-            <Info label="Defesa mágica" value={renderValue(item.magic_defense)} />
+            <Info
+              label="Defesa"
+              value={formatItemDefenseValue(item.defense_dice, item.defense_bonus)}
+            />
+
+            <Info
+              label="Defesa Mágica"
+              value={formatItemDefenseValue(
+                item.magic_defense_dice,
+                item.magic_defense_bonus,
+              )}
+            />
             <Info label="Iniciativa" value={renderValue(item.initiative)} />
           </div>
 

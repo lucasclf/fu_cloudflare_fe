@@ -21,6 +21,7 @@ import type {
   NpcSpecialRule,
 } from "../types/npc";
 import { getItemImageSrc } from "../../items/lib/get-item-image-src";
+import { formatItemDefenseValue } from "../../items/lib/item-formatters.ts";
 
 type Props = {
   npc: NpcDetail;
@@ -298,11 +299,17 @@ function getNpcItemCompactDetails(item: NpcItem): Array<{
     return [
       {
         label: "Defesa",
-        value: item.defense ? `DEF ${item.defense}` : "???",
+        value: `DEF ${formatItemDefenseValue(
+          item.defense_dice,
+          item.defense_bonus,
+        )}`,
       },
       {
         label: "Def. Mágica",
-        value: item.magic_defense ? `DM ${item.magic_defense}` : "???",
+        value: `DM ${formatItemDefenseValue(
+          item.magic_defense_dice,
+          item.magic_defense_bonus,
+        )}`,
       },
       {
         label: "Iniciativa",
@@ -312,7 +319,7 @@ function getNpcItemCompactDetails(item: NpcItem): Array<{
         label: "Uso",
         value: formatMartialValue(item.is_martial),
       },
-    ].filter((detail) => detail.value !== "???");
+    ].filter((detail) => !detail.value.includes("???"));
   }
 
   return [];

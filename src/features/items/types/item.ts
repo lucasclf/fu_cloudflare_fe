@@ -46,8 +46,10 @@ export type Item = {
   grip: GripType;
   distance: DistanceType;
 
-  defense: string | null;
-  magic_defense: string | null;
+  defense_dice: string | null;
+  defense_bonus: number | null;
+  magic_defense_dice: string | null;
+  magic_defense_bonus: number | null;
   initiative: string | null;
 
   cost: number | null;
