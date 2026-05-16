@@ -23,6 +23,7 @@ import type {
 } from "../types/pc";
 import { getItemImageSrc } from "../../items/lib/get-item-image-src";
 import { formatItemDefenseValue } from "../../items/lib/item-formatters.ts";
+import { getPcBondImageSrc } from "../lib/get-pc-bond-image-src.ts";
 
 type Props = {
   pc: PcDetail;
@@ -411,29 +412,50 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
             formatBondAxis(bond.affection_axis),
           ].filter((axis): axis is string => axis !== null);
 
-          return (
-            <article key={`${bond.target_type}-${bond.target_id}-${index}`} style={styles.smallCard}>
-              <div style={styles.cardHeader}>
-                <h3 style={styles.cardTitle}>
-                  {bond.target_name ?? `${formatTargetType(bond.target_type)} #${renderPcValue(bond.target_id)}`}
-                </h3>
+          const imageSrc = getPcBondImageSrc(bond.target_type, bond.img_key);
 
-                <span style={styles.secondaryBadge}>
-                  {formatTargetType(bond.target_type)}
-                </span>
+          const targetTitle =
+            bond.target_name ??
+            `${formatTargetType(bond.target_type)} #${renderPcValue(
+              bond.target_id,
+            )}`;
+
+          return (
+            <article
+              key={`${bond.target_type}-${bond.target_id}-${index}`}
+              style={styles.bondCard}
+            >
+              <div style={styles.bondImageFrame}>
+                {imageSrc ? (
+                  <img src={imageSrc} alt={targetTitle} style={styles.bondImage} />
+                ) : (
+                  <span style={styles.bondImagePlaceholder}>Sem imagem</span>
+                )}
               </div>
 
-              {axes.length > 0 ? (
-                <div style={styles.badgeList}>
-                  {axes.map((axis) => (
-                    <span key={axis} style={styles.secondaryBadge}>
-                      {axis}
-                    </span>
-                  ))}
-                </div>
-              ) : null}
+              <div style={styles.bondContent}>
+                <div style={styles.cardHeader}>
+                  <h3 style={styles.cardTitle}>{targetTitle}</h3>
 
-              {bond.description ? <p style={styles.text}>{bond.description}</p> : null}
+                  <span style={styles.secondaryBadge}>
+                    {formatTargetType(bond.target_type)}
+                  </span>
+                </div>
+
+                {axes.length > 0 ? (
+                  <div style={styles.badgeList}>
+                    {axes.map((axis) => (
+                      <span key={axis} style={styles.secondaryBadge}>
+                        {axis}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                {bond.description ? (
+                  <p style={styles.text}>{bond.description}</p>
+                ) : null}
+              </div>
             </article>
           );
         })}
@@ -867,5 +889,46 @@ const styles: Record<string, CSSProperties> = {
 
   itemDetailText: {
     display: "inline-flex",
+  },
+
+  bondCard: {
+    background: "#161210",
+    border: "1px solid #3a2e22",
+    borderRadius: "10px",
+    overflow: "hidden",
+    display: "grid",
+    gridTemplateColumns: "96px minmax(0, 1fr)",
+    minHeight: "128px",
+  },
+
+  bondImageFrame: {
+    background: "#0e0c0a",
+    borderRight: "1px solid #3a2e22",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "8px",
+  },
+
+  bondImagePlaceholder: {
+    color: "#5f574c",
+    fontSize: "11px",
+    fontStyle: "italic",
+    textAlign: "center",
+    lineHeight: 1.2,
+  },
+
+  bondImage: {
+    width: "100%",
+    height: "100%",
+    objectFit: "contain",
+    display: "block",
+  },
+
+  bondContent: {
+    padding: "14px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
   },
 };

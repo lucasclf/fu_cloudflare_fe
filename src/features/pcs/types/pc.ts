@@ -133,6 +133,7 @@ export type PcBond = {
   target_type: string;
   target_id: number | null;
   target_name: string | null;
+  img_key: string | null;
   admiration_axis: string | null;
   loyalty_axis: string | null;
   affection_axis: string | null;

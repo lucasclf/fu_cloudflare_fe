@@ -12,7 +12,7 @@ export type CatalogCategory =
 export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
   sessions: "Sessões",
   items: "Itens",
-  characters: "Jogadores",
+  characters: "PC's",
   npcs: "NPC's",
   bestiary: "Bestiário",
   spells: "Magias",
