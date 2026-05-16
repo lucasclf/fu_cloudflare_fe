@@ -7,6 +7,7 @@ import { ScenarioCatalogView } from "../../scenario/pages/scenario-catalog-view"
 import type { CatalogCategory } from "../types/category";
 import { MonstersCatalogView } from "../../monsters/pages/monsters-catalog-view";
 import { NpcsCatalogView } from "../../npcs/pages/npcs-catalog-view";
+import { PcsCatalogView } from "../../pcs/pages/pcs-catalog-view";
 
 type CatalogPageProps = {
   category: CatalogCategory;
@@ -80,12 +81,10 @@ export function CatalogPage({
         );
     case "characters":
       return (
-        <div style={styles.comingSoon}>
-          <h2 style={styles.title}>Em breve</h2>
-          <p style={styles.text}>
-            A categoria ainda não foi implementada.
-          </p>
-        </div>
+        <PcsCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
       );
 
     default:
