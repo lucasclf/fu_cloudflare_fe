@@ -78,7 +78,7 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
       <CapacitiesSection pc={pc} />
       <JobsSection jobs={pc.jobs} />
       <PowersSection powers={pc.powers} />
-      <SpellsSection title="Magias" spells={[...pc.spells, ...pc.monsterSpells]} />
+      <SpellsSection spells={[...pc.spells, ...pc.monsterSpells]} />
       <ArcanasSection arcanas={pc.arcanas} />
       <EquipmentSection pc={pc} />
       <InventorySection inventories={pc.inventories} />
