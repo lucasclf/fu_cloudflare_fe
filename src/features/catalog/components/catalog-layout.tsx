@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 
-type Props = {
+import "./catalog-layout.css";
+
+type CatalogLayoutProps = {
   sidebarHeaderTitle: string;
   sidebarHeaderSubtitle: string;
   searchPlaceholder: string;
@@ -22,102 +24,51 @@ export function CatalogLayout({
   searchExtraContent,
   sidebarContent,
   mainContent,
-}: Props) {
+}: CatalogLayoutProps) {
   return (
-    <div style={styles.app}>
-      <aside style={styles.sidebar}>
-        <div style={styles.sidebarHeader}>
-          <h1 style={styles.title}>Grimório</h1>
-          <p style={styles.subtitle}>{sidebarHeaderSubtitle}</p>
-          <div style={{ marginTop: "14px" }}>{categorySwitcher}</div>
-        </div>
+    <div className="catalog-layout">
+      <aside className="catalog-layout__sidebar">
+        <header className="catalog-layout__sidebar-header">
+          <h1 className="catalog-layout__title">Grimório</h1>
 
-        <div style={styles.searchWrapper}>
+          <p className="catalog-layout__subtitle">{sidebarHeaderSubtitle}</p>
+        </header>
+
+        <div className="catalog-layout__search-wrapper">
+          {categorySwitcher}
+
           <input
-            type="text"
+            type="search"
             placeholder={searchPlaceholder}
             value={searchValue}
+            className="catalog-layout__search-input"
+            aria-label={searchPlaceholder}
             onChange={(event) => onSearchChange(event.target.value)}
-            style={styles.searchInput}
           />
 
           {searchExtraContent ? (
-            <div style={styles.searchExtraContent}>{searchExtraContent}</div>
+            <div className="catalog-layout__search-extra">
+              {searchExtraContent}
+            </div>
           ) : null}
         </div>
 
-        <div style={styles.sidebarList}>
-          <div style={styles.sectionHeader}>{sidebarHeaderTitle}</div>
+        <section
+          className="catalog-layout__sidebar-list"
+          aria-labelledby="catalog-sidebar-title"
+        >
+          <h2
+            id="catalog-sidebar-title"
+            className="catalog-layout__section-header"
+          >
+            {sidebarHeaderTitle}
+          </h2>
+
           {sidebarContent}
-        </div>
+        </section>
       </aside>
 
-      <main style={styles.main}>{mainContent}</main>
+      <main className="catalog-layout__main">{mainContent}</main>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  app: {
-    display: "flex",
-    minHeight: "100vh",
-    background: "#0e0c0a",
-    color: "#d4c9b0",
-  },
-  sidebar: {
-    width: "300px",
-    minWidth: "300px",
-    background: "#161210",
-    borderRight: "1px solid #3a2e22",
-    display: "flex",
-    flexDirection: "column",
-  },
-  sidebarHeader: {
-    padding: "20px 16px 14px",
-    borderBottom: "1px solid #3a2e22",
-  },
-  title: {
-    margin: 0,
-    fontSize: "15px",
-    color: "#c9963a",
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-  },
-  subtitle: {
-    marginTop: "4px",
-    fontSize: "13px",
-    color: "#7a6e5a",
-  },
-  searchWrapper: {
-    padding: "12px",
-    borderBottom: "1px solid #3a2e22",
-  },
-  searchInput: {
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "9px 10px",
-    background: "#1e1a16",
-    border: "1px solid #3a2e22",
-    color: "#d4c9b0",
-    borderRadius: "4px",
-  },
-  searchExtraContent: {
-    marginTop: "10px",
-  },
-  sidebarList: {
-    flex: 1,
-    overflowY: "auto",
-  },
-  sectionHeader: {
-    padding: "12px 16px 8px",
-    fontSize: "11px",
-    color: "#7a6e5a",
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-  },
-  main: {
-    flex: 1,
-    overflowY: "auto",
-    padding: "28px 32px",
-  },
-};
