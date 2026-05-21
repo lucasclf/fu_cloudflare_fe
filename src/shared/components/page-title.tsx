@@ -1,3 +1,5 @@
+import "./page-title.css";
+
 type PageTitleProps = {
   title: string;
   subtitle?: string;
@@ -5,25 +7,10 @@ type PageTitleProps = {
 
 export function PageTitle({ title, subtitle }: PageTitleProps) {
   return (
-    <div style={styles.wrapper}>
-      <h1 style={styles.title}>{title}</h1>
-      {subtitle ? <p style={styles.subtitle}>{subtitle}</p> : null}
-    </div>
+    <header className="page-title">
+      <h1 className="page-title__heading">{title}</h1>
+
+      {subtitle ? <p className="page-title__subtitle">{subtitle}</p> : null}
+    </header>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
-    marginBottom: "24px",
-  },
-  title: {
-    margin: 0,
-    fontSize: "32px",
-    lineHeight: 1.2,
-  },
-  subtitle: {
-    marginTop: "8px",
-    color: "#94a3b8",
-    fontSize: "16px",
-  },
-};
