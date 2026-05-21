@@ -1,10 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+
+import { useAsyncResource } from "../../../shared/hooks/use-async-resource";
 import { CategorySwitcher } from "../../catalog/components/category-switcher";
 import { CatalogLayout } from "../../catalog/components/catalog-layout";
 import type { CatalogCategory } from "../../catalog/types/category";
 import { getPublicItems } from "../api/get-public-items";
-import { ItemCategoryFilterSidebar } from "../components/item-category-filter-sidebar";
-import { ItemCardsPanel } from "../components/item-cards-panel";
+import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
+import { ItemsCatalogMainContent } from "../components/items-catalog-main-content";
+import { ItemsCatalogSidebarContent } from "../components/items-catalog-sidebar-content";
+import { filterItems } from "../lib/filter-items";
 import type { Item, ItemType } from "../types/item";
 
 type ItemsCatalogViewProps = {
@@ -16,76 +20,52 @@ export function ItemsCatalogView({
   category,
   onCategoryChange,
 }: ItemsCatalogViewProps) {
-  const [items, setItems] = useState<Item[]>([]);
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<ItemType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadItems() {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await getPublicItems();
-        setItems(data);
-      } catch {
-        setError("Não foi possível carregar os itens.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadItems();
+  const loadItems = useCallback((signal: AbortSignal) => {
+    return getPublicItems(signal);
   }, []);
 
+  const {
+    data: items,
+    loading,
+    error,
+  } = useAsyncResource<Item[]>(loadItems);
+
   const filteredItems = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return items.filter((item) => {
-      const matchesType =
-        selectedType === null || item.item_type === selectedType;
-
-      const matchesSearch =
-        !query || item.name.toLowerCase().includes(query);
-
-      return matchesType && matchesSearch;
+    return filterItems({
+      items: items ?? [],
+      search,
+      selectedType,
     });
   }, [items, search, selectedType]);
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle="Categorias de item"
-      sidebarHeaderSubtitle="Itens da campanha"
-      searchPlaceholder="Buscar item por nome..."
+      sidebarHeaderTitle={ITEMS_CATALOG_COPY.sidebar.headerTitle}
+      sidebarHeaderSubtitle={ITEMS_CATALOG_COPY.sidebar.headerSubtitle}
+      searchPlaceholder={ITEMS_CATALOG_COPY.search.placeholder}
       searchValue={search}
       onSearchChange={setSearch}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       sidebarContent={
-        loading ? (
-          <div style={{ padding: "16px" }}>Carregando...</div>
-        ) : error ? (
-          <div style={{ padding: "16px" }}>{error}</div>
-        ) : (
-          <ItemCategoryFilterSidebar
-            selectedType={selectedType}
-            onSelectType={setSelectedType}
-          />
-        )
+        <ItemsCatalogSidebarContent
+          loading={loading}
+          error={error}
+          selectedType={selectedType}
+          onSelectType={setSelectedType}
+        />
       }
       mainContent={
-        loading ? (
-          <div>Carregando itens...</div>
-        ) : error ? (
-          <div>{error}</div>
-        ) : (
-          <ItemCardsPanel
-            items={filteredItems}
-            selectedType={selectedType}
-          />
-        )
+        <ItemsCatalogMainContent
+          loading={loading}
+          error={error}
+          items={filteredItems}
+          selectedType={selectedType}
+        />
       }
     />
   );
