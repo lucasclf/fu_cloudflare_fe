@@ -9,6 +9,10 @@ export const ITEMS_CATALOG_COPY = {
     placeholder: "Buscar item por nome...",
   },
 
+  filters: {
+    clearButtonLabel: "Limpar filtros",
+  },
+
   main: {
     loadingMessage: "Carregando itens...",
   },
@@ -16,5 +20,10 @@ export const ITEMS_CATALOG_COPY = {
   emptyState: {
     title: "Nenhum item encontrado",
     description: "Tente remover filtros ou buscar por outro nome.",
+  },
+
+  groupsEmptyState: {
+    title: "Nenhum item para exibir",
+    description: "Tente ajustar os filtros ou buscar por outro nome.",
   },
 } as const;

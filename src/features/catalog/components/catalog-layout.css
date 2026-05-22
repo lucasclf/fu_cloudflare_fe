@@ -43,34 +43,6 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-.catalog-layout__search-input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 9px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xs);
-  color: var(--color-text);
-  background: var(--color-surface);
-  font: inherit;
-  transition:
-    border-color var(--transition-fast),
-    color var(--transition-fast),
-    background-color var(--transition-fast);
-}
-
-.catalog-layout__search-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.catalog-layout__search-input:hover {
-  border-color: var(--color-border-strong);
-}
-
-.catalog-layout__search-input:focus-visible {
-  outline: 2px solid var(--color-accent-strong);
-  outline-offset: 2px;
-}
-
 .catalog-layout__search-extra {
   margin-top: 2px;
 }
