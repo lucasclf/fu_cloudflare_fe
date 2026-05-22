@@ -1,15 +1,12 @@
-import { useCallback, useMemo, useState } from "react";
-
-import { useAsyncResource } from "../../../shared/hooks/use-async-resource";
+import { Button } from "../../../shared/components/button";
 import { CategorySwitcher } from "../../catalog/components/category-switcher";
 import { CatalogLayout } from "../../catalog/components/catalog-layout";
 import type { CatalogCategory } from "../../catalog/types/category";
-import { getPublicItems } from "../api/get-public-items";
-import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
 import { ItemsCatalogMainContent } from "../components/items-catalog-main-content";
 import { ItemsCatalogSidebarContent } from "../components/items-catalog-sidebar-content";
-import { filterItems } from "../lib/filter-items";
-import type { Item, ItemType } from "../types/item";
+import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
+import { useItemsCatalogFilters } from "../hooks/use-items-catalog-filters";
+import { usePublicItems } from "../hooks/use-public-items";
 
 type ItemsCatalogViewProps = {
   category: CatalogCategory;
@@ -20,26 +17,19 @@ export function ItemsCatalogView({
   category,
   onCategoryChange,
 }: ItemsCatalogViewProps) {
-  const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState<ItemType | null>(null);
-
-  const loadItems = useCallback((signal: AbortSignal) => {
-    return getPublicItems(signal);
-  }, []);
+  const { data: items, loading, error } = usePublicItems();
 
   const {
-    data: items,
-    loading,
-    error,
-  } = useAsyncResource<Item[]>(loadItems);
-
-  const filteredItems = useMemo(() => {
-    return filterItems({
-      items: items ?? [],
-      search,
-      selectedType,
-    });
-  }, [items, search, selectedType]);
+    search,
+    selectedType,
+    filteredItems,
+    hasActiveFilters,
+    setSearch,
+    setSelectedType,
+    clearFilters,
+  } = useItemsCatalogFilters({
+    items: items ?? [],
+  });
 
   return (
     <CatalogLayout
@@ -50,6 +40,13 @@ export function ItemsCatalogView({
       onSearchChange={setSearch}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
+      }
+      searchExtraContent={
+        hasActiveFilters ? (
+          <Button variant="ghost" fullWidth onClick={clearFilters}>
+            {ITEMS_CATALOG_COPY.filters.clearButtonLabel}
+          </Button>
+        ) : null
       }
       sidebarContent={
         <ItemsCatalogSidebarContent

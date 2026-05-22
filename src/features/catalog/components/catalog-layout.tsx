@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { SearchField } from "../../../shared/components/search-field";
+
 import "./catalog-layout.css";
 
 type CatalogLayoutProps = {
@@ -37,13 +39,13 @@ export function CatalogLayout({
         <div className="catalog-layout__search-wrapper">
           {categorySwitcher}
 
-          <input
-            type="search"
+          <SearchField
+            id="catalog-search"
+            label={searchPlaceholder}
+            hideLabel
             placeholder={searchPlaceholder}
             value={searchValue}
-            className="catalog-layout__search-input"
-            aria-label={searchPlaceholder}
-            onChange={(event) => onSearchChange(event.target.value)}
+            onChange={onSearchChange}
           />
 
           {searchExtraContent ? (
