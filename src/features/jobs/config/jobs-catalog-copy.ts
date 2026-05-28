@@ -18,8 +18,41 @@ export const JOBS_CATALOG_COPY = {
   },
 
   detail: {
-    loadingMessage: "Carregando detalhes da classe...",
+    entityBadge: "Classe",
+    loadingMessage: "Carregando detalhes...",
     errorMessage: "Não foi possível carregar os detalhes da classe.",
+
+    sections: {
+      background: "Background",
+      powers: "Poderes",
+      spells: "Magias",
+      arcanas: "Arcanas",
+    },
+
+    background: {
+      aliasesTitle: "Também conhecido como",
+      questionsTitle: "Perguntas",
+      questionLabel: "Pergunta",
+    },
+
+    powers: {
+      maxLevelLabel: "Nível máximo",
+      globalLabel: "Global",
+    },
+
+    spells: {
+      costLabel: "Custo",
+      targetLabel: "Alvo",
+      durationLabel: "Duração",
+      offensiveLabel: "Ofensiva",
+      nonOffensiveLabel: "Não ofensiva",
+    },
+
+    arcanas: {
+      mergeEffectLabel: "Efeito de Fusão",
+      dismissEffectLabel: "Efeito de Dispensa",
+      specialRuleLabel: "Regra Especial",
+    },
   },
 
   emptyState: {

@@ -48,14 +48,6 @@ export default [
     rules: {
       ...reactHooksRecommendedRules,
 
-      /*
-        Essa regra é útil, mas está restritiva demais para o estado atual
-        do projeto. Features antigas como jobs e sessions ainda usam setState
-        dentro de effects para carregamento/sincronização.
-
-        Vamos reativar depois que essas telas forem refatoradas para hooks
-        como useAsyncResource e estados derivados.
-      */
       "react-hooks/set-state-in-effect": "off",
 
       "react-refresh/only-export-components": [
@@ -92,14 +84,6 @@ export default [
       globals: {
         ...globals.serviceworker,
       },
-    },
-  },
-
-  {
-    files: ["src/features/jobs/components/job-allowance-icons.tsx"],
-
-    rules: {
-      "react-refresh/only-export-components": "off",
     },
   },
 ];
