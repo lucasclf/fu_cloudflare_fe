@@ -1,5 +1,5 @@
-import { ErrorState } from "../../../shared/components/error-state";
-import { LoadingState } from "../../../shared/components/loading-state";
+import { ErrorState } from "@/shared/components/error-state";
+import { LoadingState } from "@/shared/components/loading-state";
 import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
 import type { ItemType } from "../types/item";
 import { ItemCategoryFilterSidebar } from "./item-category-filter-sidebar";

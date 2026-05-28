@@ -10,12 +10,12 @@ describe("getVisibleItemTypes", () => {
       createItem({
         id: 1,
         name: "Espada",
-        item_type: "arma",
+        itemType: "arma",
       }),
       createItem({
         id: 2,
         name: "Escudo",
-        item_type: "escudo",
+        itemType: "escudo",
       }),
     ]);
 
@@ -32,12 +32,12 @@ describe("getVisibleItemTypes", () => {
       createItem({
         id: 1,
         name: "Espada",
-        item_type: "arma",
+        itemType: "arma",
       }),
       createItem({
         id: 2,
         name: "Escudo",
-        item_type: "escudo",
+        itemType: "escudo",
       }),
     ]);
 
@@ -54,7 +54,7 @@ describe("getVisibleItemTypes", () => {
       createItem({
         id: 1,
         name: "Espada",
-        item_type: "arma",
+        itemType: "arma",
       }),
     ]);
 
@@ -66,22 +66,22 @@ describe("getVisibleItemTypes", () => {
     expect(result).toEqual([]);
   });
 
-  it("mantém a ordem definida em ITEM_TYPE_OPTIONS", () => {
+  it("mantém a ordem definida em itemType_OPTIONS", () => {
     const groupedItems = groupItemsByType([
       createItem({
         id: 1,
         name: "Artefato Antigo",
-        item_type: "artefato",
+        itemType: "artefato",
       }),
       createItem({
         id: 2,
         name: "Espada",
-        item_type: "arma",
+        itemType: "arma",
       }),
       createItem({
         id: 3,
         name: "Anel",
-        item_type: "acessorio",
+        itemType: "acessorio",
       }),
     ]);
 

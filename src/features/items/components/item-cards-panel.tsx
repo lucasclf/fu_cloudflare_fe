@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { EmptyState } from "../../../shared/components/empty-state";
+import { EmptyState } from "@/shared/components/empty-state";
 import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
 import { useExpandedItemTypes } from "../hooks/use-expanded-item-types";
 import { getVisibleItemTypes } from "../lib/get-visible-item-types";

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { SearchField } from "../../../shared/components/search-field";
+import { SearchField } from "@/shared/components/search-field";
 
 import "./catalog-layout.css";
 

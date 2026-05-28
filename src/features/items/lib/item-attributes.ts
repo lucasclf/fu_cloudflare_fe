@@ -1,4 +1,4 @@
-import type { AttributeGridItem } from "../../../shared/components/attribute-grid";
+import type { AttributeGridItem } from "@/shared/components/attribute-grid";
 import type { Item } from "../types/item";
 import {
   formatItemDamageWithType,
@@ -15,14 +15,14 @@ export type ItemAttributesConfig = {
 };
 
 export function getItemAttributes(item: Item): ItemAttributesConfig {
-  if (item.item_type === "arma") {
+  if (item.itemType === "arma") {
     return {
       columns: 2,
       items: getWeaponAttributes(item),
     };
   }
 
-  if (item.item_type === "armadura" || item.item_type === "escudo") {
+  if (item.itemType === "armadura" || item.itemType === "escudo") {
     return {
       columns: 3,
       items: getEquipmentAttributes(item),
@@ -39,7 +39,7 @@ function getWeaponAttributes(item: Item): AttributeGridItem[] {
   const attributes: AttributeGridItem[] = [
     {
       label: "Dano",
-      value: formatItemDamageWithType(item.damage, item.damage_type),
+      value: formatItemDamageWithType(item.damage, item.damageType),
     },
     {
       label: "Precisão",
@@ -58,7 +58,7 @@ function getWeaponAttributes(item: Item): AttributeGridItem[] {
   if (hasDefenseValue(item)) {
     attributes.push({
       label: "Defesa",
-      value: formatItemDefenseValue(item.defense_dice, item.defense_bonus),
+      value: formatItemDefenseValue(item.defenseDice, item.defenseBonus),
     });
   }
 
@@ -66,8 +66,8 @@ function getWeaponAttributes(item: Item): AttributeGridItem[] {
     attributes.push({
       label: "Defesa mágica",
       value: formatItemDefenseValue(
-        item.magic_defense_dice,
-        item.magic_defense_bonus,
+        item.magicDefenseDice,
+        item.magicDefenseBonus,
       ),
     });
   }
@@ -87,13 +87,13 @@ function getEquipmentAttributes(item: Item): AttributeGridItem[] {
   const attributes: AttributeGridItem[] = [
     {
       label: "Defesa",
-      value: formatItemDefenseValue(item.defense_dice, item.defense_bonus),
+      value: formatItemDefenseValue(item.defenseDice, item.defenseBonus),
     },
     {
       label: "Defesa Mágica",
       value: formatItemDefenseValue(
-        item.magic_defense_dice,
-        item.magic_defense_bonus,
+        item.magicDefenseDice,
+        item.magicDefenseBonus,
       ),
     },
     {
@@ -124,9 +124,9 @@ function getDescriptionAttributes(item: Item): AttributeGridItem[] {
 }
 
 function hasDefenseValue(item: Item): boolean {
-  return item.defense_bonus !== null || item.defense_dice !== null;
+  return item.defenseBonus !== null || item.defenseDice !== null;
 }
 
 function hasMagicDefenseValue(item: Item): boolean {
-  return item.magic_defense_bonus !== null || item.magic_defense_dice !== null;
+  return item.magicDefenseBonus !== null || item.magicDefenseDice !== null;
 }

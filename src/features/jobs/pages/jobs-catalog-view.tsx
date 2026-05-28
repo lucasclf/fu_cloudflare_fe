@@ -1,21 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
-import { CategorySwitcher } from "../../catalog/components/category-switcher";
-import { CatalogLayout } from "../../catalog/components/catalog-layout";
-import type { CatalogCategory } from "../../catalog/types/category";
-import { getPublicJobById } from "../api/get-public-job-by-id";
-import { getPublicJobCatalog } from "../api/get-public-job-catalog";
+import { CategorySwitcher } from "@/features/catalog/components/category-switcher";
+import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import type { CatalogCategory } from "@/features/catalog/types/category";
+import { Button } from "@/shared/components/button";
 import { JobAllowanceFilterBar } from "../components/job-allowance-filter-bar";
-import {
-  type JobFeatureFilterKey,
-  getPositiveJobBonus,
-  isJobAllowanceEnabled,
-  isJobBonusKey,
-} from "../components/job-allowance-icons";
-import { JobCatalogPanel } from "../components/job-catalog-panel";
-import { JobDetailPanel } from "../components/job-detail-panel";
-import { JobListSidebar } from "../components/job-list-sidebar";
-import { normalizeText } from "../lib/job-formatters";
-import type { Job, JobCatalogItem } from "../types/job";
+import { JobsCatalogMainContent } from "../components/jobs-catalog-main-content";
+import { JobsCatalogSidebarContent } from "../components/jobs-catalog-sidebar-content";
+import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
+import { useJobsCatalogFilters } from "../hooks/use-jobs-catalog-filters";
+import { usePublicJobCatalog } from "../hooks/use-public-job-catalog";
+import { usePublicJobDetail } from "../hooks/use-public-job-detail";
+import { useSelectedJob } from "../hooks/use-selected-job";
+
+import "./jobs-catalog-view.css";
 
 type JobsCatalogViewProps = {
   category: CatalogCategory;
@@ -26,152 +22,90 @@ export function JobsCatalogView({
   category,
   onCategoryChange,
 }: JobsCatalogViewProps) {
-  const [jobs, setJobs] = useState<JobCatalogItem[]>([]);
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
-  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [search, setSearch] = useState("");
-  const [selectedFeatureKeys, setSelectedFeatureKeys] = useState<
-    JobFeatureFilterKey[]
-  >([]);
-  const [catalogLoading, setCatalogLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [catalogError, setCatalogError] = useState<string | null>(null);
-  const [detailError, setDetailError] = useState<string | null>(null);
+  const {
+    data: jobs,
+    loading: catalogLoading,
+    error: catalogError,
+  } = usePublicJobCatalog();
 
-  useEffect(() => {
-    async function loadCatalog() {
-      try {
-        setCatalogLoading(true);
-        setCatalogError(null);
-        const data = await getPublicJobCatalog();
-        setJobs(data);
-      } catch {
-        setCatalogError("Não foi possível carregar as classes.");
-      } finally {
-        setCatalogLoading(false);
-      }
-    }
+  const {
+    search,
+    selectedFeatureKeys,
+    filteredJobs,
+    hasActiveFilters,
+    setSearch,
+    toggleFeatureKey,
+    clearFilters,
+  } = useJobsCatalogFilters({
+    jobs: jobs ?? [],
+  });
 
-    void loadCatalog();
-  }, []);
+  const {
+    selectedJobId,
+    selectedCatalogJob,
+    selectJob,
+    clearSelectedJob,
+  } = useSelectedJob({
+    jobs: filteredJobs,
+  });
 
-  useEffect(() => {
-    if (selectedJobId === null) {
-      setSelectedJob(null);
-      setDetailError(null);
-      setDetailLoading(false);
-      return;
-    }
-
-    async function loadJobDetail(jobId: number) {
-      try {
-        setDetailLoading(true);
-        setDetailError(null);
-        const data = await getPublicJobById(jobId);
-        setSelectedJob(data);
-      } catch {
-        setDetailError("Não foi possível carregar os detalhes da classe.");
-      } finally {
-        setDetailLoading(false);
-      }
-    }
-
-    void loadJobDetail(selectedJobId);
-  }, [selectedJobId]);
-
-  const filteredJobs = useMemo(() => {
-    const query = normalizeText(search);
-
-    return jobs.filter((job) => {
-      const name = normalizeText(job.name);
-      const tagline = normalizeText(job.tagline ?? "");
-
-      const matchesSearch =
-        !query || name.includes(query) || tagline.includes(query);
-
-      const matchesFeatures = selectedFeatureKeys.every((key) => {
-        if (isJobBonusKey(key)) {
-          return getPositiveJobBonus(job[key]) > 0;
-        }
-
-        return isJobAllowanceEnabled(job[key]);
-      });
-
-      return matchesSearch && matchesFeatures;
-    });
-  }, [jobs, search, selectedFeatureKeys]);
-
-  function handleSelectJob(jobId: number) {
-    setSelectedJobId(jobId);
-  }
+  const {
+    job: selectedJob,
+    loading: detailLoading,
+    error: detailError,
+  } = usePublicJobDetail(selectedJobId);
 
   function handleClearSelection() {
-    setSelectedJobId(null);
-    setSelectedJob(null);
-    setSearch("");
-    setSelectedFeatureKeys([]);
+    clearSelectedJob();
+    clearFilters();
   }
-
-  function handleToggleFeatureKey(key: JobFeatureFilterKey) {
-    setSelectedFeatureKeys((current) =>
-      current.includes(key)
-        ? current.filter((currentKey) => currentKey !== key)
-        : [...current, key],
-    );
-  }
-
-  const selectedCatalogJob = useMemo(() => {
-    if (selectedJobId === null) {
-      return null;
-    }
-
-    return filteredJobs.find((job) => job.id === selectedJobId) ?? null;
-  }, [filteredJobs, selectedJobId]);
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle="Classes"
-      sidebarHeaderSubtitle="Classes de personagem"
-      searchPlaceholder="Buscar classe..."
+      sidebarHeaderTitle={JOBS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
+      sidebarHeaderSubtitle={JOBS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      searchPlaceholder={JOBS_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={setSearch}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       searchExtraContent={
-        <JobAllowanceFilterBar
-          selectedFeatureKeys={selectedFeatureKeys}
-          onToggleFeatureKey={handleToggleFeatureKey}
-        />
+        <div className="jobs-catalog-view__filters">
+          <JobAllowanceFilterBar
+            selectedFeatureKeys={selectedFeatureKeys}
+            onToggleFeatureKey={toggleFeatureKey}
+          />
+
+          {hasActiveFilters ? (
+            <Button variant="ghost" fullWidth onClick={clearFilters}>
+              {JOBS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
+            </Button>
+          ) : null}
+        </div>
       }
       sidebarContent={
-        catalogLoading ? (
-          <div style={{ padding: "16px" }}>Carregando...</div>
-        ) : catalogError ? (
-          <div style={{ padding: "16px" }}>{catalogError}</div>
-        ) : (
-          <JobListSidebar
-            jobs={filteredJobs}
-            selectedJobId={selectedJobId}
-            onSelect={handleSelectJob}
-            onClearSelection={handleClearSelection}
-          />
-        )
+        <JobsCatalogSidebarContent
+          loading={catalogLoading}
+          error={catalogError}
+          jobs={filteredJobs}
+          selectedJobId={selectedJobId}
+          onSelectJob={selectJob}
+          onClearSelection={handleClearSelection}
+        />
       }
       mainContent={
-        catalogLoading ? (
-          <div>Carregando classes...</div>
-        ) : catalogError ? (
-          <div>{catalogError}</div>
-        ) : selectedCatalogJob ? (
-          <JobDetailPanel
-            job={selectedJob ?? selectedCatalogJob}
-            loading={detailLoading}
-            error={detailError}
-          />
-        ) : (
-          <JobCatalogPanel jobs={filteredJobs} onSelect={handleSelectJob} />
-        )
+        <JobsCatalogMainContent
+          loading={catalogLoading}
+          error={catalogError}
+          jobs={filteredJobs}
+          selectedCatalogJob={selectedCatalogJob}
+          selectedJob={selectedJob}
+          detailLoading={detailLoading}
+          detailError={detailError}
+          hasActiveFilters={hasActiveFilters}
+          onSelectJob={selectJob}
+        />
       }
     />
   );

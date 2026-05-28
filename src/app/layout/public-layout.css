@@ -1,0 +1,9 @@
+.public-layout {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+.public-layout__main {
+  min-height: 100vh;
+}

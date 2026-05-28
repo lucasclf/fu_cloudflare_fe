@@ -1,4 +1,4 @@
-import { AttributeGrid } from "../../../shared/components/attribute-grid";
+import { AttributeGrid } from "@/shared/components/attribute-grid";
 import { getItemAttributes } from "../lib/item-attributes";
 import type { Item } from "../types/item";
 import { ItemCardHeader } from "./item-card-header";

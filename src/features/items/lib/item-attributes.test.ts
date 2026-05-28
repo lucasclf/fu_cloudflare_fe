@@ -8,9 +8,9 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 1,
       name: "Espada Curta",
-      item_type: "arma",
+      itemType: "arma",
       damage: "d8",
-      damage_type: "fisico",
+      damageType: "fisico",
       accuracy: "d10",
       grip: "uma_mao",
       distance: "corpo_a_corpo",
@@ -43,13 +43,13 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 1,
       name: "Lança Defensiva",
-      item_type: "arma",
+      itemType: "arma",
       damage: "d8",
       accuracy: "d10",
-      defense_dice: "d8",
-      defense_bonus: 1,
-      magic_defense_dice: "d6",
-      magic_defense_bonus: 2,
+      defenseDice: "d8",
+      defenseBonus: 1,
+      magicDefenseDice: "d6",
+      magicDefenseBonus: 2,
     });
 
     const result = getItemAttributes(item);
@@ -69,7 +69,7 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 1,
       name: "Espada Flamejante",
-      item_type: "arma",
+      itemType: "arma",
       damage: "d10",
       accuracy: "d8",
       description: "Causa dano adicional contra criaturas vulneráveis ao fogo.",
@@ -88,11 +88,11 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 2,
       name: "Armadura Leve",
-      item_type: "armadura",
-      defense_dice: "d8",
-      defense_bonus: 1,
-      magic_defense_dice: "d6",
-      magic_defense_bonus: 0,
+      itemType: "armadura",
+      defenseDice: "d8",
+      defenseBonus: 1,
+      magicDefenseDice: "d6",
+      magicDefenseBonus: 0,
       initiative: "-1",
     });
 
@@ -119,11 +119,11 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 3,
       name: "Escudo de Madeira",
-      item_type: "escudo",
-      defense_dice: null,
-      defense_bonus: 2,
-      magic_defense_dice: null,
-      magic_defense_bonus: 1,
+      itemType: "escudo",
+      defenseDice: null,
+      defenseBonus: 2,
+      magicDefenseDice: null,
+      magicDefenseBonus: 1,
       initiative: "0",
     });
 
@@ -150,9 +150,9 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 4,
       name: "Armadura Rúnica",
-      item_type: "armadura",
-      defense_dice: "d10",
-      magic_defense_dice: "d10",
+      itemType: "armadura",
+      defenseDice: "d10",
+      magicDefenseDice: "d10",
       description: "Concede resistência mágica situacional.",
     });
 
@@ -169,7 +169,7 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 5,
       name: "Anel Antigo",
-      item_type: "acessorio",
+      itemType: "acessorio",
       description: "Um anel com inscrições antigas.",
     });
 
@@ -189,7 +189,7 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 6,
       name: "Artefato Desconhecido",
-      item_type: "artefato",
+      itemType: "artefato",
       description: null,
     });
 
@@ -209,7 +209,7 @@ describe("getItemAttributes", () => {
     const item = createItem({
       id: 7,
       name: "Corda",
-      item_type: "outros",
+      itemType: "outros",
       description: "Uma corda resistente.",
     });
 

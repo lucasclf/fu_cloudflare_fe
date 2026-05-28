@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+coverage/
+.wrangler/
+.vite/
+.cache/
+.temp/
+tmp/
+
+package-lock.json
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example

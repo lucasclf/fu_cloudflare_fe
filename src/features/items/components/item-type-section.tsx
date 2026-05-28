@@ -1,5 +1,5 @@
-import { CollapsibleSection } from "../../../shared/components/collapsible-section";
-import { ITEM_TYPE_LABELS } from "../config/item-type-config";
+import { CollapsibleSection } from "@/shared/components/collapsible-section";
+import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import type { Item, ItemType } from "../types/item";
 import { ItemCard } from "./item-card";
 
@@ -21,7 +21,7 @@ export function ItemTypeSection({
   return (
     <CollapsibleSection
       id={sectionId}
-      title={ITEM_TYPE_LABELS[itemType]}
+      title={ITEMS_CATALOG_CONFIG.types.labels[itemType]}
       count={items.length}
       isExpanded={isExpanded}
       onToggle={() => onToggle(itemType)}
