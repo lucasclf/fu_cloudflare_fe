@@ -3,6 +3,9 @@ export const JOBS_CATALOG_COPY = {
     headerTitle: "Classes",
     headerSubtitle: "Classes da campanha",
     loadingMessage: "Carregando classes...",
+    listAriaLabel: "Lista de classes",
+    showAllButtonLabel: "Mostrar todas",
+    emptyMessage: "Nenhuma classe encontrada.",
   },
 
   search: {

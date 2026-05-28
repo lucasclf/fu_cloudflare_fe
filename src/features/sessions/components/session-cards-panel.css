@@ -1,0 +1,11 @@
+.session-cards-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.session-cards-panel__empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-style: italic;
+}

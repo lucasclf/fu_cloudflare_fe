@@ -1,5 +1,4 @@
-import { ErrorState } from "@/shared/components/error-state";
-import { LoadingState } from "@/shared/components/loading-state";
+import { CatalogStateBoundary } from "@/features/catalog/components/catalog-state-boundary";
 import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
 import type { ItemType } from "../types/item";
 import { ItemCategoryFilterSidebar } from "./item-category-filter-sidebar";
@@ -17,20 +16,16 @@ export function ItemsCatalogSidebarContent({
   selectedType,
   onSelectType,
 }: ItemsCatalogSidebarContentProps) {
-  if (loading) {
-    return (
-      <LoadingState message={ITEMS_CATALOG_COPY.sidebar.loadingMessage} />
-    );
-  }
-
-  if (error) {
-    return <ErrorState message={error} />;
-  }
-
   return (
-    <ItemCategoryFilterSidebar
-      selectedType={selectedType}
-      onSelectType={onSelectType}
-    />
+    <CatalogStateBoundary
+      loading={loading}
+      error={error}
+      loadingMessage={ITEMS_CATALOG_COPY.sidebar.loadingMessage}
+    >
+      <ItemCategoryFilterSidebar
+        selectedType={selectedType}
+        onSelectType={onSelectType}
+      />
+    </CatalogStateBoundary>
   );
 }

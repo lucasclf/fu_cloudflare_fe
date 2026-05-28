@@ -10,10 +10,7 @@ import {
   ScenarioTypeFilter,
   type ScenarioTypeFilterValue,
 } from "../components/scenario-type-filter";
-import {
-  isFaction,
-  normalizeScenarioText,
-} from "../lib/scenario-formatters";
+import { isFaction, normalizeScenarioText } from "../lib/scenario-formatters";
 import type { ScenarioEntity } from "../types/scenario";
 
 type ScenarioCatalogViewProps = {
@@ -30,7 +27,9 @@ export function ScenarioCatalogView({
   const [typeFilter, setTypeFilter] = useState<ScenarioTypeFilterValue>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedEntityUid, setSelectedEntityUid] = useState<string | null>(null);
+  const [selectedEntityUid, setSelectedEntityUid] = useState<string | null>(
+    null,
+  );
   const [sidebarResetVersion, setSidebarResetVersion] = useState(0);
 
   useEffect(() => {
@@ -92,7 +91,7 @@ export function ScenarioCatalogView({
         entity.name,
         entity.tagline ?? "",
         entity.description ?? "",
-        isFaction(entity) ? entity.subtype ?? "" : "",
+        isFaction(entity) ? (entity.subtype ?? "") : "",
         isFaction(entity)
           ? entity.location_relations
               .map(
@@ -130,7 +129,10 @@ export function ScenarioCatalogView({
       }
       searchExtraContent={
         <div style={styles.filterBlock}>
-          <ScenarioTypeFilter value={typeFilter} onChange={handleTypeFilterChange} />
+          <ScenarioTypeFilter
+            value={typeFilter}
+            onChange={handleTypeFilterChange}
+          />
 
           <button
             type="button"
@@ -154,10 +156,10 @@ export function ScenarioCatalogView({
             </div>
 
             <ScenarioSidebar
-                key={sidebarResetVersion}
-                entities={entities}
-                selectedEntityUid={selectedEntityUid}
-                onSelectEntity={handleSelectEntity}
+              key={sidebarResetVersion}
+              entities={entities}
+              selectedEntityUid={selectedEntityUid}
+              onSelectEntity={handleSelectEntity}
             />
           </>
         )

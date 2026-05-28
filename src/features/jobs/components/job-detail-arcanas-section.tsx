@@ -43,7 +43,10 @@ function ArcanaCard({ arcana }: { arcana: JobArcana }) {
 
         <div className="job-detail-panel__arcana-domain-list">
           {getArcanaDomains(arcana.domain).map((domain) => (
-            <span key={domain} className="job-detail-panel__arcana-domain-badge">
+            <span
+              key={domain}
+              className="job-detail-panel__arcana-domain-badge"
+            >
               {domain}
             </span>
           ))}

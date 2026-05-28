@@ -59,7 +59,9 @@ export function formatNpcItemType(type: string): string {
   return labels[type] ?? formatFallbackLabel(type);
 }
 
-export function formatNpcItemValue(value: string | number | boolean | null | undefined): string {
+export function formatNpcItemValue(
+  value: string | number | boolean | null | undefined,
+): string {
   if (value === null || value === undefined || String(value).trim() === "") {
     return "???";
   }

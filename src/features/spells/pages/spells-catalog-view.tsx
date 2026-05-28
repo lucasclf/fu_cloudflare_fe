@@ -80,52 +80,52 @@ export function SpellsCatalogView({
   }, [spells]);
 
   const jobSpellCounts = useMemo(() => {
-  const counts = new Map<string, number>();
+    const counts = new Map<string, number>();
 
-  for (const spell of spells) {
-    if (!isJobSpell(spell)) {
-      continue;
+    for (const spell of spells) {
+      if (!isJobSpell(spell)) {
+        continue;
+      }
+
+      const jobName = spell.job_name?.trim();
+
+      if (!jobName) {
+        continue;
+      }
+
+      counts.set(jobName, (counts.get(jobName) ?? 0) + 1);
     }
 
-    const jobName = spell.job_name?.trim();
-
-    if (!jobName) {
-      continue;
-    }
-
-    counts.set(jobName, (counts.get(jobName) ?? 0) + 1);
-  }
-
-  return Array.from(counts.entries())
-    .map(([jobName, count]) => ({
-      jobName,
-      count,
-    }))
+    return Array.from(counts.entries())
+      .map(([jobName, count]) => ({
+        jobName,
+        count,
+      }))
       .sort((a, b) => a.jobName.localeCompare(b.jobName));
   }, [spells]);
 
-const filteredSpells = useMemo(() => {
-  const query = normalizeSpellText(search);
+  const filteredSpells = useMemo(() => {
+    const query = normalizeSpellText(search);
 
-  return spells.filter((spell) => {
-    const sourceName = getSpellSourceName(spell);
+    return spells.filter((spell) => {
+      const sourceName = getSpellSourceName(spell);
 
-    const matchesSearch =
-      !query || normalizeSpellText(sourceName).includes(query);
+      const matchesSearch =
+        !query || normalizeSpellText(sourceName).includes(query);
 
-    const matchesSource =
-      sourceFilter.type === "all" ||
-      (sourceFilter.type === "monster" && isMonsterSpell(spell)) ||
-      (sourceFilter.type === "job" &&
-        isJobSpell(spell) &&
-        spell.job_name?.trim() === sourceFilter.jobName);
+      const matchesSource =
+        sourceFilter.type === "all" ||
+        (sourceFilter.type === "monster" && isMonsterSpell(spell)) ||
+        (sourceFilter.type === "job" &&
+          isJobSpell(spell) &&
+          spell.job_name?.trim() === sourceFilter.jobName);
 
-    const matchesOffensive =
-      !offensiveOnly || isSpellOffensive(spell.is_offensive);
+      const matchesOffensive =
+        !offensiveOnly || isSpellOffensive(spell.is_offensive);
 
-    return matchesSearch && matchesSource && matchesOffensive;
-  });
-}, [spells, search, sourceFilter, offensiveOnly]);
+      return matchesSearch && matchesSource && matchesOffensive;
+    });
+  }, [spells, search, sourceFilter, offensiveOnly]);
 
   return (
     <CatalogLayout
@@ -155,7 +155,9 @@ const filteredSpells = useMemo(() => {
               onClick={handleSelectAllSources}
               style={{
                 ...styles.jobFilterButton,
-                ...(sourceFilter.type === "all" ? styles.jobFilterButtonActive : {}),
+                ...(sourceFilter.type === "all"
+                  ? styles.jobFilterButtonActive
+                  : {}),
               }}
             >
               <span>Todas as origens</span>
@@ -178,7 +180,7 @@ const filteredSpells = useMemo(() => {
               <span style={styles.jobFilterCount}>
                 {formatSpellCount(monsterSpellCount)}
               </span>
-            </button> 
+            </button>
 
             {jobSpellCounts.map(({ jobName, count }) => (
               <button
@@ -187,7 +189,8 @@ const filteredSpells = useMemo(() => {
                 onClick={() => handleSelectJobSource(jobName)}
                 style={{
                   ...styles.jobFilterButton,
-                  ...(sourceFilter.type === "job" && sourceFilter.jobName === jobName
+                  ...(sourceFilter.type === "job" &&
+                  sourceFilter.jobName === jobName
                     ? styles.jobFilterButtonActive
                     : {}),
                 }}

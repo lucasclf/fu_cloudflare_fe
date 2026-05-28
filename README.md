@@ -18,7 +18,7 @@ Frontend da aplicação de catálogo/enciclopédia para Fabula Ultima, construí
 
 ## Instalação
 
-```bash
+````bash
 npm install
 
 ## Formatação
@@ -27,3 +27,4 @@ Formatar o projeto:
 
 ```bash
 npm run format
+````

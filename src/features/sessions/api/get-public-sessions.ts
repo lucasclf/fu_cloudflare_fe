@@ -1,9 +1,14 @@
-import { httpGet } from "../../../shared/lib/http-client";
-import { API_BASE_URL } from "../../../shared/services/api";
+import { createPublicListFetcher } from "@/shared/lib/create-public-list-fetcher";
+import { mapSessionDtosToSessions } from "../lib/session-mapper";
 import type { Session } from "../types/session";
+import type { SessionDto } from "../types/session-dto";
 
-export async function getPublicSessions(): Promise<Session[]> {
-  const sessions = await httpGet<Session[]>(`${API_BASE_URL}/public/sessions`);
-  console.log("Sessões públicas carregadas:", sessions);
-  return sessions;
+const fetchPublicSessionDtos = createPublicListFetcher<SessionDto>("sessions");
+
+export async function getPublicSessions(
+  signal?: AbortSignal,
+): Promise<Session[]> {
+  const dtos = await fetchPublicSessionDtos(signal);
+
+  return mapSessionDtosToSessions(dtos);
 }

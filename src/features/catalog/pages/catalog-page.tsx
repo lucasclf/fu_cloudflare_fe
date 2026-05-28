@@ -14,10 +14,7 @@ type CatalogPageProps = {
   onCategoryChange: (category: CatalogCategory) => void;
 };
 
-export function CatalogPage({
-  category,
-  onCategoryChange,
-}: CatalogPageProps) {
+export function CatalogPage({ category, onCategoryChange }: CatalogPageProps) {
   switch (category) {
     case "sessions":
       return (
@@ -42,7 +39,7 @@ export function CatalogPage({
           onCategoryChange={onCategoryChange}
         />
       );
-    
+
     case "spells":
       return (
         <SpellsCatalogView
@@ -72,13 +69,13 @@ export function CatalogPage({
           onCategoryChange={onCategoryChange}
         />
       );
-      case "npcs":
-        return (
-          <NpcsCatalogView
-            category={category}
-            onCategoryChange={onCategoryChange}
-          />
-        );
+    case "npcs":
+      return (
+        <NpcsCatalogView
+          category={category}
+          onCategoryChange={onCategoryChange}
+        />
+      );
     case "characters":
       return (
         <PcsCatalogView

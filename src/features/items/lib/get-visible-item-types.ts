@@ -18,4 +18,4 @@ export function getVisibleItemTypes({
   return ITEMS_CATALOG_CONFIG.types.options.filter(
     (itemType) => groupedItems[itemType].length > 0,
   );
-}  
+}

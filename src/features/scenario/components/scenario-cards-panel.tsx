@@ -15,7 +15,9 @@ type Props = {
 
 export function ScenarioCardsPanel({ entities }: Props) {
   if (entities.length === 0) {
-    return <div style={styles.empty}>Nenhuma entidade de cenário para exibir.</div>;
+    return (
+      <div style={styles.empty}>Nenhuma entidade de cenário para exibir.</div>
+    );
   }
 
   return (
@@ -34,7 +36,7 @@ type ScenarioCardProps = {
 function ScenarioCard({ entity }: ScenarioCardProps) {
   const imageSrc = getScenarioImageSrc(entity.type, entity.img_key);
   const subtypeLabel = formatScenarioSubtype(entity.type, entity.subtype);
-  
+
   return (
     <article style={styles.card}>
       <div style={styles.imageFrame}>
@@ -94,9 +96,7 @@ function ScenarioCard({ entity }: ScenarioCardProps) {
                 ))}
               </div>
             ) : (
-              <div style={styles.noRelations}>
-                Sem relações com locais.
-              </div>
+              <div style={styles.noRelations}>Sem relações com locais.</div>
             )}
           </div>
         ) : null}

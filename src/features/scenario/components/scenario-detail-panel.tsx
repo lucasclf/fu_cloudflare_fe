@@ -41,7 +41,9 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
             ))}
           </div>
         ) : (
-          <div style={styles.empty}>Nenhuma facção relacionada a este local.</div>
+          <div style={styles.empty}>
+            Nenhuma facção relacionada a este local.
+          </div>
         )}
       </div>
     );
@@ -275,8 +277,7 @@ function getRelatedFactions(
       const relationTypes = unique(
         faction.location_relations
           .filter(
-            (relation) =>
-              getLocationUid(relation.location_id) === location.uid,
+            (relation) => getLocationUid(relation.location_id) === location.uid,
           )
           .map((relation) => formatRelationType(relation.relation_type)),
       );

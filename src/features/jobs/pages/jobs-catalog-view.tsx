@@ -1,7 +1,7 @@
 import { CategorySwitcher } from "@/features/catalog/components/category-switcher";
 import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import { CatalogSearchExtra } from "@/features/catalog/components/catalog-search-extra";
 import type { CatalogCategory } from "@/features/catalog/types/category";
-import { Button } from "@/shared/components/button";
 import { JobAllowanceFilterBar } from "../components/job-allowance-filter-bar";
 import { JobsCatalogMainContent } from "../components/jobs-catalog-main-content";
 import { JobsCatalogSidebarContent } from "../components/jobs-catalog-sidebar-content";
@@ -10,8 +10,6 @@ import { useJobsCatalogFilters } from "../hooks/use-jobs-catalog-filters";
 import { usePublicJobCatalog } from "../hooks/use-public-job-catalog";
 import { usePublicJobDetail } from "../hooks/use-public-job-detail";
 import { useSelectedJob } from "../hooks/use-selected-job";
-
-import "./jobs-catalog-view.css";
 
 type JobsCatalogViewProps = {
   category: CatalogCategory;
@@ -40,14 +38,10 @@ export function JobsCatalogView({
     jobs: jobs ?? [],
   });
 
-  const {
-    selectedJobId,
-    selectedCatalogJob,
-    selectJob,
-    clearSelectedJob,
-  } = useSelectedJob({
-    jobs: filteredJobs,
-  });
+  const { selectedJobId, selectedCatalogJob, selectJob, clearSelectedJob } =
+    useSelectedJob({
+      jobs: filteredJobs,
+    });
 
   const {
     job: selectedJob,
@@ -71,18 +65,16 @@ export function JobsCatalogView({
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       searchExtraContent={
-        <div className="jobs-catalog-view__filters">
+        <CatalogSearchExtra
+          hasActiveFilters={hasActiveFilters}
+          clearButtonLabel={JOBS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
+          onClearFilters={clearFilters}
+        >
           <JobAllowanceFilterBar
             selectedFeatureKeys={selectedFeatureKeys}
             onToggleFeatureKey={toggleFeatureKey}
           />
-
-          {hasActiveFilters ? (
-            <Button variant="ghost" fullWidth onClick={clearFilters}>
-              {JOBS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
-            </Button>
-          ) : null}
-        </div>
+        </CatalogSearchExtra>
       }
       sidebarContent={
         <JobsCatalogSidebarContent

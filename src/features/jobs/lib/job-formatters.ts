@@ -8,8 +8,14 @@ export function normalizeText(value: string): string {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-export function renderOptionalValue(value: string | number | null | undefined): string {
-  if (value === null || value === undefined || String(value).trim().length === 0) {
+export function renderOptionalValue(
+  value: string | number | null | undefined,
+): string {
+  if (
+    value === null ||
+    value === undefined ||
+    String(value).trim().length === 0
+  ) {
     return "—";
   }
 

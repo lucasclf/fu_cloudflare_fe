@@ -1,6 +1,4 @@
-import { EmptyState } from "@/shared/components/empty-state";
-import { ErrorState } from "@/shared/components/error-state";
-import { LoadingState } from "@/shared/components/loading-state";
+import { CatalogStateBoundary } from "@/features/catalog/components/catalog-state-boundary";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import type { Job, JobCatalogItem } from "../types/job";
 import { JobCatalogPanel } from "./job-catalog-panel";
@@ -29,36 +27,28 @@ export function JobsCatalogMainContent({
   hasActiveFilters,
   onSelectJob,
 }: JobsCatalogMainContentProps) {
-  if (loading) {
-    return <LoadingState message={JOBS_CATALOG_CONFIG.copy.main.loadingMessage} />;
-  }
-
-  if (error) {
-    return <ErrorState message={error} />;
-  }
-
-  if (selectedCatalogJob) {
-    return (
-      <JobDetailPanel
-        job={selectedJob ?? selectedCatalogJob}
-        loading={detailLoading}
-        error={detailError}
-      />
-    );
-  }
-
-  if (jobs.length === 0) {
-    return (
-      <EmptyState
-        title={JOBS_CATALOG_CONFIG.copy.emptyState.title}
-        description={
-          hasActiveFilters
-            ? JOBS_CATALOG_CONFIG.copy.emptyState.descriptionWithFilters
-            : JOBS_CATALOG_CONFIG.copy.emptyState.descriptionWithoutFilters
-        }
-      />
-    );
-  }
-
-  return <JobCatalogPanel jobs={jobs} onSelect={onSelectJob} />;
+  return (
+    <CatalogStateBoundary
+      loading={loading}
+      error={error}
+      loadingMessage={JOBS_CATALOG_CONFIG.copy.main.loadingMessage}
+      emptyState={{
+        isEmpty: selectedCatalogJob === null && jobs.length === 0,
+        title: JOBS_CATALOG_CONFIG.copy.emptyState.title,
+        description: hasActiveFilters
+          ? JOBS_CATALOG_CONFIG.copy.emptyState.descriptionWithFilters
+          : JOBS_CATALOG_CONFIG.copy.emptyState.descriptionWithoutFilters,
+      }}
+    >
+      {selectedCatalogJob ? (
+        <JobDetailPanel
+          job={selectedJob ?? selectedCatalogJob}
+          loading={detailLoading}
+          error={detailError}
+        />
+      ) : (
+        <JobCatalogPanel jobs={jobs} onSelect={onSelectJob} />
+      )}
+    </CatalogStateBoundary>
+  );
 }

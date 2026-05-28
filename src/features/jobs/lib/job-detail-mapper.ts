@@ -1,11 +1,11 @@
 import { mapJobCatalogItemDtoToJobCatalogItem } from "./job-catalog-mapper";
 import type {
+  Job,
   JobAlias,
   JobArcana,
   JobPower,
   JobQuestion,
   JobSpell,
-  Job,
 } from "../types/job";
 import type {
   JobAliasDto,
@@ -40,6 +40,7 @@ function mapJobQuestionDtoToJobQuestion(dto: JobQuestionDto): JobQuestion {
     id: dto.id,
     question: dto.question,
     text: dto.text,
+    description: dto.description,
   };
 }
 

@@ -39,6 +39,7 @@ export type JobQuestion = {
   id: number;
   question?: string | null;
   text?: string | null;
+  description?: string | null;
 };
 
 export type JobPower = {

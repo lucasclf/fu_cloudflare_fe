@@ -6,11 +6,7 @@ type EmptyStateProps = {
   className?: string;
 };
 
-export function EmptyState({
-  title,
-  description,
-  className,
-}: EmptyStateProps) {
+export function EmptyState({ title, description, className }: EmptyStateProps) {
   const classes = ["page-state", "page-state--empty", className]
     .filter(Boolean)
     .join(" ");

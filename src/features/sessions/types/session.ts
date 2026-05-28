@@ -1,10 +1,10 @@
 export type Session = {
   id: number;
-  session_number: number;
+  sessionNumber: number;
   title: string | null;
   summary: string;
   notes: string | null;
-  played_at: string;
-  created_at: string;
-  updated_at: string | null;
+  playedAt: string;
+  createdAt: string;
+  updatedAt: string | null;
 };

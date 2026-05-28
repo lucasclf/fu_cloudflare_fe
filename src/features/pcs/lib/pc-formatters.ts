@@ -6,7 +6,9 @@ export function normalizePcText(value: string): string {
     .trim();
 }
 
-export function renderPcValue(value: string | number | null | undefined): string {
+export function renderPcValue(
+  value: string | number | null | undefined,
+): string {
   if (value === null || value === undefined || String(value).trim() === "") {
     return "???";
   }

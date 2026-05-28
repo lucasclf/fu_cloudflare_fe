@@ -15,10 +15,7 @@ type ItemCardsPanelProps = {
   selectedType: ItemType | null;
 };
 
-export function ItemCardsPanel({
-  items,
-  selectedType,
-}: ItemCardsPanelProps) {
+export function ItemCardsPanel({ items, selectedType }: ItemCardsPanelProps) {
   const { isItemTypeExpanded, toggleItemType } =
     useExpandedItemTypes(selectedType);
 

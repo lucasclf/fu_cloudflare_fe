@@ -1,4 +1,4 @@
-.jobs-catalog-view__filters {
+.catalog-search-extra {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
