@@ -52,9 +52,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
 
             <p style={styles.tagline}>“{renderNpcValue(npc.tagline)}”</p>
 
-            <p style={styles.description}>
-              {renderNpcValue(npc.description)}
-            </p>
+            <p style={styles.description}>{renderNpcValue(npc.description)}</p>
           </div>
 
           <div style={styles.heroStatsBlock}>
@@ -96,10 +94,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
 
           <div style={styles.itemGrid}>
             {npc.equipment.map((item) => (
-              <EquipmentCard
-                key={`${item.item.id}-${item.slot}`}
-                item={item}
-              />
+              <EquipmentCard key={`${item.item.id}-${item.slot}`} item={item} />
             ))}
           </div>
         </section>
@@ -688,5 +683,4 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "11px",
     fontWeight: 700,
   },
-
 };

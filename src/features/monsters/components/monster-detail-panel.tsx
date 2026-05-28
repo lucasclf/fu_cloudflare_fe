@@ -73,41 +73,41 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
         </div>
 
         <div style={styles.heroContent}>
-            <div style={styles.heroInfoBlock}>
-                <div style={styles.badges}>
-                  {isMonsterVillain(monster.is_villain) ? (
-                    <span style={styles.villainBadge}>Vilão</span>
-                  ) : null}
+          <div style={styles.heroInfoBlock}>
+            <div style={styles.badges}>
+              {isMonsterVillain(monster.is_villain) ? (
+                <span style={styles.villainBadge}>Vilão</span>
+              ) : null}
 
-                  <span style={styles.typeBadge}>
-                    {formatMonsterType(monster.monster_type)}
-                  </span>
+              <span style={styles.typeBadge}>
+                {formatMonsterType(monster.monster_type)}
+              </span>
 
-                  <span style={styles.levelBadge}>Nível {monster.level}</span>
-                </div>
-
-                <h2 style={styles.title}>{monster.name}</h2>
-
-                <p style={styles.description}>
-                  {renderMonsterValue(monster.description)}
-                </p>
-
-                {isMonsterVillain(monster.is_villain) ? (
-                  <VillainInfo monster={monster} />
-                ) : null}
-
-                <div style={styles.traits}>
-                {monster.traits.map((trait) => (
-                    <span key={trait.trait} style={styles.traitBadge}>
-                    {trait.trait}
-                    </span>
-                ))}
-                </div>
+              <span style={styles.levelBadge}>Nível {monster.level}</span>
             </div>
 
-            <div style={styles.heroStatsBlock}>
-                <CompactStats monster={monster} />
+            <h2 style={styles.title}>{monster.name}</h2>
+
+            <p style={styles.description}>
+              {renderMonsterValue(monster.description)}
+            </p>
+
+            {isMonsterVillain(monster.is_villain) ? (
+              <VillainInfo monster={monster} />
+            ) : null}
+
+            <div style={styles.traits}>
+              {monster.traits.map((trait) => (
+                <span key={trait.trait} style={styles.traitBadge}>
+                  {trait.trait}
+                </span>
+              ))}
             </div>
+          </div>
+
+          <div style={styles.heroStatsBlock}>
+            <CompactStats monster={monster} />
+          </div>
         </div>
       </article>
 
@@ -136,33 +136,33 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
         <SectionTitle>Ações</SectionTitle>
 
         {monster.actions.length > 0 ? (
-            <div style={styles.actionGroups}>
+          <div style={styles.actionGroups}>
             {ACTION_GROUPS.map((group) => {
-                const actions = monster.actions.filter(
+              const actions = monster.actions.filter(
                 (action) => action.action_type === group.type,
-                );
+              );
 
-                if (actions.length === 0) {
+              if (actions.length === 0) {
                 return null;
-                }
+              }
 
-                return (
+              return (
                 <div key={group.type} style={styles.actionGroup}>
-                    <h3 style={styles.actionGroupTitle}>{group.title}</h3>
+                  <h3 style={styles.actionGroupTitle}>{group.title}</h3>
 
-                    <div style={styles.actionGrid}>
+                  <div style={styles.actionGrid}>
                     {actions.map((action) => (
-                        <MonsterActionCard key={action.id} action={action} />
+                      <MonsterActionCard key={action.id} action={action} />
                     ))}
-                    </div>
+                  </div>
                 </div>
-                );
+              );
             })}
-            </div>
+          </div>
         ) : (
-            <div style={styles.empty}>Nenhuma ação cadastrada.</div>
+          <div style={styles.empty}>Nenhuma ação cadastrada.</div>
         )}
-        </section>
+      </section>
     </div>
   );
 }
@@ -180,9 +180,7 @@ function VillainInfo({ monster }: { monster: MonsterDetail }) {
       {showUltimaPoints ? (
         <div style={styles.villainInfoItem}>
           <span style={styles.villainInfoLabel}>Pontos Ultima</span>
-          <span style={styles.villainInfoValue}>
-            {monster.ultima_points}
-          </span>
+          <span style={styles.villainInfoValue}>{monster.ultima_points}</span>
         </div>
       ) : null}
 
@@ -228,11 +226,7 @@ function MonsterActionCard({ action }: { action: MonsterAction }) {
       {actionInfoItems.length > 0 ? (
         <div style={styles.actionInfoGrid}>
           {actionInfoItems.map((item) => (
-            <Info
-              key={item.label}
-              label={item.label}
-              value={item.value}
-            />
+            <Info key={item.label} label={item.label} value={item.value} />
           ))}
         </div>
       ) : null}
@@ -240,7 +234,9 @@ function MonsterActionCard({ action }: { action: MonsterAction }) {
   );
 }
 
-function hasActionInfoValue(value: string | number | null | undefined): boolean {
+function hasActionInfoValue(
+  value: string | number | null | undefined,
+): boolean {
   if (value === null || value === undefined) {
     return false;
   }
@@ -365,7 +361,7 @@ const styles: Record<string, CSSProperties> = {
     minHeight: "420px",
   },
 
-    imageFrame: {
+  imageFrame: {
     minHeight: "420px",
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
@@ -392,24 +388,24 @@ const styles: Record<string, CSSProperties> = {
   },
 
   heroContent: {
-  display: "grid",
-  gridTemplateRows: "1fr 1fr",
-  minHeight: "420px",
-},
+    display: "grid",
+    gridTemplateRows: "1fr 1fr",
+    minHeight: "420px",
+  },
 
-heroInfoBlock: {
-  padding: "26px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "14px",
-  borderBottom: "1px solid #3a2e22",
-},
+  heroInfoBlock: {
+    padding: "26px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+    borderBottom: "1px solid #3a2e22",
+  },
 
-heroStatsBlock: {
-  padding: "22px 26px",
-  display: "flex",
-  alignItems: "center",
-},
+  heroStatsBlock: {
+    padding: "22px 26px",
+    display: "flex",
+    alignItems: "center",
+  },
 
   badges: {
     display: "flex",

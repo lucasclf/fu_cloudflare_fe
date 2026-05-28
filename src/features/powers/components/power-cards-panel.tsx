@@ -47,7 +47,9 @@ function PowerCard({ power }: PowerCardProps) {
             {formatPowerType(power.type)}
           </span>
 
-          <span style={styles.levelBadge}>{formatMaxLevel(power.max_level)}</span>
+          <span style={styles.levelBadge}>
+            {formatMaxLevel(power.max_level)}
+          </span>
 
           {power.is_global ? (
             <span style={styles.globalBadge}>Global</span>

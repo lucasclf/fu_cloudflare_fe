@@ -1,10 +1,12 @@
 import { useCallback } from "react";
 
-
 import { getPublicJobById } from "../api/get-public-job-by-id";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import type { Job } from "../types/job";
-import { type AsyncResourceByKeyState, useAsyncResourceByKey } from "./use-async-resource-by-key";
+import {
+  type AsyncResourceByKeyState,
+  useAsyncResourceByKey,
+} from "./use-async-resource-by-key";
 
 type UsePublicJobDetailResult = {
   job: Job | null;

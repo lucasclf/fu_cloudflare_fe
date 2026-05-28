@@ -1,5 +1,4 @@
-import { ErrorState } from "@/shared/components/error-state";
-import { LoadingState } from "@/shared/components/loading-state";
+import { CatalogStateBoundary } from "@/features/catalog/components/catalog-state-boundary";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import type { JobCatalogItem } from "../types/job";
 import { JobListSidebar } from "./job-list-sidebar";
@@ -21,22 +20,18 @@ export function JobsCatalogSidebarContent({
   onSelectJob,
   onClearSelection,
 }: JobsCatalogSidebarContentProps) {
-  if (loading) {
-    return (
-      <LoadingState message={JOBS_CATALOG_CONFIG.copy.sidebar.loadingMessage} />
-    );
-  }
-
-  if (error) {
-    return <ErrorState message={error} />;
-  }
-
   return (
-    <JobListSidebar
-      jobs={jobs}
-      selectedJobId={selectedJobId}
-      onSelect={onSelectJob}
-      onClearSelection={onClearSelection}
-    />
+    <CatalogStateBoundary
+      loading={loading}
+      error={error}
+      loadingMessage={JOBS_CATALOG_CONFIG.copy.sidebar.loadingMessage}
+    >
+      <JobListSidebar
+        jobs={jobs}
+        selectedJobId={selectedJobId}
+        onSelect={onSelectJob}
+        onClearSelection={onClearSelection}
+      />
+    </CatalogStateBoundary>
   );
 }

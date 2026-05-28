@@ -20,10 +20,10 @@ function getLocationUidFromRelation(locationId: number): string {
   return `location-${locationId}`;
 }
 
-export function ScenarioSidebar({ 
+export function ScenarioSidebar({
   entities,
   selectedEntityUid,
-  onSelectEntity, 
+  onSelectEntity,
 }: Props) {
   const [expandedLocationUid, setExpandedLocationUid] = useState<string | null>(
     null,

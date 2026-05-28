@@ -35,8 +35,8 @@ function getCharacterFolderByTargetType(targetType: string): string | null {
     return "monsters";
   }
 
-  if (targetType === "freeform"){
-    return "freeform"
+  if (targetType === "freeform") {
+    return "freeform";
   }
 
   return null;

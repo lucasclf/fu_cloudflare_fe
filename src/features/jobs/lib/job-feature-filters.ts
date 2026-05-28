@@ -11,7 +11,10 @@ export type AllowanceKey = keyof Pick<
   | "canStartProjects"
 >;
 
-export type BonusKey = keyof Pick<JobCatalogItem, "hpBonus" | "mpBonus" | "ipBonus">;
+export type BonusKey = keyof Pick<
+  JobCatalogItem,
+  "hpBonus" | "mpBonus" | "ipBonus"
+>;
 
 export type JobFeatureFilterKey = AllowanceKey | BonusKey;
 

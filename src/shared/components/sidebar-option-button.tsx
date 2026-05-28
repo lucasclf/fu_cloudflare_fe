@@ -23,12 +23,7 @@ export function SidebarOptionButton({
     .join(" ");
 
   return (
-    <button
-      type={type}
-      className={classes}
-      aria-pressed={isActive}
-      {...props}
-    >
+    <button type={type} className={classes} aria-pressed={isActive} {...props}>
       {children}
     </button>
   );

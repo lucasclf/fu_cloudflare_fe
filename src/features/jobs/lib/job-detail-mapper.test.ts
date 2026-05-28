@@ -94,6 +94,7 @@ describe("job-detail-mapper", () => {
           id: 20,
           question: "Qual poder você teme?",
           text: undefined,
+          description: undefined,
         },
       ],
       powers: [

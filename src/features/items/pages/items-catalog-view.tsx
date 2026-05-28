@@ -1,6 +1,6 @@
-import { Button } from "@/shared/components/button";
 import { CategorySwitcher } from "@/features/catalog/components/category-switcher";
 import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import { CatalogSearchExtra } from "@/features/catalog/components/catalog-search-extra";
 import type { CatalogCategory } from "@/features/catalog/types/category";
 import { ItemsCatalogMainContent } from "../components/items-catalog-main-content";
 import { ItemsCatalogSidebarContent } from "../components/items-catalog-sidebar-content";
@@ -42,11 +42,11 @@ export function ItemsCatalogView({
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       searchExtraContent={
-        hasActiveFilters ? (
-          <Button variant="ghost" fullWidth onClick={clearFilters}>
-            {ITEMS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
-          </Button>
-        ) : null
+        <CatalogSearchExtra
+          hasActiveFilters={hasActiveFilters}
+          clearButtonLabel={ITEMS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
+          onClearFilters={clearFilters}
+        />
       }
       sidebarContent={
         <ItemsCatalogSidebarContent

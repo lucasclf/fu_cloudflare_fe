@@ -1,32 +1,27 @@
+import { SESSIONS_CATALOG_CONFIG } from "../config/sessions-catalog-config";
 import type { Session } from "../types/session";
 import { SessionCard } from "./session-card";
 
-type Props = {
+import "./session-cards-panel.css";
+
+type SessionCardsPanelProps = {
   sessions: Session[];
 };
 
-export function SessionCardsPanel({ sessions }: Props) {
+export function SessionCardsPanel({ sessions }: SessionCardsPanelProps) {
   if (sessions.length === 0) {
-    return <div style={styles.empty}>Nenhuma sessão para exibir.</div>;
+    return (
+      <p className="session-cards-panel__empty">
+        {SESSIONS_CATALOG_CONFIG.copy.session.emptyPanelMessage}
+      </p>
+    );
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className="session-cards-panel">
       {sessions.map((session) => (
         <SessionCard key={session.id} session={session} />
       ))}
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px",
-  },
-  empty: {
-    color: "#7a6e5a",
-    fontStyle: "italic",
-  },
-};

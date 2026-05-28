@@ -23,7 +23,10 @@ type PowersCatalogViewProps = {
 const ALL_CLASSES_FILTER = "__ALL_CLASSES__";
 const UNRESTRICTED_CLASS_FILTER = "__UNRESTRICTED_CLASS__";
 
-type ClassFilterValue = typeof ALL_CLASSES_FILTER | typeof UNRESTRICTED_CLASS_FILTER | string;
+type ClassFilterValue =
+  | typeof ALL_CLASSES_FILTER
+  | typeof UNRESTRICTED_CLASS_FILTER
+  | string;
 
 export function PowersCatalogView({
   category,
@@ -101,8 +104,7 @@ export function PowersCatalogView({
           isPowerUnrestricted(power)) ||
         jobNames.includes(selectedClassFilter);
 
-      const matchesType =
-        typeFilter === null || power.type === typeFilter;
+      const matchesType = typeFilter === null || power.type === typeFilter;
 
       return matchesSearch && matchesClass && matchesType;
     });
@@ -175,9 +177,7 @@ export function PowersCatalogView({
 
             <button
               type="button"
-              onClick={() =>
-                handleSelectClassFilter(UNRESTRICTED_CLASS_FILTER)
-              }
+              onClick={() => handleSelectClassFilter(UNRESTRICTED_CLASS_FILTER)}
               style={{
                 ...styles.classFilterButton,
                 ...(selectedClassFilter === UNRESTRICTED_CLASS_FILTER

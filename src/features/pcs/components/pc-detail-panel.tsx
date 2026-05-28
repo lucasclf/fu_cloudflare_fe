@@ -46,7 +46,11 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
 
       <article style={styles.heroCard}>
         <div style={styles.imageFrame}>
-          <img src={getPcImageSrc(pc.img_key)} alt={pc.name} style={styles.image} />
+          <img
+            src={getPcImageSrc(pc.img_key)}
+            alt={pc.name}
+            style={styles.image}
+          />
         </div>
 
         <div style={styles.heroContent}>
@@ -54,7 +58,9 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
             <div style={styles.badges}>
               <span style={styles.typeBadge}>Personagem</span>
               <span style={styles.secondaryBadge}>Nível {pc.stats.level}</span>
-              <span style={styles.secondaryBadge}>{renderPcValue(pc.pronouns)}</span>
+              <span style={styles.secondaryBadge}>
+                {renderPcValue(pc.pronouns)}
+              </span>
             </div>
 
             <h2 style={styles.title}>{pc.name}</h2>
@@ -112,7 +118,9 @@ function CollapsibleSection({
           ) : null}
         </span>
 
-        <span style={styles.collapsibleAction}>{open ? "Fechar" : "Abrir"}</span>
+        <span style={styles.collapsibleAction}>
+          {open ? "Fechar" : "Abrir"}
+        </span>
       </button>
 
       {open ? <div style={styles.collapsibleContent}>{children}</div> : null}
@@ -149,8 +157,12 @@ function CapacitiesSection({ pc }: { pc: PcDetail }) {
   const capacities = [
     pc.pc_capacities.allows_martial_armor ? "Armaduras marciais" : null,
     pc.pc_capacities.allows_martial_shield ? "Escudos marciais" : null,
-    pc.pc_capacities.allows_martial_ranged_weapon ? "Armas à distância marciais" : null,
-    pc.pc_capacities.allows_martial_melee_weapon ? "Armas corpo a corpo marciais" : null,
+    pc.pc_capacities.allows_martial_ranged_weapon
+      ? "Armas à distância marciais"
+      : null,
+    pc.pc_capacities.allows_martial_melee_weapon
+      ? "Armas corpo a corpo marciais"
+      : null,
     pc.pc_capacities.allows_arcane ? "Arcanas" : null,
     pc.pc_capacities.allows_rituals ? "Rituais" : null,
     pc.pc_capacities.allows_monster_spells ? "Magias de monstro" : null,
@@ -221,9 +233,13 @@ function PowersSection({ powers }: { powers: PcPower[] }) {
               <h3 style={styles.cardTitle}>{power.name}</h3>
 
               <div style={styles.badges}>
-                <span style={styles.secondaryBadge}>{formatPowerType(power.type)}</span>
+                <span style={styles.secondaryBadge}>
+                  {formatPowerType(power.type)}
+                </span>
                 <span style={styles.secondaryBadge}>Nível {power.level}</span>
-                <span style={styles.secondaryBadge}>Máx. {power.max_level}</span>
+                <span style={styles.secondaryBadge}>
+                  Máx. {power.max_level}
+                </span>
                 {isTruthyFlag(power.is_global) ? (
                   <span style={styles.secondaryBadge}>Global</span>
                 ) : null}
@@ -244,7 +260,11 @@ function SpellsSection({ spells }: { spells: PcSpell[] }) {
   }
 
   return (
-    <CollapsibleSection title="Magias" count={spells.length} defaultOpen={false}>
+    <CollapsibleSection
+      title="Magias"
+      count={spells.length}
+      defaultOpen={false}
+    >
       <div style={styles.cardGridTwo}>
         {spells.map((spell) => (
           <SpellCard key={getPcSpellKey(spell)} spell={spell} />
@@ -268,7 +288,11 @@ function ArcanasSection({ arcanas }: { arcanas: PcArcana[] }) {
   }
 
   return (
-    <CollapsibleSection title="Arcanas" count={arcanas.length} defaultOpen={false}>
+    <CollapsibleSection
+      title="Arcanas"
+      count={arcanas.length}
+      defaultOpen={false}
+    >
       <div style={styles.cardGridTwo}>
         {arcanas.map((arcana) => (
           <SpellCard key={`arcana-${arcana.id}`} spell={arcana} />
@@ -299,7 +323,9 @@ function SpellCard({ spell }: { spell: PcSpell | PcArcana }) {
             <span style={styles.secondaryBadge}>Suporte</span>
           )}
 
-          {spell.cost ? <span style={styles.secondaryBadge}>{spell.cost}</span> : null}
+          {spell.cost ? (
+            <span style={styles.secondaryBadge}>{spell.cost}</span>
+          ) : null}
         </div>
       </div>
 
@@ -319,7 +345,9 @@ function EquipmentSection({ pc }: { pc: PcDetail }) {
     { slot: "off_hand", item: pc.equipment.off_hand },
     { slot: "armor", item: pc.equipment.armor },
     { slot: "accessory", item: pc.equipment.accessory },
-  ].filter((entry): entry is { slot: string; item: PcItem } => entry.item !== null);
+  ].filter(
+    (entry): entry is { slot: string; item: PcItem } => entry.item !== null,
+  );
 
   if (equipment.length === 0) {
     return null;
@@ -329,7 +357,11 @@ function EquipmentSection({ pc }: { pc: PcDetail }) {
     <CollapsibleSection title="Equipamentos" count={equipment.length}>
       <div style={styles.cardGridTwo}>
         {equipment.map(({ slot, item }) => (
-          <ItemCard key={`${slot}-${item.id}`} item={item} headerLabel={formatSlot(slot)} />
+          <ItemCard
+            key={`${slot}-${item.id}`}
+            item={item}
+            headerLabel={formatSlot(slot)}
+          />
         ))}
       </div>
     </CollapsibleSection>
@@ -342,7 +374,11 @@ function InventorySection({ inventories }: { inventories: PcInventoryItem[] }) {
   }
 
   return (
-    <CollapsibleSection title="Inventário" count={inventories.length} defaultOpen={false}>
+    <CollapsibleSection
+      title="Inventário"
+      count={inventories.length}
+      defaultOpen={false}
+    >
       <div style={styles.cardGridTwo}>
         {inventories.map((entry) => (
           <ItemCard
@@ -368,7 +404,11 @@ function ItemCard({
   return (
     <article style={styles.itemCard}>
       <div style={styles.itemImageFrame}>
-        <img src={getItemImageSrc(item.img_key)} alt={item.name} style={styles.itemImage} />
+        <img
+          src={getItemImageSrc(item.img_key)}
+          alt={item.name}
+          style={styles.itemImage}
+        />
       </div>
 
       <div style={styles.itemContent}>
@@ -376,7 +416,9 @@ function ItemCard({
           <h3 style={styles.cardTitle}>{item.name}</h3>
 
           <div style={styles.badges}>
-            <span style={styles.secondaryBadge}>{formatItemType(item.item_type)}</span>
+            <span style={styles.secondaryBadge}>
+              {formatItemType(item.item_type)}
+            </span>
             <span style={styles.secondaryBadge}>{headerLabel}</span>
           </div>
         </div>
@@ -391,7 +433,9 @@ function ItemCard({
           </div>
         ) : null}
 
-        {item.description ? <p style={styles.text}>{item.description}</p> : null}
+        {item.description ? (
+          <p style={styles.text}>{item.description}</p>
+        ) : null}
       </div>
     </article>
   );
@@ -403,7 +447,11 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
   }
 
   return (
-    <CollapsibleSection title="Vínculos" count={bonds.length} defaultOpen={false}>
+    <CollapsibleSection
+      title="Vínculos"
+      count={bonds.length}
+      defaultOpen={false}
+    >
       <div style={styles.cardGridTwo}>
         {bonds.map((bond, index) => {
           const axes = [
@@ -427,7 +475,11 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
             >
               <div style={styles.bondImageFrame}>
                 {imageSrc ? (
-                  <img src={imageSrc} alt={targetTitle} style={styles.bondImage} />
+                  <img
+                    src={imageSrc}
+                    alt={targetTitle}
+                    style={styles.bondImage}
+                  />
                 ) : (
                   <span style={styles.bondImagePlaceholder}>Sem imagem</span>
                 )}
@@ -473,7 +525,10 @@ function getItemDetails(item: PcItem): string[] {
     pushIf(details, item.damage);
     pushIf(details, formatDamageType(item.damage_type));
 
-    const defense = formatItemDefenseValue(item.defense_dice, item.defense_bonus);
+    const defense = formatItemDefenseValue(
+      item.defense_dice,
+      item.defense_bonus,
+    );
     const magicDefense = formatItemDefenseValue(
       item.magic_defense_dice,
       item.magic_defense_bonus,
@@ -484,7 +539,10 @@ function getItemDetails(item: PcItem): string[] {
   }
 
   if (item.item_type === "armadura" || item.item_type === "escudo") {
-    const defense = formatItemDefenseValue(item.defense_dice, item.defense_bonus);
+    const defense = formatItemDefenseValue(
+      item.defense_dice,
+      item.defense_bonus,
+    );
     const magicDefense = formatItemDefenseValue(
       item.magic_defense_dice,
       item.magic_defense_bonus,

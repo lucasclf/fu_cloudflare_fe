@@ -50,9 +50,7 @@ export function getSpellTarget(spell: JobSpell): string | number | undefined {
   return readTextOrNumber(spell.target);
 }
 
-export function getSpellDuration(
-  spell: JobSpell,
-): string | number | undefined {
+export function getSpellDuration(spell: JobSpell): string | number | undefined {
   return readTextOrNumber(spell.duration);
 }
 

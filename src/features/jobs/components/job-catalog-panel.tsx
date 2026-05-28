@@ -74,9 +74,7 @@ function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
 export function JobCatalogPanel({ jobs, onSelect }: JobCatalogPanelProps) {
   if (jobs.length === 0) {
     return (
-      <p className="job-catalog-panel__empty">
-        Nenhuma classe para exibir.
-      </p>
+      <p className="job-catalog-panel__empty">Nenhuma classe para exibir.</p>
     );
   }
 

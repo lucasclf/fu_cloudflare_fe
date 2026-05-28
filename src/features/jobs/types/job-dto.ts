@@ -37,6 +37,7 @@ export type JobQuestionDto = {
   id: number;
   question?: string | null;
   text?: string | null;
+  description?: string | null;
 };
 
 export type JobPowerDto = {
