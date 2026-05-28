@@ -21,19 +21,19 @@ describe("groupItemsByType", () => {
     const sword = createItem({
       id: 1,
       name: "Espada",
-      item_type: "arma",
+      itemType: "arma",
     });
 
     const bow = createItem({
       id: 2,
       name: "Arco",
-      item_type: "arma",
+      itemType: "arma",
     });
 
     const armor = createItem({
       id: 3,
       name: "Armadura",
-      item_type: "armadura",
+      itemType: "armadura",
     });
 
     const result = groupItemsByType([sword, bow, armor]);

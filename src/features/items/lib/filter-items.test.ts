@@ -8,17 +8,17 @@ describe("filterItems", () => {
     createItem({
       id: 1,
       name: "Lâmina Curta",
-      item_type: "arma",
+      itemType: "arma",
     }),
     createItem({
       id: 2,
       name: "Armadura Leve",
-      item_type: "armadura",
+      itemType: "armadura",
     }),
     createItem({
       id: 3,
       name: "Escudo de Madeira",
-      item_type: "escudo",
+      itemType: "escudo",
     }),
   ];
 

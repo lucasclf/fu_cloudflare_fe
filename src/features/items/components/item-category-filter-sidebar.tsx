@@ -1,5 +1,5 @@
-import { SidebarOptionButton } from "../../../shared/components/sidebar-option-button";
-import { ITEM_TYPE_LABELS, ITEM_TYPE_OPTIONS } from "../config/item-type-config";
+import { SidebarOptionButton } from "@/shared/components/sidebar-option-button";
+import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import type { ItemType } from "../types/item";
 
 import "./item-category-filter-sidebar.css";
@@ -25,7 +25,7 @@ export function ItemCategoryFilterSidebar({
         Todas
       </SidebarOptionButton>
 
-      {ITEM_TYPE_OPTIONS.map((itemType) => {
+      {ITEMS_CATALOG_CONFIG.types.options.map((itemType) => {
         const isActive = selectedType === itemType;
 
         return (
@@ -34,7 +34,7 @@ export function ItemCategoryFilterSidebar({
             isActive={isActive}
             onClick={() => onSelectType(itemType)}
           >
-            {ITEM_TYPE_LABELS[itemType]}
+            {ITEMS_CATALOG_CONFIG.types.labels[itemType]}
           </SidebarOptionButton>
         );
       })}

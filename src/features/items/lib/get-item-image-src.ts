@@ -1,6 +1,8 @@
+import { createAssetImageResolver } from "@/shared/lib/create-asset-image-resolver";
+
 const ITEM_PLACEHOLDER_SRC = new URL(
   "../../../assets/items/armas/placeholder.png",
-  import.meta.url
+  import.meta.url,
 ).href;
 
 const itemImageModules = import.meta.glob(
@@ -8,18 +10,11 @@ const itemImageModules = import.meta.glob(
   {
     eager: true,
     import: "default",
-  }
+  },
 ) as Record<string, string>;
 
-function normalizeAssetPath(urlKey: string): string {
-  return `../../../assets/${urlKey}.png`;
-}
-
-export function getItemImageSrc(urlKey: string | null): string {
-  if (!urlKey) {
-    return ITEM_PLACEHOLDER_SRC;
-  }
-
-  const normalizedPath = normalizeAssetPath(urlKey);
-  return itemImageModules[normalizedPath] ?? ITEM_PLACEHOLDER_SRC;
-}
+export const getItemImageSrc = createAssetImageResolver({
+  assetModules: itemImageModules,
+  assetsRoot: "../../../assets",
+  placeholderSrc: ITEM_PLACEHOLDER_SRC,
+});

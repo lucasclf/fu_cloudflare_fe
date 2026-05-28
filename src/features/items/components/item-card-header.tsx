@@ -15,7 +15,7 @@ export function ItemCardHeader({ item }: ItemCardHeaderProps) {
         <h2 className="item-card__title">
           {item.name}
 
-          {item.is_martial ? (
+          {item.isMartial ? (
             <span className="item-card__martial-icon" title="Item marcial">
               {" "}
               ⛧
@@ -28,7 +28,7 @@ export function ItemCardHeader({ item }: ItemCardHeaderProps) {
         ) : null}
       </div>
 
-      <ItemCardImage imageKey={item.img_key} alt={item.name} />
+      <ItemCardImage imageKey={item.imageKey} alt={item.name} />
     </div>
   );
 }

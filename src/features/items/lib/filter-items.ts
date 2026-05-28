@@ -14,8 +14,7 @@ export function filterItems({
   const normalizedSearch = normalizeSearchText(search);
 
   return items.filter((item) => {
-    const matchesType =
-      selectedType === null || item.item_type === selectedType;
+    const matchesType = selectedType === null || item.itemType === selectedType;
 
     const matchesSearch =
       normalizedSearch.length === 0 ||

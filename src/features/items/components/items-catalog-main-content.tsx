@@ -1,6 +1,6 @@
-import { EmptyState } from "../../../shared/components/empty-state";
-import { ErrorState } from "../../../shared/components/error-state";
-import { LoadingState } from "../../../shared/components/loading-state";
+import { EmptyState } from "@/shared/components/empty-state";
+import { ErrorState } from "@/shared/components/error-state";
+import { LoadingState } from "@/shared/components/loading-state";
 import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
 import type { Item, ItemType } from "../types/item";
 import { ItemCardsPanel } from "./item-cards-panel";

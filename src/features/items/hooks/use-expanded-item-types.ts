@@ -1,6 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import type { ItemType } from "../types/item";
+
+type ExpandedItemTypesState = {
+  selectedType: ItemType | null;
+  expandedTypes: ItemType[];
+};
 
 type UseExpandedItemTypesResult = {
   isItemTypeExpanded: (itemType: ItemType) => boolean;
@@ -10,18 +15,16 @@ type UseExpandedItemTypesResult = {
 export function useExpandedItemTypes(
   selectedType: ItemType | null,
 ): UseExpandedItemTypesResult {
-  const [expandedTypes, setExpandedTypes] = useState<ItemType[]>([]);
+  const [expandedState, setExpandedState] = useState<ExpandedItemTypesState>(
+    () => ({
+      selectedType,
+      expandedTypes: selectedType === null ? [] : [selectedType],
+    }),
+  );
 
-  useEffect(() => {
-    if (selectedType === null) {
-      setExpandedTypes([]);
-      return;
-    }
-
-    setExpandedTypes((current) =>
-      current.includes(selectedType) ? current : [selectedType],
-    );
-  }, [selectedType]);
+  const expandedTypes = useMemo(() => {
+    return getExpandedTypesForSelectedType(expandedState, selectedType);
+  }, [expandedState, selectedType]);
 
   const isItemTypeExpanded = useCallback(
     (itemType: ItemType) => {
@@ -30,18 +33,44 @@ export function useExpandedItemTypes(
     [expandedTypes],
   );
 
-  const toggleItemType = useCallback((itemType: ItemType) => {
-    setExpandedTypes((current) => {
-      if (current.includes(itemType)) {
-        return current.filter((value) => value !== itemType);
-      }
+  const toggleItemType = useCallback(
+    (itemType: ItemType) => {
+      setExpandedState((current) => {
+        const currentExpandedTypes = getExpandedTypesForSelectedType(
+          current,
+          selectedType,
+        );
 
-      return [...current, itemType];
-    });
-  }, []);
+        const nextExpandedTypes = currentExpandedTypes.includes(itemType)
+          ? currentExpandedTypes.filter((value) => value !== itemType)
+          : [...currentExpandedTypes, itemType];
+
+        return {
+          selectedType,
+          expandedTypes: nextExpandedTypes,
+        };
+      });
+    },
+    [selectedType],
+  );
 
   return {
     isItemTypeExpanded,
     toggleItemType,
   };
+}
+
+function getExpandedTypesForSelectedType(
+  state: ExpandedItemTypesState,
+  selectedType: ItemType | null,
+): ItemType[] {
+  if (state.selectedType === selectedType) {
+    return state.expandedTypes;
+  }
+
+  if (selectedType === null) {
+    return [];
+  }
+
+  return [selectedType];
 }

@@ -1,10 +1,10 @@
-import { Button } from "../../../shared/components/button";
-import { CategorySwitcher } from "../../catalog/components/category-switcher";
-import { CatalogLayout } from "../../catalog/components/catalog-layout";
-import type { CatalogCategory } from "../../catalog/types/category";
+import { Button } from "@/shared/components/button";
+import { CategorySwitcher } from "@/features/catalog/components/category-switcher";
+import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import type { CatalogCategory } from "@/features/catalog/types/category";
 import { ItemsCatalogMainContent } from "../components/items-catalog-main-content";
 import { ItemsCatalogSidebarContent } from "../components/items-catalog-sidebar-content";
-import { ITEMS_CATALOG_COPY } from "../config/items-catalog-copy";
+import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import { useItemsCatalogFilters } from "../hooks/use-items-catalog-filters";
 import { usePublicItems } from "../hooks/use-public-items";
 
@@ -33,9 +33,9 @@ export function ItemsCatalogView({
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle={ITEMS_CATALOG_COPY.sidebar.headerTitle}
-      sidebarHeaderSubtitle={ITEMS_CATALOG_COPY.sidebar.headerSubtitle}
-      searchPlaceholder={ITEMS_CATALOG_COPY.search.placeholder}
+      sidebarHeaderTitle={ITEMS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
+      sidebarHeaderSubtitle={ITEMS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      searchPlaceholder={ITEMS_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={setSearch}
       categorySwitcher={
@@ -44,7 +44,7 @@ export function ItemsCatalogView({
       searchExtraContent={
         hasActiveFilters ? (
           <Button variant="ghost" fullWidth onClick={clearFilters}>
-            {ITEMS_CATALOG_COPY.filters.clearButtonLabel}
+            {ITEMS_CATALOG_CONFIG.copy.filters.clearButtonLabel}
           </Button>
         ) : null
       }

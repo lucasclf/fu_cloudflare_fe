@@ -1,4 +1,4 @@
-import { ITEM_TYPE_OPTIONS } from "../config/item-type-config";
+import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import type { ItemsGroupedByType } from "./group-items-by-type";
 import type { ItemType } from "../types/item";
 
@@ -15,7 +15,7 @@ export function getVisibleItemTypes({
     return groupedItems[selectedType].length > 0 ? [selectedType] : [];
   }
 
-  return ITEM_TYPE_OPTIONS.filter(
+  return ITEMS_CATALOG_CONFIG.types.options.filter(
     (itemType) => groupedItems[itemType].length > 0,
   );
-}
+}  
