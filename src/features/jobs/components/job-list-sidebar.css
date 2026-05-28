@@ -1,0 +1,66 @@
+.job-list-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+}
+
+.job-list-sidebar__actions {
+  padding: 0 var(--space-3) var(--space-2);
+}
+
+.job-list-sidebar__empty {
+  margin: 0;
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.job-list-sidebar__items {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-list-sidebar__item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px var(--space-4);
+  border: 0;
+  border-left: 2px solid transparent;
+  color: var(--color-text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.job-list-sidebar__item:hover {
+  background: var(--color-surface-muted);
+}
+
+.job-list-sidebar__item:focus-visible {
+  outline: 2px solid var(--color-accent-strong);
+  outline-offset: -2px;
+}
+
+.job-list-sidebar__item--active {
+  border-left-color: var(--color-accent);
+  background: var(--color-surface);
+}
+
+.job-list-sidebar__item-title {
+  color: var(--color-accent-strong);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.job-list-sidebar__item-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}

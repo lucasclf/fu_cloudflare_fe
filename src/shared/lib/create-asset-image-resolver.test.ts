@@ -128,4 +128,32 @@ describe("createAssetImageResolver", () => {
 
     expect(resolveImage("items/armas/espada")).toBe(placeholderSrc);
   });
+
+  it("permite placeholder null", () => {
+    const resolveImage = createAssetImageResolver({
+      assetModules: {},
+      assetsRoot: "../../../assets",
+      placeholderSrc: null,
+    });
+
+    expect(resolveImage("items/armas/inexistente")).toBeNull();
+  });
+
+  it("usa candidateAssetKeys para tentar caminhos alternativos", () => {
+    const resolveImage = createAssetImageResolver({
+      assetModules: {
+        "../../../assets/jobs/icons/arcanista.png": "arcanista-src",
+      },
+      assetsRoot: "../../../assets",
+      placeholderSrc: null,
+      extensions: ["png"],
+      candidateAssetKeys: (assetKey) => [
+        assetKey,
+        `jobs/${assetKey}`,
+        `jobs/icons/${assetKey}`,
+      ],
+    });
+
+    expect(resolveImage("arcanista")).toBe("arcanista-src");
+  });
 });

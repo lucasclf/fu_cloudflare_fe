@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createJobCatalogItem } from "../testing/job-test-factory";
-import { filterJobs } from "../lib/filter-jobs";
+import { filterJobs } from "./filter-jobs";
 
 describe("filterJobs", () => {
   const jobs = [
@@ -9,23 +9,23 @@ describe("filterJobs", () => {
       id: 1,
       name: "Arcanista",
       tagline: "Mestre das arcanas",
-      allows_arcane: true,
-      mp_bonus: 5,
+      allowsArcane: true,
+      mpBonus: 5,
     }),
     createJobCatalogItem({
       id: 2,
       name: "Guardião",
       tagline: "Defensor resistente",
-      allows_martial_armor: "1",
-      allows_martial_shield: 1,
-      hp_bonus: "5",
+      allowsMartialArmor: "1",
+      allowsMartialShield: 1,
+      hpBonus: "5",
     }),
     createJobCatalogItem({
       id: 3,
       name: "Inventor",
       tagline: "Especialista em projetos",
-      can_start_projects: true,
-      ip_bonus: 3,
+      canStartProjects: true,
+      ipBonus: 3,
     }),
   ];
 
@@ -73,7 +73,7 @@ describe("filterJobs", () => {
     const result = filterJobs({
       jobs,
       search: "",
-      selectedFeatureKeys: ["allows_arcane"],
+      selectedFeatureKeys: ["allowsArcane"],
     });
 
     expect(result).toEqual([jobs[0]]);
@@ -83,7 +83,7 @@ describe("filterJobs", () => {
     const result = filterJobs({
       jobs,
       search: "",
-      selectedFeatureKeys: ["hp_bonus"],
+      selectedFeatureKeys: ["hpBonus"],
     });
 
     expect(result).toEqual([jobs[1]]);
@@ -93,7 +93,7 @@ describe("filterJobs", () => {
     const result = filterJobs({
       jobs,
       search: "",
-      selectedFeatureKeys: ["allows_martial_armor", "allows_martial_shield"],
+      selectedFeatureKeys: ["allowsMartialArmor", "allowsMartialShield"],
     });
 
     expect(result).toEqual([jobs[1]]);
@@ -103,7 +103,7 @@ describe("filterJobs", () => {
     const result = filterJobs({
       jobs,
       search: "defensor",
-      selectedFeatureKeys: ["hp_bonus"],
+      selectedFeatureKeys: ["hpBonus"],
     });
 
     expect(result).toEqual([jobs[1]]);
@@ -113,7 +113,7 @@ describe("filterJobs", () => {
     const result = filterJobs({
       jobs,
       search: "arcanista",
-      selectedFeatureKeys: ["can_start_projects"],
+      selectedFeatureKeys: ["canStartProjects"],
     });
 
     expect(result).toEqual([]);

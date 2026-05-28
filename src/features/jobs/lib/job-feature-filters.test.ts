@@ -6,7 +6,7 @@ import {
   isJobAllowanceEnabled,
   isJobBonusKey,
   jobMatchesFeatureFilter,
-} from "../lib/job-feature-filters";
+} from "./job-feature-filters";
 
 describe("job-feature-filters", () => {
   describe("isJobAllowanceEnabled", () => {
@@ -45,14 +45,14 @@ describe("job-feature-filters", () => {
 
   describe("isJobBonusKey", () => {
     it("identifica chaves de bônus", () => {
-      expect(isJobBonusKey("hp_bonus")).toBe(true);
-      expect(isJobBonusKey("mp_bonus")).toBe(true);
-      expect(isJobBonusKey("ip_bonus")).toBe(true);
+      expect(isJobBonusKey("hpBonus")).toBe(true);
+      expect(isJobBonusKey("mpBonus")).toBe(true);
+      expect(isJobBonusKey("ipBonus")).toBe(true);
     });
 
     it("não identifica permissões como bônus", () => {
-      expect(isJobBonusKey("allows_arcane")).toBe(false);
-      expect(isJobBonusKey("can_start_projects")).toBe(false);
+      expect(isJobBonusKey("allowsArcane")).toBe(false);
+      expect(isJobBonusKey("canStartProjects")).toBe(false);
     });
   });
 
@@ -61,40 +61,40 @@ describe("job-feature-filters", () => {
       const job = createJobCatalogItem({
         id: 1,
         name: "Arcanista",
-        allows_arcane: "1",
+        allowsArcane: "1",
       });
 
-      expect(jobMatchesFeatureFilter(job, "allows_arcane")).toBe(true);
+      expect(jobMatchesFeatureFilter(job, "allowsArcane")).toBe(true);
     });
 
     it("valida filtro de permissão desabilitada", () => {
       const job = createJobCatalogItem({
         id: 1,
         name: "Arcanista",
-        allows_arcane: "0",
+        allowsArcane: "0",
       });
 
-      expect(jobMatchesFeatureFilter(job, "allows_arcane")).toBe(false);
+      expect(jobMatchesFeatureFilter(job, "allowsArcane")).toBe(false);
     });
 
     it("valida filtro de bônus positivo", () => {
       const job = createJobCatalogItem({
         id: 1,
         name: "Guardião",
-        hp_bonus: "5",
+        hpBonus: "5",
       });
 
-      expect(jobMatchesFeatureFilter(job, "hp_bonus")).toBe(true);
+      expect(jobMatchesFeatureFilter(job, "hpBonus")).toBe(true);
     });
 
     it("valida filtro de bônus ausente", () => {
       const job = createJobCatalogItem({
         id: 1,
         name: "Guardião",
-        hp_bonus: 0,
+        hpBonus: 0,
       });
 
-      expect(jobMatchesFeatureFilter(job, "hp_bonus")).toBe(false);
+      expect(jobMatchesFeatureFilter(job, "hpBonus")).toBe(false);
     });
   });
 });

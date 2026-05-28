@@ -1,14 +1,17 @@
-import type { CSSProperties } from "react";
 import {
   ALLOWANCE_DEFINITIONS,
   BONUS_DEFINITIONS,
+} from "./job-feature-definitions";
+import {
   getPositiveJobBonus,
   isJobAllowanceEnabled,
-} from "./job-allowance-icons";
+} from "../lib/job-feature-filters";
 import { getJobImageSrc } from "../lib/get-job-image-src";
 import type { JobCatalogItem } from "../types/job";
 
-type Props = {
+import "./job-catalog-panel.css";
+
+type JobCatalogPanelProps = {
   jobs: JobCatalogItem[];
   onSelect: (jobId: number) => void;
 };
@@ -23,31 +26,28 @@ function getInitials(name: string): string {
 }
 
 function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
-
   return (
-    <div style={styles.allowanceBar} aria-label="Características da classe">
-      {ALLOWANCE_DEFINITIONS.map(({ key, label, icon }) => {
+    <div
+      className="job-catalog-panel__allowance-bar"
+      aria-label="Características da classe"
+    >
+      {ALLOWANCE_DEFINITIONS.map(({ key, label, Icon }) => {
         const enabled = isJobAllowanceEnabled(job[key]);
         const status = enabled ? "permitido" : "não permitido";
 
         return (
           <span
             key={key}
+            className={getAllowanceChipClassName(enabled)}
             title={`${label}: ${status}`}
             aria-label={`${label}: ${status}`}
-            style={{
-              ...styles.allowanceChip,
-              ...(enabled
-                ? styles.allowanceChipEnabled
-                : styles.allowanceChipDisabled),
-            }}
           >
-            {icon}
+            <Icon />
           </span>
         );
       })}
 
-      {BONUS_DEFINITIONS.map(({ key, label, shortLabel, icon }) => {
+      {BONUS_DEFINITIONS.map(({ key, label, shortLabel, Icon }) => {
         const value = getPositiveJobBonus(job[key]);
         const enabled = value > 0;
         const status = enabled ? `+${value} ${shortLabel}` : "sem bônus";
@@ -55,19 +55,14 @@ function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
         return (
           <span
             key={key}
+            className={getBonusChipClassName(enabled)}
             title={`${label}: ${status}`}
             aria-label={`${label}: ${status}`}
-            style={{
-              ...styles.allowanceChip,
-              ...(enabled
-                ? styles.allowanceChipEnabled
-                : styles.allowanceChipDisabled),
-            }}
           >
-            {icon}
+            <Icon />
 
             {enabled ? (
-              <span style={styles.bonusValue}></span>
+              <span className="job-catalog-panel__bonus-value">+{value}</span>
             ) : null}
           </span>
         );
@@ -76,31 +71,48 @@ function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
   );
 }
 
-export function JobCatalogPanel({ jobs, onSelect }: Props) {
+export function JobCatalogPanel({ jobs, onSelect }: JobCatalogPanelProps) {
   if (jobs.length === 0) {
-    return <div style={styles.empty}>Nenhuma classe para exibir.</div>;
+    return (
+      <p className="job-catalog-panel__empty">
+        Nenhuma classe para exibir.
+      </p>
+    );
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className="job-catalog-panel">
       {jobs.map((job) => {
-        const imageSrc = getJobImageSrc(job.img_key);
+        const imageSrc = getJobImageSrc(job.imageKey);
 
         return (
           <button
             key={job.id}
+            type="button"
+            className="job-catalog-panel__card"
+            aria-label={`Ver detalhes da classe ${job.name}`}
             onClick={() => onSelect(job.id)}
-            style={styles.card}
           >
-            <div style={styles.imageWrapper}>
+            <div className="job-catalog-panel__image-wrapper">
               {imageSrc ? (
-                <img src={imageSrc} alt={job.name} style={styles.image} />
+                <img
+                  src={imageSrc}
+                  alt=""
+                  className="job-catalog-panel__image"
+                  aria-hidden
+                />
               ) : (
-                <span style={styles.initials}>{getInitials(job.name)}</span>
+                <span className="job-catalog-panel__initials">
+                  {getInitials(job.name)}
+                </span>
               )}
             </div>
 
-            <h2 style={styles.title}>{job.name}</h2>
+            <h2 className="job-catalog-panel__title">{job.name}</h2>
+
+            {job.tagline ? (
+              <p className="job-catalog-panel__tagline">{job.tagline}</p>
+            ) : null}
 
             <JobAllowanceIcons job={job} />
           </button>
@@ -110,106 +122,25 @@ export function JobCatalogPanel({ jobs, onSelect }: Props) {
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
-    gap: "14px",
-  },
-  card: {
-    width: "100%",
-    minHeight: "190px",
-    background: "#161210",
-    border: "1px solid #3a2e22",
-    borderRadius: "10px",
-    padding: "16px 14px 14px",
-    color: "#d4c9b0",
-    textAlign: "center",
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "12px",
-  },
-  imageWrapper: {
-    width: "86px",
-    height: "86px",
-    flexShrink: 0,
-    border: "1px solid #3a2e22",
-    borderRadius: "10px",
-    background: "#1e1a16",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-    padding: "8px",
-  },
-  image: {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    objectFit: "contain",
-    display: "block",
-  },
-  initials: {
-    color: "#c9963a",
-    fontWeight: 700,
-    fontSize: "22px",
-  },
-  title: {
-    minHeight: "38px",
-    margin: 0,
-    color: "#e8c875",
-    fontSize: "17px",
-    lineHeight: 1.15,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  allowanceBar: {
-    width: "100%",
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "6px",
-    marginTop: "auto",
-    paddingTop: "4px",
-  },
-  allowanceChip: {
-    width: "24px",
-    height: "24px",
-    border: "1px solid #34291f",
-    borderRadius: "999px",
-    background: "#110e0c",
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "color 120ms ease, border-color 120ms ease, opacity 120ms ease",
-  },
-  allowanceChipEnabled: {
-    color: "#f5efe2",
-    borderColor: "#7b694b",
-    opacity: 1,
-  },
-  allowanceChipDisabled: {
-    color: "#4e463c",
-    borderColor: "#2a231d",
-    opacity: 0.72,
-  },
-  empty: {
-    color: "#7a6e5a",
-    fontStyle: "italic",
-  },
-  bonusChip: {
-    width: "auto",
-    minWidth: "34px",
-    padding: "0 6px",
-    gap: "3px",
-  },
+function getAllowanceChipClassName(enabled: boolean): string {
+  return [
+    "job-catalog-panel__allowance-chip",
+    enabled
+      ? "job-catalog-panel__allowance-chip--enabled"
+      : "job-catalog-panel__allowance-chip--disabled",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
 
-  bonusValue: {
-    fontSize: "10px",
-    fontWeight: 700,
-    lineHeight: 1,
-  },
-};
+function getBonusChipClassName(enabled: boolean): string {
+  return [
+    "job-catalog-panel__allowance-chip",
+    "job-catalog-panel__bonus-chip",
+    enabled
+      ? "job-catalog-panel__allowance-chip--enabled"
+      : "job-catalog-panel__allowance-chip--disabled",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}

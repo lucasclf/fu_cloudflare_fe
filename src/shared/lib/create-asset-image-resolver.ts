@@ -4,37 +4,47 @@ type ImageExtension = (typeof DEFAULT_IMAGE_EXTENSIONS)[number];
 
 type AssetImageModules = Record<string, string>;
 
-type CreateAssetImageResolverParams = {
+type CreateAssetImageResolverParams<TFallback extends string | null> = {
   assetModules: AssetImageModules;
   assetsRoot: string;
-  placeholderSrc: string;
+  placeholderSrc: TFallback;
   extensions?: readonly ImageExtension[];
+  candidateAssetKeys?: (assetKey: string) => readonly string[];
 };
 
-export function createAssetImageResolver({
+export function createAssetImageResolver<TFallback extends string | null>({
   assetModules,
   assetsRoot,
   placeholderSrc,
   extensions = DEFAULT_IMAGE_EXTENSIONS,
-}: CreateAssetImageResolverParams) {
+  candidateAssetKeys,
+}: CreateAssetImageResolverParams<TFallback>) {
   const normalizedAssetsRoot = normalizeAssetsRoot(assetsRoot);
 
-  return function resolveAssetImage(assetKey: string | null | undefined): string {
+  return function resolveAssetImage(
+    assetKey: string | null | undefined,
+  ): string | TFallback {
     if (!assetKey || assetKey.trim().length === 0) {
       return placeholderSrc;
     }
 
-    const candidatePaths = createAssetCandidatePaths({
-      assetKey,
-      assetsRoot: normalizedAssetsRoot,
-      extensions,
-    });
+    const resolvedCandidateKeys = candidateAssetKeys
+      ? candidateAssetKeys(assetKey)
+      : [assetKey];
 
-    for (const candidatePath of candidatePaths) {
-      const assetSrc = assetModules[candidatePath];
+    for (const candidateKey of resolvedCandidateKeys) {
+      const candidatePaths = createAssetCandidatePaths({
+        assetKey: candidateKey,
+        assetsRoot: normalizedAssetsRoot,
+        extensions,
+      });
 
-      if (assetSrc) {
-        return assetSrc;
+      for (const candidatePath of candidatePaths) {
+        const assetSrc = assetModules[candidatePath];
+
+        if (assetSrc) {
+          return assetSrc;
+        }
       }
     }
 
