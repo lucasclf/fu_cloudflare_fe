@@ -4,7 +4,6 @@ import {
   extractSessionNumberFromSearch,
   filterSessions,
 } from "../lib/filter-sessions";
-import { getSessionNumberLabel } from "../lib/session-formatters";
 import type { Session } from "../types/session";
 
 type UseSessionsCatalogStateParams = {
@@ -62,7 +61,7 @@ export function useSessionsCatalogState({
     return selectedSession ? [selectedSession] : filteredSessions;
   }, [filteredSessions, selectedSession]);
 
-  const hasActiveFilters = search.trim().length > 0 || selectedSession !== null;
+  const hasActiveFilters = search.trim().length > 0;
 
   const setSearch = useCallback((value: string) => {
     setRawSearch(value);
@@ -77,7 +76,6 @@ export function useSessionsCatalogState({
         return;
       }
 
-      setRawSearch(getSessionNumberLabel(session));
       setSelectedSessionId(session.id);
     },
     [sessions],

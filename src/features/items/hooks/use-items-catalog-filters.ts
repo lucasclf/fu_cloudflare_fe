@@ -11,6 +11,8 @@ type UseItemsCatalogFiltersResult = {
   search: string;
   selectedType: ItemType | null;
   filteredItems: Item[];
+  typeCounts: Partial<Record<ItemType, number>>;
+  totalCount: number;
   hasActiveFilters: boolean;
   setSearch: (search: string) => void;
   setSelectedType: (itemType: ItemType | null) => void;
@@ -31,9 +33,17 @@ export function useItemsCatalogFilters({
     });
   }, [items, search, selectedType]);
 
+  const typeCounts = useMemo(() => {
+    const counts: Partial<Record<ItemType, number>> = {};
+    for (const item of items) {
+      counts[item.itemType] = (counts[item.itemType] ?? 0) + 1;
+    }
+    return counts;
+  }, [items]);
+
   const hasActiveFilters = useMemo(() => {
-    return search.trim().length > 0 || selectedType !== null;
-  }, [search, selectedType]);
+    return search.trim().length > 0;
+  }, [search]);
 
   const clearFilters = useCallback(() => {
     setSearch("");
@@ -44,6 +54,8 @@ export function useItemsCatalogFilters({
     search,
     selectedType,
     filteredItems,
+    typeCounts,
+    totalCount: items.length,
     hasActiveFilters,
     setSearch,
     setSelectedType,
