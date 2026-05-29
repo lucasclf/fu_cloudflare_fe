@@ -12,9 +12,7 @@ export function CatalogEmptyMessage({
   className,
 }: CatalogEmptyMessageProps) {
   return (
-    <p className={getCatalogEmptyMessageClassName(className)}>
-      {children}
-    </p>
+    <p className={getCatalogEmptyMessageClassName(className)}>{children}</p>
   );
 }
 

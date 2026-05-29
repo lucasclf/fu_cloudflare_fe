@@ -91,7 +91,7 @@ describe("useSessionsCatalogState", () => {
     expect(result.current.sessionsToRender).toEqual([sessions[1]]);
   });
 
-  it("seleciona sessão manualmente pela sidebar", () => {
+  it("seleciona sessão manualmente pela sidebar sem preencher o input de busca", () => {
     const { result } = renderHook(() =>
       useSessionsCatalogState({
         sessions,
@@ -102,7 +102,7 @@ describe("useSessionsCatalogState", () => {
       result.current.selectSession(2);
     });
 
-    expect(result.current.search).toBe("Sessão 2");
+    expect(result.current.search).toBe("");
     expect(result.current.selectedSessionId).toBe(2);
     expect(result.current.selectedSession).toEqual(sessions[1]);
     expect(result.current.sessionsToRender).toEqual([sessions[1]]);
@@ -136,7 +136,7 @@ describe("useSessionsCatalogState", () => {
       result.current.selectSession(2);
     });
 
-    expect(result.current.hasActiveFilters).toBe(true);
+    expect(result.current.hasActiveFilters).toBe(false);
 
     act(() => {
       result.current.clearSelection();

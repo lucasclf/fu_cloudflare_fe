@@ -54,6 +54,11 @@ export function JobsCatalogView({
     clearFilters();
   }
 
+  function handleSelectJob(jobId: number) {
+    selectJob(jobId);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <CatalogLayout
       sidebarHeaderTitle={JOBS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
@@ -82,7 +87,7 @@ export function JobsCatalogView({
           error={catalogError}
           jobs={filteredJobs}
           selectedJobId={selectedJobId}
-          onSelectJob={selectJob}
+          onSelectJob={handleSelectJob}
           onClearSelection={handleClearSelection}
         />
       }

@@ -7,6 +7,8 @@ type ItemsCatalogSidebarContentProps = {
   loading: boolean;
   error: string | null;
   selectedType: ItemType | null;
+  typeCounts: Partial<Record<ItemType, number>>;
+  totalCount: number;
   onSelectType: (itemType: ItemType | null) => void;
 };
 
@@ -14,6 +16,8 @@ export function ItemsCatalogSidebarContent({
   loading,
   error,
   selectedType,
+  typeCounts,
+  totalCount,
   onSelectType,
 }: ItemsCatalogSidebarContentProps) {
   return (
@@ -24,6 +28,8 @@ export function ItemsCatalogSidebarContent({
     >
       <ItemCategoryFilterSidebar
         selectedType={selectedType}
+        typeCounts={typeCounts}
+        totalCount={totalCount}
         onSelectType={onSelectType}
       />
     </CatalogStateBoundary>

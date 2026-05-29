@@ -94,7 +94,7 @@ export function isMonsterActionOffensive(action: MonsterAction): boolean {
   );
 }
 
-export function getMonsterTypeCounts(monsters: MonsterSummary[]) {
+export function getMonsterTypeCounts(monsters: readonly MonsterSummary[]) {
   const counts = new Map<string, number>();
 
   for (const monster of monsters) {

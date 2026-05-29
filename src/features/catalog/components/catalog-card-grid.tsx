@@ -9,9 +9,7 @@ type CatalogCardGridProps = {
 
 export function CatalogCardGrid({ children, className }: CatalogCardGridProps) {
   return (
-    <div className={getCatalogCardGridClassName(className)}>
-      {children}
-    </div>
+    <div className={getCatalogCardGridClassName(className)}>{children}</div>
   );
 }
 

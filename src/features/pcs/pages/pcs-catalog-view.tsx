@@ -1,14 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { CategorySwitcher } from "../../catalog/components/category-switcher";
 import { CatalogLayout } from "../../catalog/components/catalog-layout";
 import type { CatalogCategory } from "../../catalog/types/category";
-import { getPublicPcById } from "../api/get-public-pc-by-id";
-import { getPublicPcSummary } from "../api/get-public-pc-summary";
+import { ErrorState } from "../../../shared/components/error-state";
+import { LoadingState } from "../../../shared/components/loading-state";
+import { PCS_CATALOG_CONFIG } from "../config/pcs-catalog-config";
+import { usePublicPcSummary } from "../hooks/use-public-pc-summary";
+import { usePublicPcDetail } from "../hooks/use-public-pc-detail";
 import { PcCardsPanel } from "../components/pc-cards-panel";
 import { PcDetailPanel } from "../components/pc-detail-panel";
-import { PcSidebar } from "../components/pc-sidebar";
+import { PcListSidebar } from "../components/pc-list-sidebar";
 import { normalizePcText } from "../lib/pc-formatters";
-import type { PcDetail, PcSummary } from "../types/pc";
 
 type PcsCatalogViewProps = {
   category: CatalogCategory;
@@ -19,78 +21,44 @@ export function PcsCatalogView({
   category,
   onCategoryChange,
 }: PcsCatalogViewProps) {
-  const [pcs, setPcs] = useState<PcSummary[]>([]);
+  const { data: pcs, loading, error } = usePublicPcSummary();
   const [search, setSearch] = useState("");
   const [selectedPcId, setSelectedPcId] = useState<number | null>(null);
-  const [selectedPc, setSelectedPc] = useState<PcDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [detailError, setDetailError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadPcs() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await getPublicPcSummary();
-        setPcs(data);
-      } catch {
-        setError("Não foi possível carregar os personagens.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadPcs();
-  }, []);
+  const {
+    data: selectedPc,
+    loading: detailLoading,
+    error: detailError,
+  } = usePublicPcDetail(selectedPcId);
 
   const filteredPcs = useMemo(() => {
     const query = normalizePcText(search);
 
-    return pcs.filter((pc) => {
-      if (!query) {
-        return true;
-      }
+    return (pcs ?? []).filter((pc) => {
+      if (!query) return true;
 
       return normalizePcText(`${pc.name} ${pc.tagline ?? ""}`).includes(query);
     });
   }, [pcs, search]);
 
-  async function handleSelectPc(pcId: number) {
-    try {
-      setSelectedPcId(pcId);
-      setDetailLoading(true);
-      setDetailError(null);
-      setSearch("");
-
-      const pc = await getPublicPcById(pcId);
-      setSelectedPc(pc);
-    } catch {
-      setDetailError("Não foi possível carregar os detalhes do personagem.");
-      setSelectedPc(null);
-    } finally {
-      setDetailLoading(false);
-    }
+  function handleSelectPc(pcId: number) {
+    setSelectedPcId(pcId);
+    setSearch("");
   }
 
   function handleBackToList() {
     setSelectedPcId(null);
-    setSelectedPc(null);
-    setDetailError(null);
   }
 
   function handleSearchChange(value: string) {
     setSearch(value);
-    handleBackToList();
+    setSelectedPcId(null);
   }
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle="Personagens"
-      sidebarHeaderSubtitle="Personagens dos jogadores"
-      searchPlaceholder="Buscar personagem..."
+      sidebarHeaderTitle={PCS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
+      sidebarHeaderSubtitle={PCS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      searchPlaceholder={PCS_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={handleSearchChange}
       categorySwitcher={
@@ -98,26 +66,29 @@ export function PcsCatalogView({
       }
       sidebarContent={
         loading ? (
-          <div style={{ padding: "16px" }}>Carregando...</div>
+          <LoadingState />
         ) : error ? (
-          <div style={{ padding: "16px" }}>{error}</div>
+          <ErrorState message={error} />
         ) : (
-          <PcSidebar
+          <PcListSidebar
             pcs={filteredPcs}
             selectedPcId={selectedPcId}
             onSelectPc={handleSelectPc}
+            onClearSelection={handleBackToList}
           />
         )
       }
       mainContent={
         loading ? (
-          <div>Carregando personagens...</div>
+          <LoadingState message={PCS_CATALOG_CONFIG.copy.main.loadingMessage} />
         ) : error ? (
-          <div>{error}</div>
+          <ErrorState message={error} />
         ) : detailLoading ? (
-          <div>Carregando personagem...</div>
+          <LoadingState
+            message={PCS_CATALOG_CONFIG.copy.detail.loadingMessage}
+          />
         ) : detailError ? (
-          <div>{detailError}</div>
+          <ErrorState message={detailError} />
         ) : selectedPc ? (
           <PcDetailPanel pc={selectedPc} onBackToList={handleBackToList} />
         ) : (

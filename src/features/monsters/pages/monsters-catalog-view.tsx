@@ -1,19 +1,18 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { CategorySwitcher } from "../../catalog/components/category-switcher";
 import { CatalogLayout } from "../../catalog/components/catalog-layout";
 import type { CatalogCategory } from "../../catalog/types/category";
-import { getPublicMonsterById } from "../api/get-public-monster-by-id";
-import { getPublicMonsterSummary } from "../api/get-public-monster-summary";
+import { ErrorState } from "../../../shared/components/error-state";
+import { LoadingState } from "../../../shared/components/loading-state";
+import { MONSTERS_CATALOG_CONFIG } from "../config/monsters-catalog-config";
+import { usePublicMonsterSummary } from "../hooks/use-public-monster-summary";
+import { usePublicMonsterDetail } from "../hooks/use-public-monster-detail";
+import { useMonstersCatalogFilters } from "../hooks/use-monsters-catalog-filters";
 import { MonsterCardsPanel } from "../components/monster-cards-panel";
 import { MonsterDetailPanel } from "../components/monster-detail-panel";
 import { MonsterLevelFilter } from "../components/monster-level-filter";
 import { MonsterTypeFilter } from "../components/monster-type-filter";
-import {
-  getMonsterTypeCounts,
-  isMonsterVillain,
-  normalizeMonsterText,
-} from "../lib/monster-formatters";
-import type { MonsterDetail, MonsterSummary } from "../types/monster";
+import pageStyles from "./monsters-catalog-view.module.css";
 
 type MonstersCatalogViewProps = {
   category: CatalogCategory;
@@ -24,204 +23,124 @@ export function MonstersCatalogView({
   category,
   onCategoryChange,
 }: MonstersCatalogViewProps) {
-  const [monsters, setMonsters] = useState<MonsterSummary[]>([]);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
-  const [minLevel, setMinLevel] = useState("");
-  const [maxLevel, setMaxLevel] = useState("");
-  const [search, setSearch] = useState("");
-  const [villainOnly, setVillainOnly] = useState(false);
+  const { data: monsters, loading, error } = usePublicMonsterSummary();
+  const monstersList = useMemo(() => monsters ?? [], [monsters]);
+
   const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(
     null,
   );
-  const [selectedMonster, setSelectedMonster] = useState<MonsterDetail | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [detailError, setDetailError] = useState<string | null>(null);
+  const {
+    data: selectedMonster,
+    loading: detailLoading,
+    error: detailError,
+  } = usePublicMonsterDetail(selectedMonsterId);
 
-  useEffect(() => {
-    async function loadMonsters() {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const data = await getPublicMonsterSummary();
-        setMonsters(data);
-      } catch {
-        setError("Não foi possível carregar o bestiário.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void loadMonsters();
+  const handleBackToList = useCallback(() => {
+    setSelectedMonsterId(null);
   }, []);
 
-  const typeCounts = useMemo(() => {
-    return getMonsterTypeCounts(monsters);
-  }, [monsters]);
+  const {
+    search,
+    selectedType,
+    minLevel,
+    maxLevel,
+    villainOnly,
+    filteredMonsters,
+    typeCounts,
+    setSearch,
+    selectType,
+    setMinLevel,
+    setMaxLevel,
+    toggleVillainOnly,
+    resetFilters,
+  } = useMonstersCatalogFilters({
+    monsters: monstersList,
+    onFilterChange: handleBackToList,
+  });
 
-  const filteredMonsters = useMemo(() => {
-    const query = normalizeMonsterText(search);
-
-    const min = minLevel.trim() === "" ? null : Number(minLevel);
-    const max = maxLevel.trim() === "" ? null : Number(maxLevel);
-
-    return monsters.filter((monster) => {
-      const matchesSearch =
-        !query || normalizeMonsterText(monster.name).includes(query);
-
-      const matchesType =
-        selectedType === null || monster.monster_type === selectedType;
-
-      const matchesMin =
-        min === null || !Number.isFinite(min) || monster.level >= min;
-
-      const matchesMax =
-        max === null || !Number.isFinite(max) || monster.level <= max;
-
-      const matchesVillain =
-        !villainOnly || isMonsterVillain(monster.is_villain);
-
-      return (
-        matchesSearch &&
-        matchesType &&
-        matchesMin &&
-        matchesMax &&
-        matchesVillain
-      );
-    });
-  }, [monsters, search, selectedType, minLevel, maxLevel, villainOnly]);
-
-  async function handleSelectMonster(monsterId: number) {
-    try {
-      setSelectedMonsterId(monsterId);
-      setDetailLoading(true);
-      setDetailError(null);
-
-      const monster = await getPublicMonsterById(monsterId);
-      setSelectedMonster(monster);
-    } catch {
-      setDetailError("Não foi possível carregar os detalhes do monstro.");
-      setSelectedMonster(null);
-    } finally {
-      setDetailLoading(false);
-    }
+  function handleSelectMonster(monsterId: number) {
+    setSelectedMonsterId(monsterId);
   }
 
-  function handleBackToList() {
-    setSelectedMonsterId(null);
-    setSelectedMonster(null);
-    setDetailError(null);
-  }
-
-  function handleResetFilters() {
-    setSearch("");
-    setSelectedType(null);
-    setMinLevel("");
-    setMaxLevel("");
-    setVillainOnly(false);
-    handleBackToList();
-  }
-
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    setSelectedType(null);
-    setMinLevel("");
-    setMaxLevel("");
-    setVillainOnly(false);
-    handleBackToList();
-  }
-
-  function handleSelectType(type: string | null) {
-    setSelectedType(type);
-    setSearch("");
-    handleBackToList();
-  }
-
-  function handleMinLevelChange(value: string) {
-    setMinLevel(value);
-    setSearch("");
-    handleBackToList();
-  }
-
-  function handleMaxLevelChange(value: string) {
-    setMaxLevel(value);
-    setSearch("");
-    handleBackToList();
-  }
-
-  function handleToggleVillainOnly() {
-    setVillainOnly((current) => !current);
-    setSearch("");
-    handleBackToList();
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle="Bestiário"
-      sidebarHeaderSubtitle="Criaturas e ameaças"
-      searchPlaceholder="Buscar monstro..."
+      sidebarHeaderTitle={MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
+      sidebarHeaderSubtitle={
+        MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle
+      }
+      searchPlaceholder={MONSTERS_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
-      onSearchChange={handleSearchChange}
+      onSearchChange={setSearch}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       searchExtraContent={
-        <div style={styles.filterBlock}>
+        <div className={pageStyles.filterBlock}>
           <MonsterLevelFilter
             minLevel={minLevel}
             maxLevel={maxLevel}
-            onMinLevelChange={handleMinLevelChange}
-            onMaxLevelChange={handleMaxLevelChange}
+            onMinLevelChange={setMinLevel}
+            onMaxLevelChange={setMaxLevel}
           />
 
           <button
             type="button"
             aria-pressed={villainOnly}
-            onClick={handleToggleVillainOnly}
-            style={{
-              ...styles.villainFilterButton,
-              ...(villainOnly ? styles.villainFilterButtonActive : {}),
+            onClick={() => {
+              toggleVillainOnly();
+              scrollToTop();
             }}
+            className={`${pageStyles.villainButton} ${villainOnly ? pageStyles.villainButtonActive : ""}`}
           >
-            Vilões
+            {MONSTERS_CATALOG_CONFIG.copy.sidebar.villainFilterLabel}
           </button>
 
           <button
             type="button"
-            onClick={handleResetFilters}
-            style={styles.resetButton}
+            onClick={() => {
+              resetFilters();
+              scrollToTop();
+            }}
+            className={pageStyles.resetButton}
           >
-            Mostrar todos
+            {MONSTERS_CATALOG_CONFIG.copy.sidebar.resetFiltersLabel}
           </button>
         </div>
       }
       sidebarContent={
         loading ? (
-          <div style={{ padding: "16px" }}>Carregando...</div>
+          <LoadingState />
         ) : error ? (
-          <div style={{ padding: "16px" }}>{error}</div>
+          <ErrorState message={error} />
         ) : (
           <MonsterTypeFilter
             typeCounts={typeCounts}
             selectedType={selectedType}
-            totalCount={monsters.length}
-            onSelectType={handleSelectType}
+            totalCount={monstersList.length}
+            onSelectType={(type) => {
+              selectType(type);
+              scrollToTop();
+            }}
           />
         )
       }
       mainContent={
         loading ? (
-          <div>Carregando bestiário...</div>
+          <LoadingState
+            message={MONSTERS_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
-          <div>{error}</div>
+          <ErrorState message={error} />
         ) : detailLoading ? (
-          <div>Carregando monstro...</div>
+          <LoadingState
+            message={MONSTERS_CATALOG_CONFIG.copy.detail.loadingMessage}
+          />
         ) : detailError ? (
-          <div>{detailError}</div>
+          <ErrorState message={detailError} />
         ) : selectedMonster ? (
           <MonsterDetailPanel
             monster={selectedMonster}
@@ -238,44 +157,3 @@ export function MonstersCatalogView({
     />
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  filterBlock: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  resetButton: {
-    width: "100%",
-    border: "1px solid #4c3922",
-    borderRadius: "8px",
-    background: "#15110f",
-    color: "#c9963a",
-    padding: "9px 10px",
-    cursor: "pointer",
-    fontSize: "13px",
-    fontWeight: 800,
-    textAlign: "center",
-  },
-
-  villainFilterButton: {
-    width: "100%",
-    border: "1px solid #4c2422",
-    borderRadius: "8px",
-    background: "#160d0c",
-    color: "#b46b64",
-    padding: "9px 10px",
-    cursor: "pointer",
-    fontSize: "13px",
-    fontWeight: 800,
-    textAlign: "center",
-  },
-
-  villainFilterButtonActive: {
-    background: "#2a1210",
-    color: "#ffb3a8",
-    borderColor: "#b94a3f",
-    boxShadow: "0 0 0 1px rgba(185, 74, 63, 0.24)",
-  },
-};
