@@ -118,7 +118,11 @@ export function useMonstersCatalogFilters({
         !villainOnly || isMonsterVillain(monster.is_villain);
 
       return (
-        matchesSearch && matchesType && matchesMin && matchesMax && matchesVillain
+        matchesSearch &&
+        matchesType &&
+        matchesMin &&
+        matchesMax &&
+        matchesVillain
       );
     });
   }, [monsters, search, selectedType, minLevel, maxLevel, villainOnly]);

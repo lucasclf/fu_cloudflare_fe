@@ -7,7 +7,9 @@ import {
 import { getPublicMonsterSummary } from "../api/get-public-monster-summary";
 import type { MonsterSummary } from "../types/monster";
 
-export function usePublicMonsterSummary(): AsyncResourceState<MonsterSummary[]> {
+export function usePublicMonsterSummary(): AsyncResourceState<
+  MonsterSummary[]
+> {
   const loader = useCallback((signal: AbortSignal) => {
     return getPublicMonsterSummary(signal);
   }, []);

@@ -12,9 +12,7 @@ export function CatalogContentStack({
   className,
 }: CatalogContentStackProps) {
   return (
-    <div className={getCatalogContentStackClassName(className)}>
-      {children}
-    </div>
+    <div className={getCatalogContentStackClassName(className)}>{children}</div>
   );
 }
 

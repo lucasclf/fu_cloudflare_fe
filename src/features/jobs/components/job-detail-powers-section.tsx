@@ -30,7 +30,9 @@ export function JobDetailPowersSection({
 
               <div className="job-detail-panel__inline-badges">
                 {power.type ? (
-                  <Badge variant="surface">{renderTokenLabel(power.type)}</Badge>
+                  <Badge variant="surface">
+                    {renderTokenLabel(power.type)}
+                  </Badge>
                 ) : null}
 
                 {power.maxLevel ? (

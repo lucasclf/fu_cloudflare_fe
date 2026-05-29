@@ -23,7 +23,9 @@ type JobCatalogPanelProps = {
 
 export function JobCatalogPanel({ jobs, onSelect }: JobCatalogPanelProps) {
   if (jobs.length === 0) {
-    return <CatalogEmptyMessage>Nenhuma classe para exibir.</CatalogEmptyMessage>;
+    return (
+      <CatalogEmptyMessage>Nenhuma classe para exibir.</CatalogEmptyMessage>
+    );
   }
 
   return (

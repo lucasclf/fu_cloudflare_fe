@@ -127,7 +127,9 @@ export function ScenarioCatalogView({
   return (
     <CatalogLayout
       sidebarHeaderTitle={SCENARIO_CATALOG_CONFIG.layout.sidebarHeaderTitle}
-      sidebarHeaderSubtitle={SCENARIO_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      sidebarHeaderSubtitle={
+        SCENARIO_CATALOG_CONFIG.layout.sidebarHeaderSubtitle
+      }
       searchPlaceholder={SCENARIO_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={handleSearchChange}
@@ -173,7 +175,9 @@ export function ScenarioCatalogView({
       }
       mainContent={
         loading ? (
-          <LoadingState message={SCENARIO_CATALOG_CONFIG.copy.main.loadingMessage} />
+          <LoadingState
+            message={SCENARIO_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
           <ErrorState message={error} />
         ) : selectedEntity ? (
@@ -185,4 +189,3 @@ export function ScenarioCatalogView({
     />
   );
 }
-

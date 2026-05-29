@@ -31,7 +31,9 @@ export function DetailHero({
 
           <h2 className="detail-hero__title">{title}</h2>
 
-          {subtitle ? <p className="detail-hero__subtitle">{subtitle}</p> : null}
+          {subtitle ? (
+            <p className="detail-hero__subtitle">{subtitle}</p>
+          ) : null}
         </div>
       </div>
 
