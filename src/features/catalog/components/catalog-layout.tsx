@@ -52,7 +52,9 @@ export function CatalogLayout({
           />
 
           {searchExtraContent ? (
-            <div className="catalog-layout__search-extra">{searchExtraContent}</div>
+            <div className="catalog-layout__search-extra">
+              {searchExtraContent}
+            </div>
           ) : null}
         </div>
 

@@ -66,14 +66,20 @@ export function SpellsCatalogView({
               label={SPELLS_CATALOG_CONFIG.copy.sidebar.allSourcesLabel}
               count={formatSpellCount(spellsList.length)}
               isActive={sourceFilter.type === "all"}
-              onClick={() => { selectAllSources(); scrollToTop(); }}
+              onClick={() => {
+                selectAllSources();
+                scrollToTop();
+              }}
             />
 
             <CatalogFilterButton
               label={SPELLS_CATALOG_CONFIG.copy.sidebar.monsterSourcesLabel}
               count={formatSpellCount(monsterSpellCount)}
               isActive={sourceFilter.type === "monster"}
-              onClick={() => { selectMonsterSource(); scrollToTop(); }}
+              onClick={() => {
+                selectMonsterSource();
+                scrollToTop();
+              }}
             />
 
             {jobSpellCounts.map(({ jobName, count }) => (
@@ -85,7 +91,10 @@ export function SpellsCatalogView({
                   sourceFilter.type === "job" &&
                   sourceFilter.jobName === jobName
                 }
-                onClick={() => { selectJobSource(jobName); scrollToTop(); }}
+                onClick={() => {
+                  selectJobSource(jobName);
+                  scrollToTop();
+                }}
               />
             ))}
 
@@ -97,7 +106,9 @@ export function SpellsCatalogView({
       }
       mainContent={
         loading ? (
-          <LoadingState message={SPELLS_CATALOG_CONFIG.copy.main.loadingMessage} />
+          <LoadingState
+            message={SPELLS_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
           <ErrorState message={error} />
         ) : (

@@ -71,7 +71,10 @@ export function PowersCatalogView({
               label={POWERS_CATALOG_CONFIG.copy.sidebar.allClassesLabel}
               count={formatPowerCount(powersList.length)}
               isActive={selectedClassFilter === ALL_CLASSES_FILTER}
-              onClick={() => { selectClassFilter(ALL_CLASSES_FILTER); scrollToTop(); }}
+              onClick={() => {
+                selectClassFilter(ALL_CLASSES_FILTER);
+                scrollToTop();
+              }}
             />
 
             {classPowerCounts.map(({ jobName, count }) => (
@@ -80,7 +83,10 @@ export function PowersCatalogView({
                 label={jobName}
                 count={formatPowerCount(count)}
                 isActive={selectedClassFilter === jobName}
-                onClick={() => { selectClassFilter(jobName); scrollToTop(); }}
+                onClick={() => {
+                  selectClassFilter(jobName);
+                  scrollToTop();
+                }}
               />
             ))}
 
@@ -88,7 +94,10 @@ export function PowersCatalogView({
               label={POWERS_CATALOG_CONFIG.copy.sidebar.unrestrictedClassLabel}
               count={formatPowerCount(unrestrictedPowerCount)}
               isActive={selectedClassFilter === UNRESTRICTED_CLASS_FILTER}
-              onClick={() => { selectClassFilter(UNRESTRICTED_CLASS_FILTER); scrollToTop(); }}
+              onClick={() => {
+                selectClassFilter(UNRESTRICTED_CLASS_FILTER);
+                scrollToTop();
+              }}
             />
 
             <p className={styles.sidebarSummary}>
@@ -99,7 +108,9 @@ export function PowersCatalogView({
       }
       mainContent={
         loading ? (
-          <LoadingState message={POWERS_CATALOG_CONFIG.copy.main.loadingMessage} />
+          <LoadingState
+            message={POWERS_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
           <ErrorState message={error} />
         ) : (

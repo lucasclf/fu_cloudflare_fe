@@ -81,11 +81,15 @@ export function NpcsCatalogView({
       }
       mainContent={
         loading ? (
-          <LoadingState message={NPCS_CATALOG_CONFIG.copy.main.loadingMessage} />
+          <LoadingState
+            message={NPCS_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
           <ErrorState message={error} />
         ) : detailLoading ? (
-          <LoadingState message={NPCS_CATALOG_CONFIG.copy.detail.loadingMessage} />
+          <LoadingState
+            message={NPCS_CATALOG_CONFIG.copy.detail.loadingMessage}
+          />
         ) : detailError ? (
           <ErrorState message={detailError} />
         ) : selectedNpc ? (

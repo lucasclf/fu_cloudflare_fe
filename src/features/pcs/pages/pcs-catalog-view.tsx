@@ -84,7 +84,9 @@ export function PcsCatalogView({
         ) : error ? (
           <ErrorState message={error} />
         ) : detailLoading ? (
-          <LoadingState message={PCS_CATALOG_CONFIG.copy.detail.loadingMessage} />
+          <LoadingState
+            message={PCS_CATALOG_CONFIG.copy.detail.loadingMessage}
+          />
         ) : detailError ? (
           <ErrorState message={detailError} />
         ) : selectedPc ? (

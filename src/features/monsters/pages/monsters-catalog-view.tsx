@@ -69,7 +69,9 @@ export function MonstersCatalogView({
   return (
     <CatalogLayout
       sidebarHeaderTitle={MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
-      sidebarHeaderSubtitle={MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      sidebarHeaderSubtitle={
+        MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle
+      }
       searchPlaceholder={MONSTERS_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={setSearch}
@@ -88,7 +90,10 @@ export function MonstersCatalogView({
           <button
             type="button"
             aria-pressed={villainOnly}
-            onClick={() => { toggleVillainOnly(); scrollToTop(); }}
+            onClick={() => {
+              toggleVillainOnly();
+              scrollToTop();
+            }}
             className={`${pageStyles.villainButton} ${villainOnly ? pageStyles.villainButtonActive : ""}`}
           >
             {MONSTERS_CATALOG_CONFIG.copy.sidebar.villainFilterLabel}
@@ -96,7 +101,10 @@ export function MonstersCatalogView({
 
           <button
             type="button"
-            onClick={() => { resetFilters(); scrollToTop(); }}
+            onClick={() => {
+              resetFilters();
+              scrollToTop();
+            }}
             className={pageStyles.resetButton}
           >
             {MONSTERS_CATALOG_CONFIG.copy.sidebar.resetFiltersLabel}
@@ -113,17 +121,24 @@ export function MonstersCatalogView({
             typeCounts={typeCounts}
             selectedType={selectedType}
             totalCount={monstersList.length}
-            onSelectType={(type) => { selectType(type); scrollToTop(); }}
+            onSelectType={(type) => {
+              selectType(type);
+              scrollToTop();
+            }}
           />
         )
       }
       mainContent={
         loading ? (
-          <LoadingState message={MONSTERS_CATALOG_CONFIG.copy.main.loadingMessage} />
+          <LoadingState
+            message={MONSTERS_CATALOG_CONFIG.copy.main.loadingMessage}
+          />
         ) : error ? (
           <ErrorState message={error} />
         ) : detailLoading ? (
-          <LoadingState message={MONSTERS_CATALOG_CONFIG.copy.detail.loadingMessage} />
+          <LoadingState
+            message={MONSTERS_CATALOG_CONFIG.copy.detail.loadingMessage}
+          />
         ) : detailError ? (
           <ErrorState message={detailError} />
         ) : selectedMonster ? (
@@ -142,4 +157,3 @@ export function MonstersCatalogView({
     />
   );
 }
-
