@@ -1,0 +1,20 @@
+.content-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.content-card--elevated {
+  background: var(--color-background-elevated);
+}
+
+.content-card--surface {
+  background: var(--color-surface);
+}
+
+.content-card--padding-md {
+  padding: 14px;
+}
+
+.content-card--padding-lg {
+  padding: var(--space-5);
+}

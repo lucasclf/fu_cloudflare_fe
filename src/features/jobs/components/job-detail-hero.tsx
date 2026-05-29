@@ -1,7 +1,10 @@
+import { DetailHero } from "@/shared/components/detail-hero";
+import { EntityAvatar } from "@/shared/components/entity-avatar";
 import {
   ALLOWANCE_DEFINITIONS,
   BONUS_DEFINITIONS,
 } from "./job-feature-definitions";
+import { JobFeatureChip } from "./job-feature-chip";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import {
   getPositiveJobBonus,
@@ -16,40 +19,16 @@ type JobDetailHeroProps = {
 
 export function JobDetailHero({ job }: JobDetailHeroProps) {
   const imageSrc = getJobImageSrc(job.imageKey);
+  const allowanceContent = <HeroAllowanceIcons job={job} />;
 
   return (
-    <header className="job-detail-panel__hero">
-      <div className="job-detail-panel__hero-main">
-        <div className="job-detail-panel__hero-image-wrapper">
-          {imageSrc ? (
-            <img
-              src={imageSrc}
-              alt=""
-              className="job-detail-panel__hero-image"
-              aria-hidden
-            />
-          ) : (
-            <span className="job-detail-panel__hero-initials">
-              {getInitials(job.name)}
-            </span>
-          )}
-        </div>
-
-        <div className="job-detail-panel__hero-text">
-          <span className="job-detail-panel__badge">
-            {JOBS_CATALOG_CONFIG.copy.detail.entityBadge}
-          </span>
-
-          <h2 className="job-detail-panel__hero-title">{job.name}</h2>
-
-          {job.tagline ? (
-            <p className="job-detail-panel__tagline">{job.tagline}</p>
-          ) : null}
-        </div>
-      </div>
-
-      <HeroAllowanceIcons job={job} />
-    </header>
+    <DetailHero
+      badge={JOBS_CATALOG_CONFIG.copy.detail.entityBadge}
+      title={job.name}
+      subtitle={job.tagline}
+      media={<EntityAvatar name={job.name} imageSrc={imageSrc} size="lg" />}
+      aside={allowanceContent}
+    />
   );
 }
 
@@ -69,53 +48,26 @@ function HeroAllowanceIcons({ job }: { job: Job }) {
 
   return (
     <div
-      className="job-detail-panel__hero-allowance-wrapper"
+      className="job-detail-panel__hero-allowance-bar"
       aria-label="Características da classe"
     >
-      <div className="job-detail-panel__hero-allowance-bar">
-        {enabledAllowances.map(({ key, label, Icon }) => (
-          <span
-            key={key}
-            title={label}
-            aria-label={label}
-            className="job-detail-panel__hero-allowance-chip"
-          >
-            <span className="job-detail-panel__hero-allowance-icon">
-              <Icon />
-            </span>
+      {enabledAllowances.map(({ key, label, Icon }) => (
+        <JobFeatureChip key={key} Icon={Icon} label={label} variant="label">
+          {label}
+        </JobFeatureChip>
+      ))}
 
-            <span className="job-detail-panel__hero-allowance-text">
-              {label}
-            </span>
-          </span>
-        ))}
-
-        {enabledBonuses.map(({ key, label, shortLabel, Icon, value }) => (
-          <span
-            key={key}
-            title={`${label}: +${value}`}
-            aria-label={`${label}: +${value}`}
-            className="job-detail-panel__hero-allowance-chip"
-          >
-            <span className="job-detail-panel__hero-allowance-icon">
-              <Icon />
-            </span>
-
-            <span className="job-detail-panel__hero-allowance-text">
-              +{value} {shortLabel}
-            </span>
-          </span>
-        ))}
-      </div>
+      {enabledBonuses.map(({ key, label, shortLabel, Icon, value }) => (
+        <JobFeatureChip
+          key={key}
+          Icon={Icon}
+          label={label}
+          variant="label"
+          statusLabel={`+${value}`}
+        >
+          +{value} {shortLabel}
+        </JobFeatureChip>
+      ))}
     </div>
   );
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
 }

@@ -1,3 +1,5 @@
+import { Badge } from "@/shared/components/badge";
+import { ContentCard } from "@/shared/components/content-card";
 import { JobDetailSection } from "./job-detail-section";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import {
@@ -37,18 +39,19 @@ function ArcanaCard({ arcana }: { arcana: JobArcana }) {
   const details = getArcanaDetails(arcana);
 
   return (
-    <article className="job-detail-panel__arcana-card">
+    <ContentCard
+      as="article"
+      variant="elevated"
+      className="job-detail-panel__arcana-card"
+    >
       <header className="job-detail-panel__arcana-header">
         <h3 className="job-detail-panel__arcana-title">{arcana.name}</h3>
 
         <div className="job-detail-panel__arcana-domain-list">
           {getArcanaDomains(arcana.domain).map((domain) => (
-            <span
-              key={domain}
-              className="job-detail-panel__arcana-domain-badge"
-            >
+            <Badge key={domain} variant="accent">
               {domain}
-            </span>
+            </Badge>
           ))}
         </div>
       </header>
@@ -71,6 +74,6 @@ function ArcanaCard({ arcana }: { arcana: JobArcana }) {
           ))}
         </div>
       ) : null}
-    </article>
+    </ContentCard>
   );
 }

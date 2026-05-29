@@ -1,4 +1,6 @@
-import { JobDetailInfo } from "./job-detail-info";
+import { Badge } from "@/shared/components/badge";
+import { ContentCard } from "@/shared/components/content-card";
+import { InfoBox } from "@/shared/components/info-box";
 import { JobDetailSection } from "./job-detail-section";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import {
@@ -38,38 +40,38 @@ export function JobDetailSpellsSection({
           const offensive = isSpellOffensive(spell);
 
           return (
-            <div key={spell.id} className="job-detail-panel__info-box">
+            <ContentCard key={spell.id} variant="surface">
               <div className="job-detail-panel__card-header">
                 <h4 className="job-detail-panel__card-title">{spell.name}</h4>
 
                 <div className="job-detail-panel__inline-badges">
                   {spellType ? (
-                    <span className="job-detail-panel__secondary-badge">
+                    <Badge variant="surface">
                       {renderTokenLabel(spellType)}
-                    </span>
+                    </Badge>
                   ) : null}
 
                   {spellCost !== undefined ? (
-                    <span className="job-detail-panel__secondary-badge">
+                    <Badge variant="surface">
                       {JOBS_CATALOG_CONFIG.copy.detail.spells.costLabel}{" "}
                       {renderOptionalValue(spellCost)}
-                    </span>
+                    </Badge>
                   ) : null}
 
                   {offensive !== null ? (
-                    <span className="job-detail-panel__secondary-badge">
+                    <Badge variant="surface">
                       {offensive
                         ? JOBS_CATALOG_CONFIG.copy.detail.spells.offensiveLabel
                         : JOBS_CATALOG_CONFIG.copy.detail.spells
                             .nonOffensiveLabel}
-                    </span>
+                    </Badge>
                   ) : null}
                 </div>
               </div>
 
               <div className="job-detail-panel__spell-meta-grid">
                 {spellTarget !== undefined ? (
-                  <JobDetailInfo
+                  <InfoBox
                     label={JOBS_CATALOG_CONFIG.copy.detail.spells.targetLabel}
                     value={renderOptionalValue(spellTarget)}
                     compact
@@ -77,7 +79,7 @@ export function JobDetailSpellsSection({
                 ) : null}
 
                 {spellDuration !== undefined ? (
-                  <JobDetailInfo
+                  <InfoBox
                     label={JOBS_CATALOG_CONFIG.copy.detail.spells.durationLabel}
                     value={renderOptionalValue(spellDuration)}
                     compact
@@ -86,7 +88,7 @@ export function JobDetailSpellsSection({
               </div>
 
               <p className="job-detail-panel__text">{spell.description}</p>
-            </div>
+            </ContentCard>
           );
         })}
       </div>

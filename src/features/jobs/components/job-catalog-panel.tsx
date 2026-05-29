@@ -1,7 +1,12 @@
+import { CatalogCardGrid } from "@/features/catalog/components/catalog-card-grid";
+import { CatalogEmptyMessage } from "@/features/catalog/components/catalog-empty-message";
+import { ActionCard } from "@/shared/components/action-card";
+import { EntityAvatar } from "@/shared/components/entity-avatar";
 import {
   ALLOWANCE_DEFINITIONS,
   BONUS_DEFINITIONS,
 } from "./job-feature-definitions";
+import { JobFeatureChip } from "./job-feature-chip";
 import {
   getPositiveJobBonus,
   isJobAllowanceEnabled,
@@ -16,13 +21,37 @@ type JobCatalogPanelProps = {
   onSelect: (jobId: number) => void;
 };
 
-function getInitials(name: string): string {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("");
+export function JobCatalogPanel({ jobs, onSelect }: JobCatalogPanelProps) {
+  if (jobs.length === 0) {
+    return <CatalogEmptyMessage>Nenhuma classe para exibir.</CatalogEmptyMessage>;
+  }
+
+  return (
+    <CatalogCardGrid className="job-catalog-panel">
+      {jobs.map((job) => {
+        const imageSrc = getJobImageSrc(job.imageKey);
+
+        return (
+          <ActionCard
+            key={job.id}
+            className="job-catalog-panel__card"
+            ariaLabel={`Ver detalhes da classe ${job.name}`}
+            onClick={() => onSelect(job.id)}
+          >
+            <EntityAvatar name={job.name} imageSrc={imageSrc} size="md" />
+
+            <h2 className="job-catalog-panel__title">{job.name}</h2>
+
+            {job.tagline ? (
+              <p className="job-catalog-panel__tagline">{job.tagline}</p>
+            ) : null}
+
+            <JobAllowanceIcons job={job} />
+          </ActionCard>
+        );
+      })}
+    </CatalogCardGrid>
+  );
 }
 
 function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
@@ -33,112 +62,34 @@ function JobAllowanceIcons({ job }: { job: JobCatalogItem }) {
     >
       {ALLOWANCE_DEFINITIONS.map(({ key, label, Icon }) => {
         const enabled = isJobAllowanceEnabled(job[key]);
-        const status = enabled ? "permitido" : "não permitido";
 
         return (
-          <span
+          <JobFeatureChip
             key={key}
-            className={getAllowanceChipClassName(enabled)}
-            title={`${label}: ${status}`}
-            aria-label={`${label}: ${status}`}
-          >
-            <Icon />
-          </span>
+            Icon={Icon}
+            label={label}
+            active={enabled}
+            statusLabel={enabled ? "permitido" : "não permitido"}
+          />
         );
       })}
 
       {BONUS_DEFINITIONS.map(({ key, label, shortLabel, Icon }) => {
         const value = getPositiveJobBonus(job[key]);
         const enabled = value > 0;
-        const status = enabled ? `+${value} ${shortLabel}` : "sem bônus";
 
         return (
-          <span
+          <JobFeatureChip
             key={key}
-            className={getBonusChipClassName(enabled)}
-            title={`${label}: ${status}`}
-            aria-label={`${label}: ${status}`}
+            Icon={Icon}
+            label={label}
+            active={enabled}
+            statusLabel={enabled ? `+${value} ${shortLabel}` : "sem bônus"}
           >
-            <Icon />
-
-            {enabled ? (
-              <span className="job-catalog-panel__bonus-value">+{value}</span>
-            ) : null}
-          </span>
+            {enabled ? `+${value}` : null}
+          </JobFeatureChip>
         );
       })}
     </div>
   );
-}
-
-export function JobCatalogPanel({ jobs, onSelect }: JobCatalogPanelProps) {
-  if (jobs.length === 0) {
-    return (
-      <p className="job-catalog-panel__empty">Nenhuma classe para exibir.</p>
-    );
-  }
-
-  return (
-    <div className="job-catalog-panel">
-      {jobs.map((job) => {
-        const imageSrc = getJobImageSrc(job.imageKey);
-
-        return (
-          <button
-            key={job.id}
-            type="button"
-            className="job-catalog-panel__card"
-            aria-label={`Ver detalhes da classe ${job.name}`}
-            onClick={() => onSelect(job.id)}
-          >
-            <div className="job-catalog-panel__image-wrapper">
-              {imageSrc ? (
-                <img
-                  src={imageSrc}
-                  alt=""
-                  className="job-catalog-panel__image"
-                  aria-hidden
-                />
-              ) : (
-                <span className="job-catalog-panel__initials">
-                  {getInitials(job.name)}
-                </span>
-              )}
-            </div>
-
-            <h2 className="job-catalog-panel__title">{job.name}</h2>
-
-            {job.tagline ? (
-              <p className="job-catalog-panel__tagline">{job.tagline}</p>
-            ) : null}
-
-            <JobAllowanceIcons job={job} />
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-function getAllowanceChipClassName(enabled: boolean): string {
-  return [
-    "job-catalog-panel__allowance-chip",
-    enabled
-      ? "job-catalog-panel__allowance-chip--enabled"
-      : "job-catalog-panel__allowance-chip--disabled",
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
-
-function getBonusChipClassName(enabled: boolean): string {
-  return [
-    "job-catalog-panel__allowance-chip",
-    "job-catalog-panel__bonus-chip",
-    enabled
-      ? "job-catalog-panel__allowance-chip--enabled"
-      : "job-catalog-panel__allowance-chip--disabled",
-  ]
-    .filter(Boolean)
-    .join(" ");
 }

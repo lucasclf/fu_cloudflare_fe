@@ -1,4 +1,8 @@
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
+import {
+  capitalizeFirstLetter,
+  hasText,
+} from "@/shared/lib/text-formatters";
 import type { JobArcana, JobSpell } from "../types/job";
 
 export type JobArcanaDetail = {
@@ -50,7 +54,9 @@ export function getSpellTarget(spell: JobSpell): string | number | undefined {
   return readTextOrNumber(spell.target);
 }
 
-export function getSpellDuration(spell: JobSpell): string | number | undefined {
+export function getSpellDuration(
+  spell: JobSpell,
+): string | number | undefined {
   return readTextOrNumber(spell.duration);
 }
 
@@ -86,16 +92,4 @@ function readStringValueOrUndefined(
 
 function readStringValue(value: string | null | undefined): string {
   return hasText(value) ? value : "";
-}
-
-function hasText(value: string | null | undefined): value is string {
-  return value !== null && value !== undefined && value.trim().length > 0;
-}
-
-function capitalizeFirstLetter(value: string): string {
-  if (value.length === 0) {
-    return value;
-  }
-
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }

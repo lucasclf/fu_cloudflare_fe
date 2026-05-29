@@ -1,0 +1,59 @@
+.job-feature-chip {
+  min-width: 24px;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-background);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.job-feature-chip--active {
+  border-color: var(--color-border-strong);
+  color: var(--color-accent-strong);
+  background: var(--color-surface);
+  opacity: 1;
+}
+
+.job-feature-chip--inactive {
+  color: var(--color-text-muted);
+  background: var(--color-background);
+  opacity: 0.45;
+}
+
+.job-feature-chip--label {
+  min-height: 30px;
+  gap: 7px;
+  padding: 6px 10px;
+  box-shadow: 0 0 12px rgba(232, 200, 117, 0.08);
+}
+
+.job-feature-chip--with-text {
+  width: auto;
+}
+
+.job-feature-chip__icon {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.job-feature-chip__text {
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
