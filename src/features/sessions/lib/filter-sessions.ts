@@ -1,3 +1,4 @@
+import { normalizeSearchText } from "@/shared/lib/text-formatters";
 import { getSessionNumberLabel } from "./session-formatters";
 import type { Session } from "../types/session";
 
@@ -54,9 +55,5 @@ export function extractSessionNumberFromSearch(value: string): number | null {
 }
 
 export function normalizeSessionSearchText(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
+  return normalizeSearchText(value);
 }

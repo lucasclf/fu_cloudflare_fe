@@ -1,4 +1,6 @@
-import { JobDetailInfo } from "./job-detail-info";
+import { Badge } from "@/shared/components/badge";
+import { ContentSection } from "@/shared/components/content-section";
+import { InfoBox } from "@/shared/components/info-box";
 import { JobDetailSection } from "./job-detail-section";
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import { getAliasText, getQuestionText } from "../lib/job-formatters";
@@ -26,30 +28,26 @@ export function JobDetailBackgroundSection({
     >
       <div className="job-detail-panel__background-content">
         {aliases.length > 0 ? (
-          <div className="job-detail-panel__subsection">
-            <h3 className="job-detail-panel__subsection-title">
-              {JOBS_CATALOG_CONFIG.copy.detail.background.aliasesTitle}
-            </h3>
-
+          <ContentSection
+            title={JOBS_CATALOG_CONFIG.copy.detail.background.aliasesTitle}
+          >
             <div className="job-detail-panel__aliases">
               {aliases.map((alias) => (
-                <span key={alias.id} className="job-detail-panel__alias-badge">
+                <Badge key={alias.id} variant="surface">
                   {getAliasText(alias)}
-                </span>
+                </Badge>
               ))}
             </div>
-          </div>
+          </ContentSection>
         ) : null}
 
         {questions.length > 0 ? (
-          <div className="job-detail-panel__subsection">
-            <h3 className="job-detail-panel__subsection-title">
-              {JOBS_CATALOG_CONFIG.copy.detail.background.questionsTitle}
-            </h3>
-
+          <ContentSection
+            title={JOBS_CATALOG_CONFIG.copy.detail.background.questionsTitle}
+          >
             <div className="job-detail-panel__list">
               {questions.map((question, index) => (
-                <JobDetailInfo
+                <InfoBox
                   key={question.id}
                   label={`${JOBS_CATALOG_CONFIG.copy.detail.background.questionLabel} ${
                     index + 1
@@ -58,7 +56,7 @@ export function JobDetailBackgroundSection({
                 />
               ))}
             </div>
-          </div>
+          </ContentSection>
         ) : null}
       </div>
     </JobDetailSection>

@@ -4,93 +4,10 @@
   gap: 18px;
 }
 
-.job-detail-panel__hero {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-  padding: 22px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-background-elevated);
-}
-
-.job-detail-panel__hero-main {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-}
-
-.job-detail-panel__hero-image-wrapper {
-  width: 112px;
-  height: 112px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  padding: 10px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.job-detail-panel__hero-image {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.job-detail-panel__hero-initials {
-  color: var(--color-accent);
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.job-detail-panel__hero-text {
-  min-width: 0;
-}
-
-.job-detail-panel__badge {
-  display: inline-block;
-  margin-bottom: 10px;
-  padding: 4px 10px;
-  border: 1px solid var(--color-border-strong);
-  border-radius: 999px;
-  color: var(--color-accent);
-  background: var(--color-surface);
-  font-size: 0.75rem;
-}
-
-.job-detail-panel__hero-title {
-  margin: 0;
-  color: var(--color-accent-strong);
-  font-size: 1.875rem;
-}
-
-.job-detail-panel__tagline {
-  margin: var(--space-2) 0 0;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-}
-
 .job-detail-panel__message {
   margin: 0;
   color: var(--color-text-muted);
   font-style: italic;
-}
-
-.job-detail-panel__hero-allowance-wrapper {
-  min-width: 220px;
-  max-width: 340px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-2);
-  margin-left: auto;
 }
 
 .job-detail-panel__hero-allowance-bar {
@@ -99,37 +16,6 @@
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: var(--space-2);
-}
-
-.job-detail-panel__hero-allowance-chip {
-  min-height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 6px 10px;
-  border: 1px solid #7b694b;
-  border-radius: 999px;
-  color: #f5efe2;
-  background: #110e0c;
-  box-shadow: 0 0 12px rgba(232, 200, 117, 0.12);
-}
-
-.job-detail-panel__hero-allowance-icon {
-  width: 16px;
-  height: 16px;
-  min-width: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
-}
-
-.job-detail-panel__hero-allowance-text {
-  color: #d4c9b0;
-  font-size: 0.75rem;
-  line-height: 1;
-  white-space: nowrap;
 }
 
 .job-detail-panel__section {
@@ -214,7 +100,6 @@
 }
 
 .job-detail-panel__background-content,
-.job-detail-panel__subsection,
 .job-detail-panel__list,
 .job-detail-panel__arcana-details {
   display: flex;
@@ -225,18 +110,6 @@
   gap: 18px;
 }
 
-.job-detail-panel__subsection {
-  gap: 10px;
-}
-
-.job-detail-panel__subsection-title {
-  margin: 0;
-  color: var(--color-accent);
-  font-size: 0.8125rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
 .job-detail-panel__aliases,
 .job-detail-panel__inline-badges,
 .job-detail-panel__arcana-domain-list {
@@ -245,52 +118,8 @@
   gap: var(--space-2);
 }
 
-.job-detail-panel__alias-badge,
-.job-detail-panel__secondary-badge,
-.job-detail-panel__arcana-domain-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  font-size: 0.75rem;
-}
-
-.job-detail-panel__arcana-domain-badge {
-  border-color: var(--color-border-strong);
-  color: var(--color-accent);
-  font-weight: 800;
-  line-height: 1.2;
-}
-
 .job-detail-panel__list {
   gap: var(--space-3);
-}
-
-.job-detail-panel__info-box {
-  padding: 14px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xs);
-  background: var(--color-surface);
-}
-
-.job-detail-panel__info-box--compact {
-  padding: 8px 10px;
-  background: var(--color-background-elevated);
-}
-
-.job-detail-panel__info-label {
-  margin-bottom: 4px;
-  color: var(--color-text-muted);
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.job-detail-panel__info-value {
-  color: var(--color-text);
-  white-space: pre-wrap;
 }
 
 .job-detail-panel__card-header {
@@ -332,10 +161,6 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-background-elevated);
 }
 
 .job-detail-panel__arcana-header {
@@ -383,30 +208,7 @@
     grid-template-columns: 1fr;
   }
 
-  .job-detail-panel__hero-allowance-wrapper {
-    width: 100%;
-    max-width: none;
-    align-items: flex-start;
-    margin-left: 0;
-  }
-
   .job-detail-panel__hero-allowance-bar {
     justify-content: flex-start;
-  }
-}
-
-@media (max-width: 640px) {
-  .job-detail-panel__hero-main {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .job-detail-panel__hero-image-wrapper {
-    width: 88px;
-    height: 88px;
-  }
-
-  .job-detail-panel__hero-title {
-    font-size: 1.5rem;
   }
 }
