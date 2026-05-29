@@ -7,14 +7,14 @@
     "types": ["vite/client"],
     "skipLibCheck": true,
 
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "noEmit": true,
     "jsx": "react-jsx",
 
@@ -23,6 +23,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/testing/**"]
+  "include": ["src"]
 }

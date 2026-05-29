@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
-import { SearchField } from "@/shared/components/search-field";
+import { PageHeader } from "../../../shared/components/page-header";
+import { SearchField } from "../../../shared/components/search-field";
 
 import "./catalog-layout.css";
 
@@ -30,15 +31,16 @@ export function CatalogLayout({
   return (
     <div className="catalog-layout">
       <aside className="catalog-layout__sidebar">
-        <header className="catalog-layout__sidebar-header">
-          <h1 className="catalog-layout__title">Grimório</h1>
-
-          <p className="catalog-layout__subtitle">{sidebarHeaderSubtitle}</p>
-        </header>
+        <div className="catalog-layout__sidebar-header">
+          <PageHeader
+            title="Grimório"
+            subtitle={sidebarHeaderSubtitle}
+            actions={categorySwitcher}
+            variant="compact"
+          />
+        </div>
 
         <div className="catalog-layout__search-wrapper">
-          {categorySwitcher}
-
           <SearchField
             id="catalog-search"
             label={searchPlaceholder}
@@ -46,28 +48,18 @@ export function CatalogLayout({
             placeholder={searchPlaceholder}
             value={searchValue}
             onChange={onSearchChange}
+            className="catalog-layout__search-field"
           />
 
           {searchExtraContent ? (
-            <div className="catalog-layout__search-extra">
-              {searchExtraContent}
-            </div>
+            <div className="catalog-layout__search-extra">{searchExtraContent}</div>
           ) : null}
         </div>
 
-        <section
-          className="catalog-layout__sidebar-list"
-          aria-labelledby="catalog-sidebar-title"
-        >
-          <h2
-            id="catalog-sidebar-title"
-            className="catalog-layout__section-header"
-          >
-            {sidebarHeaderTitle}
-          </h2>
-
+        <div className="catalog-layout__sidebar-list">
+          <p className="catalog-layout__section-header">{sidebarHeaderTitle}</p>
           {sidebarContent}
-        </section>
+        </div>
       </aside>
 
       <main className="catalog-layout__main">{mainContent}</main>
