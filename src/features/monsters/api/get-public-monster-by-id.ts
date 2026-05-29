@@ -4,8 +4,10 @@ import type { MonsterDetail } from "../types/monster";
 
 export async function getPublicMonsterById(
   monsterId: number,
+  signal?: AbortSignal,
 ): Promise<MonsterDetail> {
   return httpGet<MonsterDetail>(
     `${API_BASE_URL}/public/monsters/${monsterId}?include=traits,affinities,actions`,
+    { signal },
   );
 }

@@ -1,8 +1,12 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { CategorySwitcher } from "../../catalog/components/category-switcher";
 import { CatalogLayout } from "../../catalog/components/catalog-layout";
 import type { CatalogCategory } from "../../catalog/types/category";
+import { ErrorState } from "../../../shared/components/error-state";
+import { LoadingState } from "../../../shared/components/loading-state";
 import { getPublicScenarioEntities } from "../api/get-public-scenario-entities";
+import { SCENARIO_CATALOG_CONFIG } from "../config/scenario-catalog-config";
+import pageStyles from "./scenario-catalog-view.module.css";
 import { ScenarioCardsPanel } from "../components/scenario-cards-panel";
 import { ScenarioSidebar } from "../components/scenario-sidebar";
 import { ScenarioDetailPanel } from "../components/scenario-detail-panel";
@@ -41,7 +45,7 @@ export function ScenarioCatalogView({
         const data = await getPublicScenarioEntities();
         setEntities(data);
       } catch {
-        setError("Não foi possível carregar o cenário.");
+        setError(SCENARIO_CATALOG_CONFIG.copy.main.errorMessage);
       } finally {
         setLoading(false);
       }
@@ -66,12 +70,14 @@ export function ScenarioCatalogView({
   function handleTypeFilterChange(value: ScenarioTypeFilterValue) {
     setTypeFilter(value);
     setSelectedEntityUid(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleSelectEntity(uid: string) {
     setSelectedEntityUid(uid);
     setSearch("");
     setTypeFilter(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleResetFilters() {
@@ -79,6 +85,7 @@ export function ScenarioCatalogView({
     setTypeFilter(null);
     setSelectedEntityUid(null);
     setSidebarResetVersion((current) => current + 1);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const filteredEntities = useMemo(() => {
@@ -119,16 +126,16 @@ export function ScenarioCatalogView({
 
   return (
     <CatalogLayout
-      sidebarHeaderTitle="Cenário"
-      sidebarHeaderSubtitle="Locais e facções"
-      searchPlaceholder="Buscar cenário..."
+      sidebarHeaderTitle={SCENARIO_CATALOG_CONFIG.layout.sidebarHeaderTitle}
+      sidebarHeaderSubtitle={SCENARIO_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
+      searchPlaceholder={SCENARIO_CATALOG_CONFIG.layout.searchPlaceholder}
       searchValue={search}
       onSearchChange={handleSearchChange}
       categorySwitcher={
         <CategorySwitcher value={category} onChange={onCategoryChange} />
       }
       searchExtraContent={
-        <div style={styles.filterBlock}>
+        <div className={pageStyles.filterBlock}>
           <ScenarioTypeFilter
             value={typeFilter}
             onChange={handleTypeFilterChange}
@@ -137,20 +144,20 @@ export function ScenarioCatalogView({
           <button
             type="button"
             onClick={handleResetFilters}
-            style={styles.resetButton}
+            className={pageStyles.resetButton}
           >
-            Mostrar todos
+            {SCENARIO_CATALOG_CONFIG.copy.sidebar.resetFiltersLabel}
           </button>
         </div>
       }
       sidebarContent={
         loading ? (
-          <div style={{ padding: "16px" }}>Carregando...</div>
+          <LoadingState />
         ) : error ? (
-          <div style={{ padding: "16px" }}>{error}</div>
+          <ErrorState message={error} />
         ) : (
           <>
-            <div style={styles.summary}>
+            <div className={pageStyles.summary}>
               <span>{locationCount} locais</span>
               <span>{factionCount} facções</span>
             </div>
@@ -166,9 +173,9 @@ export function ScenarioCatalogView({
       }
       mainContent={
         loading ? (
-          <div>Carregando cenário...</div>
+          <LoadingState message={SCENARIO_CATALOG_CONFIG.copy.main.loadingMessage} />
         ) : error ? (
-          <div>{error}</div>
+          <ErrorState message={error} />
         ) : selectedEntity ? (
           <ScenarioDetailPanel entity={selectedEntity} entities={entities} />
         ) : (
@@ -179,33 +186,3 @@ export function ScenarioCatalogView({
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  summary: {
-    padding: "0 16px 12px",
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "#7a6e5a",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-
-  filterBlock: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  resetButton: {
-    width: "100%",
-    border: "1px solid #4c3922",
-    borderRadius: "8px",
-    background: "#15110f",
-    color: "#c9963a",
-    padding: "9px 10px",
-    cursor: "pointer",
-    fontSize: "13px",
-    fontWeight: 800,
-    textAlign: "center",
-  },
-};

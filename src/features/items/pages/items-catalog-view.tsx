@@ -23,6 +23,8 @@ export function ItemsCatalogView({
     search,
     selectedType,
     filteredItems,
+    typeCounts,
+    totalCount,
     hasActiveFilters,
     setSearch,
     setSelectedType,
@@ -53,7 +55,12 @@ export function ItemsCatalogView({
           loading={loading}
           error={error}
           selectedType={selectedType}
-          onSelectType={setSelectedType}
+          typeCounts={typeCounts}
+          totalCount={totalCount}
+          onSelectType={(type) => {
+            setSelectedType(type);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
         />
       }
       mainContent={

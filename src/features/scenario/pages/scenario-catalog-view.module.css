@@ -1,0 +1,41 @@
+.filterBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.resetButton {
+  width: 100%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-background-elevated);
+  color: var(--color-accent);
+  padding: 9px var(--space-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-align: center;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.resetButton:hover {
+  background: var(--color-surface);
+}
+
+.resetButton:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.summary {
+  padding: 0 var(--space-4) var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}

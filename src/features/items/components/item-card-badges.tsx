@@ -1,3 +1,4 @@
+import { Badge } from "../../../shared/components/badge";
 import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import { formatItemCategoryBadgeValue } from "../lib/item-formatters";
 import type { Item } from "../types/item";
@@ -11,12 +12,12 @@ export function ItemCardBadges({ item }: ItemCardBadgesProps) {
 
   return (
     <div className="item-card__badges">
-      <span className="item-card__badge">
+      <Badge variant="accent">
         {ITEMS_CATALOG_CONFIG.types.labels[item.itemType]}
-      </span>
+      </Badge>
 
       {item.itemType === "arma" && categoryBadge ? (
-        <span className="item-card__badge">{categoryBadge}</span>
+        <Badge variant="accent">{categoryBadge}</Badge>
       ) : null}
     </div>
   );
