@@ -102,6 +102,7 @@ export function JobsCatalogView({
           detailError={detailError}
           hasActiveFilters={hasActiveFilters}
           onSelectJob={selectJob}
+          onBackToList={clearSelectedJob}
         />
       }
     />

@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getScenarioImageSrc } from "../lib/get-scenario-image-src";
+import panelStyles from "./scenario-detail-panel.module.css";
 import {
   formatRelationType,
   formatScenarioEntityType,
@@ -31,7 +32,7 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
         <SectionTitle>Facções Locais</SectionTitle>
 
         {relatedFactions.length > 0 ? (
-          <div style={styles.smallGrid}>
+          <div className={panelStyles.smallGrid} style={styles.smallGrid}>
             {relatedFactions.map(({ faction, relationTypes }) => (
               <SmallFactionCard
                 key={faction.uid}
@@ -80,8 +81,8 @@ function MainEntityCard({ entity }: { entity: ScenarioEntity }) {
   const subtypeLabel = formatScenarioSubtype(entity.type, entity.subtype);
 
   return (
-    <article style={styles.mainCard}>
-      <div style={styles.mainImageFrame}>
+    <article className={panelStyles.mainCard} style={styles.mainCard}>
+      <div className={panelStyles.mainImageFrame} style={styles.mainImageFrame}>
         {imageSrc ? (
           <img src={imageSrc} alt={entity.name} style={styles.mainImage} />
         ) : (
@@ -345,15 +346,11 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid #3a2e22",
     borderRadius: "12px",
     overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "minmax(260px, 38%) minmax(0, 1fr)",
-    minHeight: "360px",
   },
 
   mainImageFrame: {
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
-    minHeight: "360px",
   },
 
   mainImage: {
@@ -471,11 +468,7 @@ const styles: Record<string, CSSProperties> = {
     textShadow: "0 0 18px rgba(201, 150, 58, 0.25)",
   },
 
-  smallGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "16px",
-  },
+  smallGrid: {},
 
   smallCard: {
     background: "#161210",

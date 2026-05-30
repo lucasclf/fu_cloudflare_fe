@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getMonsterImageSrc } from "../lib/get-monster-image-src";
+import panelStyles from "./monster-detail-panel.module.css";
 import {
   formatActionIcon,
   formatActionType,
@@ -63,16 +64,21 @@ export function MonsterDetailPanel({ monster, onBackToList }: Props) {
         ← Voltar para o bestiário
       </button>
 
-      <article style={styles.heroCard}>
-        <div style={styles.imageFrame}>
+      <article className={panelStyles.heroCard} style={styles.heroCard}>
+        <div className={panelStyles.imageFrame} style={styles.imageFrame}>
           {imageSrc ? (
-            <img src={imageSrc} alt={monster.name} style={styles.image} />
+            <img
+              src={imageSrc}
+              alt={monster.name}
+              className={panelStyles.image}
+              style={styles.image}
+            />
           ) : (
             <div style={styles.imagePlaceholder}>Sem imagem</div>
           )}
         </div>
 
-        <div style={styles.heroContent}>
+        <div className={panelStyles.heroContent} style={styles.heroContent}>
           <div style={styles.heroInfoBlock}>
             <div style={styles.badges}>
               {isMonsterVillain(monster.is_villain) ? (
@@ -356,13 +362,9 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid #3a2e22",
     borderRadius: "12px",
     overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "1fr 2fr",
-    minHeight: "420px",
   },
 
   imageFrame: {
-    minHeight: "420px",
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
     overflow: "hidden",
@@ -371,7 +373,6 @@ const styles: Record<string, CSSProperties> = {
   image: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
     display: "block",
   },
 
@@ -387,11 +388,7 @@ const styles: Record<string, CSSProperties> = {
     fontStyle: "italic",
   },
 
-  heroContent: {
-    display: "grid",
-    gridTemplateRows: "1fr 1fr",
-    minHeight: "420px",
-  },
+  heroContent: {},
 
   heroInfoBlock: {
     padding: "26px",
@@ -586,6 +583,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "4px",
+    minWidth: 0,
   },
 
   infoLabel: {
@@ -599,6 +597,8 @@ const styles: Record<string, CSSProperties> = {
     color: "#f5efe2",
     fontSize: "12px",
     fontWeight: 800,
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
   },
 
   empty: {

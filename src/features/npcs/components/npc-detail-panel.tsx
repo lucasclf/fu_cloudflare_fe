@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getNpcImageSrc } from "../lib/get-npc-image-src";
+import panelStyles from "./npc-detail-panel.module.css";
 import {
   formatEquipmentSlot,
   formatInventoryRelationType,
@@ -37,16 +38,21 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
         ← Voltar para NPCs
       </button>
 
-      <article style={styles.heroCard}>
-        <div style={styles.imageFrame}>
+      <article className={panelStyles.heroCard} style={styles.heroCard}>
+        <div className={panelStyles.imageFrame} style={styles.imageFrame}>
           {imageSrc ? (
-            <img src={imageSrc} alt={npc.name} style={styles.image} />
+            <img
+              src={imageSrc}
+              alt={npc.name}
+              className={panelStyles.image}
+              style={styles.image}
+            />
           ) : (
             <div style={styles.imagePlaceholder}>Sem imagem</div>
           )}
         </div>
 
-        <div style={styles.heroContent}>
+        <div className={panelStyles.heroContent} style={styles.heroContent}>
           <div style={styles.heroInfoBlock}>
             <h2 style={styles.title}>{npc.name}</h2>
 
@@ -65,7 +71,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
         <section style={styles.section}>
           <SectionTitle>Regras Especiais</SectionTitle>
 
-          <div style={styles.ruleGrid}>
+          <div className={panelStyles.ruleGrid}>
             {npc.specialRules.map((rule) => (
               <SpecialRuleCard key={rule.id} rule={rule} />
             ))}
@@ -77,7 +83,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
         <section style={styles.section}>
           <SectionTitle>Inventário</SectionTitle>
 
-          <div style={styles.itemGrid}>
+          <div className={panelStyles.itemGrid}>
             {npc.inventory.map((item) => (
               <InventoryCard
                 key={`${item.item.id}-${item.relation_type}`}
@@ -92,7 +98,7 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
         <section style={styles.section}>
           <SectionTitle>Equipamentos</SectionTitle>
 
-          <div style={styles.itemGrid}>
+          <div className={panelStyles.itemGrid}>
             {npc.equipment.map((item) => (
               <EquipmentCard key={`${item.item.id}-${item.slot}`} item={item} />
             ))}
@@ -348,13 +354,9 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid #3a2e22",
     borderRadius: "12px",
     overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "1fr 2fr",
-    minHeight: "420px",
   },
 
   imageFrame: {
-    minHeight: "420px",
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
     overflow: "hidden",
@@ -363,7 +365,6 @@ const styles: Record<string, CSSProperties> = {
   image: {
     width: "100%",
     height: "100%",
-    objectFit: "cover",
     display: "block",
   },
 
@@ -378,11 +379,7 @@ const styles: Record<string, CSSProperties> = {
     fontStyle: "italic",
   },
 
-  heroContent: {
-    display: "grid",
-    gridTemplateRows: "1fr 1fr",
-    minHeight: "420px",
-  },
+  heroContent: {},
 
   heroInfoBlock: {
     padding: "26px",
@@ -479,11 +476,7 @@ const styles: Record<string, CSSProperties> = {
     textShadow: "0 0 18px rgba(201, 150, 58, 0.25)",
   },
 
-  ruleGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "16px",
-  },
+  ruleGrid: {},
 
   ruleCard: {
     background: "#161210",
@@ -543,11 +536,7 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 700,
   },
 
-  itemGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "10px",
-  },
+  itemGrid: {},
 
   itemCard: {
     background: "#161210",

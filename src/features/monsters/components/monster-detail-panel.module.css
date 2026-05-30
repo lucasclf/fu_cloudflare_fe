@@ -1,0 +1,42 @@
+.heroCard {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  min-height: 420px;
+}
+
+.imageFrame {
+  min-height: 420px;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.heroContent {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  min-height: 420px;
+}
+
+@media (max-width: 640px) {
+  .heroCard {
+    grid-template-columns: 1fr;
+  }
+
+  .imageFrame {
+    min-height: 260px;
+    max-height: 300px;
+    height: 260px;
+    border-right: 0;
+    border-bottom: 1px solid #3a2e22;
+  }
+
+  .heroContent {
+    grid-template-rows: auto;
+    min-height: 0;
+  }
+
+  .image {
+    object-fit: contain;
+  }
+}

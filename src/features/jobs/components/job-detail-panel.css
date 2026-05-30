@@ -4,6 +4,33 @@
   gap: 18px;
 }
 
+.job-detail-panel__back-button {
+  align-self: flex-start;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-background-elevated);
+  color: var(--color-accent);
+  padding: 9px 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.job-detail-panel__back-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+}
+
+.job-detail-panel__back-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 .job-detail-panel__message {
   margin: 0;
   color: var(--color-text-muted);

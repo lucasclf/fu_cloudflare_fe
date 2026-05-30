@@ -14,6 +14,7 @@ type JobsCatalogMainContentProps = {
   detailError: string | null;
   hasActiveFilters: boolean;
   onSelectJob: (jobId: number) => void;
+  onBackToList?: () => void;
 };
 
 export function JobsCatalogMainContent({
@@ -26,6 +27,7 @@ export function JobsCatalogMainContent({
   detailError,
   hasActiveFilters,
   onSelectJob,
+  onBackToList,
 }: JobsCatalogMainContentProps) {
   return (
     <CatalogStateBoundary
@@ -45,6 +47,7 @@ export function JobsCatalogMainContent({
           job={selectedJob ?? selectedCatalogJob}
           loading={detailLoading}
           error={detailError}
+          onBackToList={onBackToList}
         />
       ) : (
         <JobCatalogPanel jobs={jobs} onSelect={onSelectJob} />

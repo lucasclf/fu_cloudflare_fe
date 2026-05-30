@@ -12,11 +12,27 @@ type JobDetailPanelProps = {
   job: Job;
   loading: boolean;
   error: string | null;
+  onBackToList?: () => void;
 };
 
-export function JobDetailPanel({ job, loading, error }: JobDetailPanelProps) {
+export function JobDetailPanel({
+  job,
+  loading,
+  error,
+  onBackToList,
+}: JobDetailPanelProps) {
   return (
     <article className="job-detail-panel">
+      {onBackToList ? (
+        <button
+          type="button"
+          className="job-detail-panel__back-button"
+          onClick={onBackToList}
+        >
+          ← Voltar para classes
+        </button>
+      ) : null}
+
       <JobDetailHero job={job} />
 
       {loading ? (

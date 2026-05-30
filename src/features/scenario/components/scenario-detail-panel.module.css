@@ -1,0 +1,40 @@
+.mainCard {
+  display: grid;
+  grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
+  min-height: 360px;
+}
+
+.mainImageFrame {
+  min-height: 360px;
+}
+
+.smallGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .smallGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .mainCard {
+    grid-template-columns: 1fr;
+  }
+
+  .mainImageFrame {
+    min-height: 220px;
+    max-height: 260px;
+    height: 220px;
+    border-right: 0;
+    border-bottom: 1px solid #3a2e22;
+  }
+
+  .smallGrid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+}

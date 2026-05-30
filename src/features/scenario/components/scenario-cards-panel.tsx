@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { getScenarioImageSrc } from "../lib/get-scenario-image-src";
+import panelStyles from "./scenario-cards-panel.module.css";
 import {
   formatRelationType,
   formatScenarioEntityType,
@@ -21,7 +22,7 @@ export function ScenarioCardsPanel({ entities }: Props) {
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {entities.map((entity) => (
         <ScenarioCard key={entity.uid} entity={entity} />
       ))}
@@ -106,13 +107,6 @@ function ScenarioCard({ entity }: ScenarioCardProps) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "18px",
-    alignItems: "stretch",
-  },
-
   card: {
     minHeight: "420px",
     background: "#161210",

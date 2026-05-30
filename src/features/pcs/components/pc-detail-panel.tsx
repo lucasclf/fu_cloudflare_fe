@@ -1,6 +1,7 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 
 import { getPcImageSrc } from "../lib/get-pc-image-src";
+import panelStyles from "./pc-detail-panel.module.css";
 import {
   formatBondAxis,
   formatDamageType,
@@ -44,8 +45,8 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
         ← Voltar para personagens
       </button>
 
-      <article style={styles.heroCard}>
-        <div style={styles.imageFrame}>
+      <article className={panelStyles.heroCard} style={styles.heroCard}>
+        <div className={panelStyles.imageFrame} style={styles.imageFrame}>
           <img
             src={getPcImageSrc(pc.img_key)}
             alt={pc.name}
@@ -53,7 +54,7 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
           />
         </div>
 
-        <div style={styles.heroContent}>
+        <div className={panelStyles.heroContent} style={styles.heroContent}>
           <div style={styles.heroInfoBlock}>
             <div style={styles.badges}>
               <span style={styles.typeBadge}>Personagem</span>
@@ -203,7 +204,7 @@ function JobsSection({ jobs }: { jobs: PcJob[] }) {
 
   return (
     <CollapsibleSection title="Classes" count={jobs.length}>
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {jobs.map((job) => (
           <article key={job.id} style={styles.smallCard}>
             <div style={styles.cardHeader}>
@@ -265,7 +266,7 @@ function SpellsSection({ spells }: { spells: PcSpell[] }) {
       count={spells.length}
       defaultOpen={false}
     >
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {spells.map((spell) => (
           <SpellCard key={getPcSpellKey(spell)} spell={spell} />
         ))}
@@ -293,7 +294,7 @@ function ArcanasSection({ arcanas }: { arcanas: PcArcana[] }) {
       count={arcanas.length}
       defaultOpen={false}
     >
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {arcanas.map((arcana) => (
           <SpellCard key={`arcana-${arcana.id}`} spell={arcana} />
         ))}
@@ -355,7 +356,7 @@ function EquipmentSection({ pc }: { pc: PcDetail }) {
 
   return (
     <CollapsibleSection title="Equipamentos" count={equipment.length}>
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {equipment.map(({ slot, item }) => (
           <ItemCard
             key={`${slot}-${item.id}`}
@@ -379,7 +380,7 @@ function InventorySection({ inventories }: { inventories: PcInventoryItem[] }) {
       count={inventories.length}
       defaultOpen={false}
     >
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {inventories.map((entry) => (
           <ItemCard
             key={`${entry.item.id}-${entry.quantity}`}
@@ -452,7 +453,7 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
       count={bonds.length}
       defaultOpen={false}
     >
-      <div style={styles.cardGridTwo}>
+      <div className={panelStyles.cardGridTwo}>
         {bonds.map((bond, index) => {
           const axes = [
             formatBondAxis(bond.admiration_axis),
@@ -616,13 +617,9 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid #3a2e22",
     borderRadius: "12px",
     overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "1fr 2fr",
-    minHeight: "420px",
   },
 
   imageFrame: {
-    minHeight: "420px",
     background: "#0e0c0a",
     borderRight: "1px solid #3a2e22",
     display: "flex",
@@ -640,11 +637,7 @@ const styles: Record<string, CSSProperties> = {
     boxSizing: "border-box",
   },
 
-  heroContent: {
-    display: "grid",
-    gridTemplateRows: "1fr 1fr",
-    minHeight: "420px",
-  },
+  heroContent: {},
 
   heroInfoBlock: {
     padding: "26px",
@@ -858,11 +851,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "16px",
   },
 
-  cardGridTwo: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "14px",
-  },
+  cardGridTwo: {},
 
   list: {
     display: "flex",

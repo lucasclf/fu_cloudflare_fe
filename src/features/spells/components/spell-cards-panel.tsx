@@ -161,6 +161,7 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "8px",
     background: "#110e0c",
     padding: "9px 10px",
+    minWidth: 0,
   },
   infoLabel: {
     color: "#7a6e5a",
@@ -174,6 +175,8 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "14px",
     fontWeight: 700,
     lineHeight: 1.25,
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
   },
   empty: {
     color: "#7a6e5a",
