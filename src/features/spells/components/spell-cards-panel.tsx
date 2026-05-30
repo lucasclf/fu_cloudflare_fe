@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import panelStyles from "./spell-cards-panel.module.css";
 import {
   getSpellSourceName,
   isSpellOffensive,
@@ -16,7 +17,7 @@ export function SpellCardsPanel({ spells }: Props) {
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {spells.map((spell) => (
         <SpellCard key={getSpellCardKey(spell)} spell={spell} />
       ))}
@@ -85,12 +86,6 @@ function Info({ label, value }: InfoProps) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "18px",
-    alignItems: "stretch",
-  },
   card: {
     minHeight: "280px",
     background: "#161210",

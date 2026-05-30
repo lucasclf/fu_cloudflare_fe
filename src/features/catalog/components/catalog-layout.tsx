@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { ReactNode } from "react";
 
 import { PageHeader } from "../../../shared/components/page-header";
@@ -28,6 +29,8 @@ export function CatalogLayout({
   sidebarContent,
   mainContent,
 }: CatalogLayoutProps) {
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
   return (
     <div className="catalog-layout">
       <aside className="catalog-layout__sidebar">
@@ -38,29 +41,50 @@ export function CatalogLayout({
             actions={categorySwitcher}
             variant="compact"
           />
+
+          <button
+            type="button"
+            className="catalog-layout__filter-toggle"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen((open) => !open)}
+          >
+            <span>Filtros</span>
+            <span
+              className="catalog-layout__filter-toggle-icon"
+              aria-hidden="true"
+            >
+              {filtersOpen ? "▲" : "▼"}
+            </span>
+          </button>
         </div>
 
-        <div className="catalog-layout__search-wrapper">
-          <SearchField
-            id="catalog-search"
-            label={searchPlaceholder}
-            hideLabel
-            placeholder={searchPlaceholder}
-            value={searchValue}
-            onChange={onSearchChange}
-            className="catalog-layout__search-field"
-          />
+        <div
+          className={`catalog-layout__collapsible ${filtersOpen ? "catalog-layout__collapsible--open" : ""}`}
+        >
+          <div className="catalog-layout__search-wrapper">
+            <SearchField
+              id="catalog-search"
+              label={searchPlaceholder}
+              hideLabel
+              placeholder={searchPlaceholder}
+              value={searchValue}
+              onChange={onSearchChange}
+              className="catalog-layout__search-field"
+            />
 
-          {searchExtraContent ? (
-            <div className="catalog-layout__search-extra">
-              {searchExtraContent}
-            </div>
-          ) : null}
-        </div>
+            {searchExtraContent ? (
+              <div className="catalog-layout__search-extra">
+                {searchExtraContent}
+              </div>
+            ) : null}
+          </div>
 
-        <div className="catalog-layout__sidebar-list">
-          <p className="catalog-layout__section-header">{sidebarHeaderTitle}</p>
-          {sidebarContent}
+          <div className="catalog-layout__sidebar-list">
+            <p className="catalog-layout__section-header">
+              {sidebarHeaderTitle}
+            </p>
+            {sidebarContent}
+          </div>
         </div>
       </aside>
 

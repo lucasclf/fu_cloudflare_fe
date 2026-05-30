@@ -85,10 +85,15 @@
   box-sizing: border-box;
 }
 
+img {
+  max-width: 100%;
+}
+
 html {
   min-width: 320px;
   min-height: 100%;
   margin: 0;
+  overflow-x: hidden;
   color: var(--color-text);
   background-color: var(--color-background);
 }
@@ -97,6 +102,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   color: var(--color-text);
   background-color: var(--color-background);
 }

@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { getMonsterImageSrc } from "../lib/get-monster-image-src";
 import { formatMonsterType } from "../lib/monster-formatters";
 import type { MonsterSummary } from "../types/monster";
+import panelStyles from "./monster-cards-panel.module.css";
 
 type Props = {
   monsters: MonsterSummary[];
@@ -19,7 +20,7 @@ export function MonsterCardsPanel({
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {monsters.map((monster) => (
         <MonsterSummaryCard
           key={monster.id}
@@ -94,13 +95,6 @@ function Die({ label, value }: { label: string; value: string }) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "18px",
-    alignItems: "stretch",
-  },
-
   card: {
     minHeight: "210px",
     border: "1px solid #3a2e22",

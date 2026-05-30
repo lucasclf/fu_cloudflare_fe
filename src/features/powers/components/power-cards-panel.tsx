@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import panelStyles from "./power-cards-panel.module.css";
 import {
   formatMaxLevel,
   formatPowerType,
@@ -17,7 +18,7 @@ export function PowerCardsPanel({ powers }: Props) {
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {powers.map((power) => (
         <PowerCard key={power.id} power={power} />
       ))}
@@ -79,13 +80,6 @@ function PowerCard({ power }: PowerCardProps) {
 }
 
 const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "18px",
-    alignItems: "stretch",
-  },
-
   card: {
     minHeight: "260px",
     background: "#161210",

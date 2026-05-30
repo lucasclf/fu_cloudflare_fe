@@ -79,6 +79,10 @@
     flex-direction: column;
   }
 
+  .item-card__title {
+    font-size: 1.25rem;
+  }
+
   .item-card__image-wrapper {
     width: 72px;
     height: 72px;
