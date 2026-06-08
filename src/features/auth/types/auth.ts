@@ -7,8 +7,10 @@ export type AuthenticatedUser = {
   isSuperUser: boolean;
 };
 
+// O token não é armazenado no frontend — vive exclusivamente no cookie
+// HttpOnly gerenciado pelo navegador. AuthResult só carrega os dados do usuário
+// necessários para a interface.
 export type AuthResult = {
-  token: string;
   user: AuthenticatedUser;
 };
 

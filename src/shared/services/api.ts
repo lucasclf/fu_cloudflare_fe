@@ -1,4 +1,4 @@
-﻿const DEFAULT_HOST = "https://fudb.cqn-lucas.workers.dev";
+﻿const DEFAULT_HOST = "https://api.fu-wiki.cqn.xyz.br";
 
 const configured = import.meta.env.VITE_API_BASE_URL?.trim();
 

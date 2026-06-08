@@ -12,9 +12,10 @@ export function mapUserDtoToUser(dto: UserDto): AuthenticatedUser {
   };
 }
 
+// O token (dto.token) existe na resposta do backend mas não é armazenado:
+// o navegador recebe e gerencia o JWT via cookie HttpOnly (Set-Cookie).
 export function mapAuthResultDtoToAuthResult(dto: AuthResultDto): AuthResult {
   return {
-    token: dto.token,
     user: mapUserDtoToUser(dto.user),
   };
 }

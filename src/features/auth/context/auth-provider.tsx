@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 
 import { login as requestLogin } from "../api/login";
+import { logout as requestLogout } from "../api/logout";
 import {
   clearAuthSession,
   getAuthSession,
@@ -19,10 +20,9 @@ type AuthProviderProps = {
 /**
  * Único ponto da aplicação que conhece o estado de autenticação.
  *
- * O JWT em si vive exclusivamente em auth-session-store (memória); este
- * provider apenas projeta esse estado para a árvore React e oferece as
- * operações de login/logout/modo visitante, para que nenhum componente
- * precise ler, gravar ou remover o token diretamente.
+ * O JWT vive exclusivamente no cookie HttpOnly gerenciado pelo navegador —
+ * este provider mantém apenas os dados do usuário necessários para a UI e
+ * coordena login/logout com o backend.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   const session = useSyncExternalStore(
@@ -38,7 +38,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setIsGuest(false);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    // Tenta limpar o cookie no backend antes de apagar o estado local.
+    // Mesmo que a chamada falhe (sem conexão, sessão já expirada), o estado
+    // local é limpo — o usuário sempre consegue sair da interface.
+    try {
+      await requestLogout();
+    } catch {
+      // falha silenciosa intencional
+    }
     clearAuthSession();
     setIsGuest(false);
   }, []);

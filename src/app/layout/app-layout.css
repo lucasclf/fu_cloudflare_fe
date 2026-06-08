@@ -1,6 +1,26 @@
-.app-layout__user-menu {
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-layout__topbar {
   position: fixed;
-  top: var(--space-4);
-  right: var(--space-4);
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 64px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-background-elevated);
+  box-shadow: var(--shadow-card);
   z-index: 40;
+}
+
+.app-layout__content {
+  flex: 1;
+  padding-top: 64px;
 }

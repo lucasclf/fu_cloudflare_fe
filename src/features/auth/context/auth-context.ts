@@ -8,7 +8,7 @@ export type AuthContextValue = {
   status: AuthStatus;
   user: AuthenticatedUser | null;
   login: (input: LoginInput, signal?: AbortSignal) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   continueAsGuest: () => void;
 };
 

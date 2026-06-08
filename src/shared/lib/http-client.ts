@@ -56,6 +56,7 @@ export async function httpGet<T>(
   const response = await fetch(url, {
     method: "GET",
     signal: options.signal,
+    credentials: "include",
   });
 
   const body = await parseJsonResponse<T>(response);
@@ -87,6 +88,7 @@ export async function httpPost<T>(
   const response = await fetch(url, {
     method: "POST",
     signal: options.signal,
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
       ...options.headers,

@@ -45,9 +45,9 @@ export function UserMenu() {
     return null;
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     setIsOpen(false);
-    logout();
+    await logout();
     navigate("/login", { replace: true });
   }
 

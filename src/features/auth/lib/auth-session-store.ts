@@ -1,20 +1,14 @@
 import type { AuthenticatedUser } from "../types/auth";
 
+// O JWT vive exclusivamente no cookie HttpOnly gerenciado pelo navegador —
+// o JavaScript da página nunca o acessa. A sessão em memória carrega apenas
+// os dados do usuário necessários para a UI.
 export type AuthSession = {
-  token: string;
   user: AuthenticatedUser;
 };
 
 type Listener = () => void;
 
-/**
- * Estado de sessão mantido somente em memória (variável de módulo).
- *
- * Não persiste em localStorage/sessionStorage/cookies: isso reduz a janela de
- * exposição do JWT a scripts maliciosos (XSS) e evita que ele fique disponível
- * indefinidamente em um storage acessível por qualquer script da página. Como
- * contrapartida, a sessão não sobrevive a um reload — ver auth-context.tsx.
- */
 let session: AuthSession | null = null;
 const listeners = new Set<Listener>();
 
@@ -26,10 +20,6 @@ function notifyListeners(): void {
 
 export function getAuthSession(): AuthSession | null {
   return session;
-}
-
-export function getAuthToken(): string | null {
-  return session?.token ?? null;
 }
 
 export function setAuthSession(next: AuthSession): void {

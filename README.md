@@ -31,7 +31,7 @@ cp .env.example .env.local
 ```
 
 ```env
-VITE_API_BASE_URL=https://fudb.cqn-lucas.workers.dev
+VITE_API_BASE_URL=https://api.fu-wiki.cqn.xyz.br
 ```
 
 ## Rodando localmente
@@ -63,11 +63,18 @@ A aplicação fica disponível em `http://localhost:5173`.
 
 A aplicação possui um fluxo de autenticação completo, integrado ao FUDB:
 
-- **Login** (`/login`) — autentica contra `POST /v1/auth/login` e recebe um JWT
-- **Cadastro** (`/register`) — cria uma conta nova via `POST /v1/auth/register`
+- **Login** (`/login`) — autentica contra `POST /v1/auth/login`; o backend retorna os dados do usuário no corpo e define um cookie de sessão `HttpOnly`
+- **Cadastro** (`/register`) — cria uma conta nova via `POST /v1/auth/register`; sem auto-login — redireciona para o login após o cadastro
+- **Logout** — chama `POST /v1/auth/logout` no backend (que instrui o navegador a descartar o cookie) e limpa o estado local
 - **Modo visitante** — a opção "Entrar sem login" permite navegar pelo catálogo sem autenticação; nesse modo, um botão "Entrar" ocupa o lugar do menu do usuário e leva de volta à tela de login
 
-O JWT é mantido **somente em memória** (`features/auth/lib/auth-session-store.ts`), nunca em `localStorage`/`sessionStorage`/cookies — isso reduz a janela de exposição do token a scripts maliciosos (XSS). Como contrapartida, a sessão não sobrevive a um reload da página, exigindo novo login.
+### Armazenamento do JWT — cookie HttpOnly
+
+O token JWT **nunca é acessível ao JavaScript**: o backend emite um cookie `HttpOnly; Secure; SameSite=Lax` no login e o navegador o gerencia e envia automaticamente. Mesmo que um script malicioso seja injetado na página (XSS), ele não consegue ler nem exfiltrar o token (`document.cookie` não o exibe).
+
+Todas as chamadas à API usam `credentials: "include"` (`shared/lib/http-client.ts`) para que o navegador inclua o cookie automaticamente — nenhum código de feature precisa anexar headers de autenticação manualmente.
+
+O estado em memória (`features/auth/lib/auth-session-store.ts`) guarda apenas os dados do usuário necessários para a interface (nome, e-mail, etc.), não o token. Como o token fica no cookie do navegador, a sessão **sobrevive a reloads** enquanto o cookie não expirar (30 dias, igual ao JWT).
 
 Os formulários de login e cadastro validam os campos no cliente (obrigatoriedade, formato de e-mail, tamanho mínimo de senha e confirmação de senha reativa) e traduzem erros da API em mensagens amigáveis antes de exibi-las ao usuário.
 
