@@ -1,15 +1,35 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 
+import { AppLayout } from "../layout/app-layout";
 import { PublicLayout } from "../layout/public-layout";
+import { LoginPage } from "../../features/auth/pages/login-page";
+import { RegisterPage } from "../../features/auth/pages/register-page";
 import { HomePage } from "../../pages/home-page";
 
 export const router = createBrowserRouter([
   {
-    element: <PublicLayout />,
+    path: "/",
+    element: <Navigate to="/login" replace />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
+    element: <AppLayout />,
     children: [
       {
-        path: "/",
-        element: <HomePage />,
+        element: <PublicLayout />,
+        children: [
+          {
+            path: "/home",
+            element: <HomePage />,
+          },
+        ],
       },
     ],
   },

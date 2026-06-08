@@ -1,0 +1,6 @@
+.app-layout__user-menu {
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 40;
+}
