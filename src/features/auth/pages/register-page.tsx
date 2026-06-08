@@ -123,7 +123,6 @@ export function RegisterPage() {
           value={confirmPassword}
           onChange={setConfirmPassword}
           autoComplete="new-password"
-          minLength={MIN_PASSWORD_LENGTH}
           required
           invalid={passwordsDiffer}
           errorMessage="As senhas não coincidem."
