@@ -8,8 +8,10 @@ const fetchPublicJobCatalogDtos =
 
 export async function getPublicJobCatalog(
   signal?: AbortSignal,
+  globalOnly?: boolean,
 ): Promise<JobCatalogItem[]> {
-  const dtos = await fetchPublicJobCatalogDtos(signal);
+  const params = globalOnly ? { scope: "global" } : undefined;
+  const dtos = await fetchPublicJobCatalogDtos(signal, params);
 
   return mapJobCatalogItemDtosToJobCatalogItems(dtos);
 }

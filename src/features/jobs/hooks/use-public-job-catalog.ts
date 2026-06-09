@@ -7,10 +7,10 @@ import {
 import { getPublicJobCatalog } from "../api/get-public-job-catalog";
 import type { JobCatalogItem } from "../types/job";
 
-export function usePublicJobCatalog(): AsyncResourceState<JobCatalogItem[]> {
+export function usePublicJobCatalog(globalOnly: boolean): AsyncResourceState<JobCatalogItem[]> {
   const loadJobCatalog = useCallback((signal: AbortSignal) => {
-    return getPublicJobCatalog(signal);
-  }, []);
+    return getPublicJobCatalog(signal, globalOnly);
+  }, [globalOnly]);
 
   return useAsyncResource<JobCatalogItem[]>(loadJobCatalog);
 }

@@ -1,8 +1,9 @@
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import type { ReactNode } from "react";
 
 import { login as requestLogin } from "../api/login";
 import { logout as requestLogout } from "../api/logout";
+import { getMe } from "../api/get-me";
 import {
   clearAuthSession,
   getAuthSession,
@@ -31,6 +32,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     getAuthSession,
   );
   const [isGuest, setIsGuest] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    getMe().then((result) => {
+      if (!cancelled && result) {
+        setAuthSession(result);
+      }
+      if (!cancelled) {
+        setInitializing(false);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const login = useCallback(async (input: LoginInput, signal?: AbortSignal) => {
     const result = await requestLogin(input, signal);
@@ -64,12 +81,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
+      initializing,
       user: session?.user ?? null,
       login,
       logout,
       continueAsGuest,
     }),
-    [status, session, login, logout, continueAsGuest],
+    [status, initializing, session, login, logout, continueAsGuest],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

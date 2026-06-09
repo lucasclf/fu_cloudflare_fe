@@ -5,6 +5,7 @@ import { PublicLayout } from "../layout/public-layout";
 import { LoginPage } from "../../features/auth/pages/login-page";
 import { RegisterPage } from "../../features/auth/pages/register-page";
 import { HomePage } from "../../pages/home-page";
+import { CampaignsPage } from "../../features/campaigns/pages/campaigns-page";
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
           {
             path: "/home",
             element: <HomePage />,
+          },
+          {
+            path: "/campaigns",
+            element: <CampaignsPage />,
           },
         ],
       },

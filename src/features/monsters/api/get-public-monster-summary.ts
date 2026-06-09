@@ -4,8 +4,10 @@ import type { MonsterSummary } from "../types/monster";
 
 export async function getPublicMonsterSummary(
   signal?: AbortSignal,
+  globalOnly?: boolean,
 ): Promise<MonsterSummary[]> {
-  return httpGet<MonsterSummary[]>(`${API_BASE_URL}/public/monsters/summary`, {
-    signal,
-  });
+  const url = globalOnly
+    ? `${API_BASE_URL}/public/monsters/summary?scope=global`
+    : `${API_BASE_URL}/public/monsters/summary`;
+  return httpGet<MonsterSummary[]>(url, { signal });
 }

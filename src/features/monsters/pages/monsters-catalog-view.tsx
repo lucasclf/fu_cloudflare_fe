@@ -6,6 +6,7 @@ import { ErrorState } from "../../../shared/components/error-state";
 import { LoadingState } from "../../../shared/components/loading-state";
 import { MONSTERS_CATALOG_CONFIG } from "../config/monsters-catalog-config";
 import { usePublicMonsterSummary } from "../hooks/use-public-monster-summary";
+import { useAuth } from "../../auth/hooks/use-auth";
 import { usePublicMonsterDetail } from "../hooks/use-public-monster-detail";
 import { useMonstersCatalogFilters } from "../hooks/use-monsters-catalog-filters";
 import { MonsterCardsPanel } from "../components/monster-cards-panel";
@@ -23,7 +24,9 @@ export function MonstersCatalogView({
   category,
   onCategoryChange,
 }: MonstersCatalogViewProps) {
-  const { data: monsters, loading, error } = usePublicMonsterSummary();
+  const { status } = useAuth();
+  const globalOnly = status !== "authenticated";
+  const { data: monsters, loading, error } = usePublicMonsterSummary(globalOnly);
   const monstersList = useMemo(() => monsters ?? [], [monsters]);
 
   const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(

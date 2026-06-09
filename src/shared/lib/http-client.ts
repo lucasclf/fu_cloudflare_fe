@@ -9,6 +9,10 @@ type HttpPostOptions = {
   headers?: Record<string, string>;
 };
 
+type HttpDeleteOptions = {
+  signal?: AbortSignal;
+};
+
 const FALLBACK_ERROR_MESSAGE =
   "Não foi possível concluir a operação. Verifique os dados informados e tente novamente.";
 
@@ -115,4 +119,28 @@ export async function httpPost<T>(
   }
 
   return body.data;
+}
+
+export async function httpDelete(
+  url: string,
+  options: HttpDeleteOptions = {},
+): Promise<void> {
+  const response = await fetch(url, {
+    method: "DELETE",
+    signal: options.signal,
+    credentials: "include",
+  });
+
+  if (response.status === 204) {
+    return;
+  }
+
+  const body = await parseJsonResponse<never>(response);
+
+  if (!response.ok) {
+    if (body && !body.success) {
+      throw new Error(resolveErrorMessage(body.error));
+    }
+    throw new Error(`Requisição falhou com status ${response.status}.`);
+  }
 }

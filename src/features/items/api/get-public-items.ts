@@ -5,8 +5,9 @@ import type { Item } from "../types/item";
 
 const fetchPublicItemDtos = createPublicListFetcher<ItemDto>("items");
 
-export async function getPublicItems(signal?: AbortSignal): Promise<Item[]> {
-  const itemDtos = await fetchPublicItemDtos(signal);
+export async function getPublicItems(signal?: AbortSignal, globalOnly?: boolean): Promise<Item[]> {
+  const params = globalOnly ? { scope: "global" } : undefined;
+  const itemDtos = await fetchPublicItemDtos(signal, params);
 
   return mapItemDtosToItems(itemDtos);
 }

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export type AsyncResourceState<TData> = {
   data: TData | null;
   loading: boolean;
   error: string | null;
+  reload: () => void;
 };
 
 type AsyncResourceLoader<TData> = (signal: AbortSignal) => Promise<TData>;
@@ -11,7 +12,8 @@ type AsyncResourceLoader<TData> = (signal: AbortSignal) => Promise<TData>;
 export function useAsyncResource<TData>(
   loader: AsyncResourceLoader<TData>,
 ): AsyncResourceState<TData> {
-  const [state, setState] = useState<AsyncResourceState<TData>>({
+  const [reloadKey, setReloadKey] = useState(0);
+  const [state, setState] = useState<Omit<AsyncResourceState<TData>, "reload">>({
     data: null,
     loading: true,
     error: null,
@@ -58,9 +60,11 @@ export function useAsyncResource<TData>(
     void loadResource();
 
     return () => controller.abort();
-  }, [loader]);
+  }, [loader, reloadKey]);
 
-  return state;
+  const reload = useCallback(() => setReloadKey((k) => k + 1), []);
+
+  return { ...state, reload };
 }
 
 function isAbortError(error: unknown): boolean {

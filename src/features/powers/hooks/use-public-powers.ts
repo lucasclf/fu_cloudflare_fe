@@ -7,10 +7,10 @@ import {
 import { getPublicPowers } from "../api/get-public-powers";
 import type { Power } from "../types/power";
 
-export function usePublicPowers(): AsyncResourceState<Power[]> {
+export function usePublicPowers(globalOnly: boolean): AsyncResourceState<Power[]> {
   const loader = useCallback((signal: AbortSignal) => {
-    return getPublicPowers(signal);
-  }, []);
+    return getPublicPowers(signal, globalOnly);
+  }, [globalOnly]);
 
   return useAsyncResource<Power[]>(loader);
 }

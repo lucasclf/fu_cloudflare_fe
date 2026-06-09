@@ -13,12 +13,12 @@ import "./app-layout.css";
  * da barra para não ficar coberto por ela.
  */
 export function AppLayout() {
-  const { status } = useAuth();
+  const { status, initializing } = useAuth();
 
   return (
     <div className="app-layout">
       <header className="app-layout__topbar">
-        {status === "authenticated" ? (
+        {initializing ? null : status === "authenticated" ? (
           <UserMenu />
         ) : (
           <GuestLoginButton />

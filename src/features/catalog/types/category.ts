@@ -33,6 +33,14 @@ export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
   scenario: "Cenário",
 };
 
+export const GUEST_CATEGORIES = [
+  "items",
+  "bestiary",
+  "spells",
+  "powers",
+  "classes",
+] as const satisfies readonly CatalogCategory[];
+
 export const CATALOG_CATEGORY_OPTIONS = CATALOG_CATEGORIES.map((category) => ({
   value: category,
   label: CATEGORY_LABELS[category],

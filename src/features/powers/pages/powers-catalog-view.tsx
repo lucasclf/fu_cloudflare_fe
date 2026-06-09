@@ -12,6 +12,7 @@ import {
   type PowerTypeFilterValue,
 } from "../components/power-type-filter";
 import { usePublicPowers } from "../hooks/use-public-powers";
+import { useAuth } from "../../auth/hooks/use-auth";
 import {
   ALL_CLASSES_FILTER,
   UNRESTRICTED_CLASS_FILTER,
@@ -29,7 +30,9 @@ export function PowersCatalogView({
   category,
   onCategoryChange,
 }: PowersCatalogViewProps) {
-  const { data: powers, loading, error } = usePublicPowers();
+  const { status } = useAuth();
+  const globalOnly = status !== "authenticated";
+  const { data: powers, loading, error } = usePublicPowers(globalOnly);
   const powersList = useMemo(() => powers ?? [], [powers]);
 
   const {

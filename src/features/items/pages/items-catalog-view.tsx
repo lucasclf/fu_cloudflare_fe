@@ -7,6 +7,7 @@ import { ItemsCatalogSidebarContent } from "../components/items-catalog-sidebar-
 import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import { useItemsCatalogFilters } from "../hooks/use-items-catalog-filters";
 import { usePublicItems } from "../hooks/use-public-items";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
 type ItemsCatalogViewProps = {
   category: CatalogCategory;
@@ -17,7 +18,9 @@ export function ItemsCatalogView({
   category,
   onCategoryChange,
 }: ItemsCatalogViewProps) {
-  const { data: items, loading, error } = usePublicItems();
+  const { status } = useAuth();
+  const globalOnly = status !== "authenticated";
+  const { data: items, loading, error } = usePublicItems(globalOnly);
 
   const {
     search,

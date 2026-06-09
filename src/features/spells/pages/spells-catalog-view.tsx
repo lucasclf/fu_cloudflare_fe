@@ -9,6 +9,7 @@ import { SpellCardsPanel } from "../components/spell-cards-panel";
 import { SpellOffensiveToggle } from "../components/spell-offensive-toggle";
 import { SPELLS_CATALOG_CONFIG } from "../config/spells-catalog-config";
 import { usePublicSpells } from "../hooks/use-public-spells";
+import { useAuth } from "../../auth/hooks/use-auth";
 import { useSpellsCatalogFilters } from "../hooks/use-spells-catalog-filters";
 
 import styles from "./spells-catalog-view.module.css";
@@ -22,7 +23,9 @@ export function SpellsCatalogView({
   category,
   onCategoryChange,
 }: SpellsCatalogViewProps) {
-  const { data: spells, loading, error } = usePublicSpells();
+  const { status } = useAuth();
+  const globalOnly = status !== "authenticated";
+  const { data: spells, loading, error } = usePublicSpells(globalOnly);
   const spellsList = useMemo(() => spells ?? [], [spells]);
 
   const {

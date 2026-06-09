@@ -7,10 +7,10 @@ import {
 import { getPublicItems } from "../api/get-public-items";
 import type { Item } from "../types/item";
 
-export function usePublicItems(): AsyncResourceState<Item[]> {
+export function usePublicItems(globalOnly: boolean): AsyncResourceState<Item[]> {
   const loadItems = useCallback((signal: AbortSignal) => {
-    return getPublicItems(signal);
-  }, []);
+    return getPublicItems(signal, globalOnly);
+  }, [globalOnly]);
 
   return useAsyncResource<Item[]>(loadItems);
 }

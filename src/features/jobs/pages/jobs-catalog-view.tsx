@@ -8,6 +8,7 @@ import { JobsCatalogSidebarContent } from "../components/jobs-catalog-sidebar-co
 import { JOBS_CATALOG_CONFIG } from "../config/jobs-catalog-config";
 import { useJobsCatalogFilters } from "../hooks/use-jobs-catalog-filters";
 import { usePublicJobCatalog } from "../hooks/use-public-job-catalog";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { usePublicJobDetail } from "../hooks/use-public-job-detail";
 import { useSelectedJob } from "../hooks/use-selected-job";
 
@@ -20,11 +21,13 @@ export function JobsCatalogView({
   category,
   onCategoryChange,
 }: JobsCatalogViewProps) {
+  const { status } = useAuth();
+  const globalOnly = status !== "authenticated";
   const {
     data: jobs,
     loading: catalogLoading,
     error: catalogError,
-  } = usePublicJobCatalog();
+  } = usePublicJobCatalog(globalOnly);
 
   const {
     search,

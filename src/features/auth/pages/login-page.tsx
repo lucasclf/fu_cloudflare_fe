@@ -36,7 +36,7 @@ export function LoginPage() {
 
     try {
       await login({ email, password });
-      navigate("/home", { replace: true });
+      navigate("/campaigns", { replace: true });
     } catch (submitError) {
       setError(
         submitError instanceof Error
