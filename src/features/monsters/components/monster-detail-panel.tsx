@@ -262,7 +262,7 @@ function getActionInfoItems(action: MonsterAction) {
     },
     {
       label: "Dano",
-      value: action.damage_type,
+      value: action.damage_type ? formatAffinityType(action.damage_type) : action.damage_type,
     },
     {
       label: "Custo",

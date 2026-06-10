@@ -59,3 +59,23 @@ export function capitalizeFirstLetter(value: string): string {
 
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
+
+const DAMAGE_TYPE_LABELS: Record<string, string> = {
+  physical: "Físico",
+  air: "Ar",
+  bolt: "Raio",
+  dark: "Trevas",
+  earth: "Terra",
+  fire: "Fogo",
+  ice: "Gelo",
+  light: "Luz",
+  poison: "Veneno",
+};
+
+export function formatDamageType(value: string | null | undefined): string {
+  if (!hasText(value)) {
+    return "—";
+  }
+
+  return DAMAGE_TYPE_LABELS[value] ?? capitalizeFirstLetter(value);
+}

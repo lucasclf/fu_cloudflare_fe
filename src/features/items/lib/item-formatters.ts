@@ -1,3 +1,5 @@
+import { formatDamageType } from "@/shared/lib/text-formatters";
+
 export function formatItemDefenseValue(
   dice: string | null | undefined,
   bonus: number | string | null | undefined,
@@ -58,7 +60,7 @@ export function formatItemDamageWithType(
     return resolvedDamage;
   }
 
-  return `${resolvedDamage} | ${formatItemCapitalizedValue(damageType)}`;
+  return `${resolvedDamage} | ${formatDamageType(damageType)}`;
 }
 
 export function formatItemCapitalizedValue(

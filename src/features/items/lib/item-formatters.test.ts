@@ -91,12 +91,12 @@ describe("item-formatters", () => {
       expect(formatItemDamageWithType("d8", null)).toBe("d8");
     });
 
-    it("retorna dano com tipo capitalizado", () => {
-      expect(formatItemDamageWithType("d10", "fogo")).toBe("d10 | Fogo");
+    it("retorna dano com tipo traduzido", () => {
+      expect(formatItemDamageWithType("d10", "fire")).toBe("d10 | Fogo");
     });
 
     it("usa fallback quando dano é nulo", () => {
-      expect(formatItemDamageWithType(null, "gelo")).toBe("— | Gelo");
+      expect(formatItemDamageWithType(null, "ice")).toBe("— | Gelo");
     });
   });
 
