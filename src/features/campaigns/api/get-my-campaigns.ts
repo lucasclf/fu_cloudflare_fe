@@ -8,6 +8,7 @@ function mapDto(dto: UserCampaignDto): UserCampaign {
     name: dto.name,
     description: dto.description,
     imgKey: dto.img_key,
+    status: dto.status,
     role: dto.role,
     joinedAt: dto.joined_at,
   };

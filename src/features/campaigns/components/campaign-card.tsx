@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { UserCampaign } from "../types/campaign";
 import "./campaign-card.css";
 
@@ -7,8 +8,20 @@ type CampaignCardProps = {
 };
 
 export function CampaignCard({ campaign, onDelete }: CampaignCardProps) {
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate(`/campaigns/${campaign.id}`);
+  }
+
   return (
-    <article className="campaign-card">
+    <article
+      className="campaign-card"
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleClick(); }}
+    >
       {onDelete ? (
         <button
           type="button"

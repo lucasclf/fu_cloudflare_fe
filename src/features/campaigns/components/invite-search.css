@@ -1,0 +1,113 @@
+.invite-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.invite-search__input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.invite-search__icon {
+  position: absolute;
+  left: var(--space-3);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.invite-search__input {
+  width: 100%;
+  background: var(--color-background-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 14px + var(--space-2));
+  font-size: 0.875rem;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.invite-search__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.invite-search__input:focus {
+  border-color: var(--color-border-strong);
+}
+
+.invite-search__spinner {
+  position: absolute;
+  right: var(--space-3);
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: invite-spin 0.6s linear infinite;
+}
+
+@keyframes invite-spin {
+  to { transform: rotate(360deg); }
+}
+
+.invite-search__error {
+  font-size: 0.8125rem;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.invite-search__results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.invite-search__result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.invite-search__result:last-child {
+  border-bottom: none;
+}
+
+.invite-search__result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.invite-search__result-nickname {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invite-search__result-email {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invite-search__empty {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: var(--space-2) 0;
+}
