@@ -210,9 +210,30 @@ export type ItemType =
   | "arma" | "armadura" | "escudo"
   | "acessorio" | "artefato" | "outros";
 
+export type WeaponCategory =
+  | "arcana" | "arco" | "luta" | "adaga" | "arma_de_fogo"
+  | "malho" | "pesado" | "lança" | "espada" | "arremesso";
+
+export type DamageType =
+  | "physical" | "air" | "bolt" | "dark"
+  | "earth" | "fire" | "ice" | "light" | "poison";
+
 export type CreateItemInput = {
   name: string;
   item_type: ItemType;
   description?: string | null;
+  img_key?: string | null;
   cost?: number | null;
+  weapon_category?: WeaponCategory | null;
+  accuracy?: string | null;
+  damage?: string | null;
+  damage_type?: DamageType | null;
+  grip?: string | null;
+  distance?: string | null;
+  defense_dice?: string | null;
+  defense_bonus?: number | null;
+  magic_defense_dice?: string | null;
+  magic_defense_bonus?: number | null;
+  initiative?: string | null;
+  is_martial?: boolean | null;
 };

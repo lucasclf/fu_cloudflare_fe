@@ -1,6 +1,5 @@
 import { ItemsCatalogView } from "../../items/pages/items-catalog-view";
 import { JobsCatalogView } from "../../jobs/pages/jobs-catalog-view";
-import { SessionsCatalogView } from "../../sessions/pages/sessions-catalog-view";
 import { SpellsCatalogView } from "../../spells/pages/spells-catalog-view";
 import { PowersCatalogView } from "../../powers/pages/powers-catalog-view";
 import { ScenarioCatalogView } from "../../scenario/pages/scenario-catalog-view";
@@ -16,14 +15,6 @@ type CatalogPageProps = {
 
 export function CatalogPage({ category, onCategoryChange }: CatalogPageProps) {
   switch (category) {
-    case "sessions":
-      return (
-        <SessionsCatalogView
-          category={category}
-          onCategoryChange={onCategoryChange}
-        />
-      );
-
     case "items":
       return (
         <ItemsCatalogView

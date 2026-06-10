@@ -7,6 +7,7 @@ import {
   normalizeSearchText,
   renderOptionalValue,
   renderTokenLabel,
+  toSnakeCaseKey,
 } from "./text-formatters";
 
 describe("text-formatters", () => {
@@ -61,6 +62,16 @@ describe("text-formatters", () => {
 
     it("permite configurar quantidade de partes", () => {
       expect(getInitials("Mestre das Arcanas", 3)).toBe("MDA");
+    });
+  });
+
+  describe("toSnakeCaseKey", () => {
+    it("converte nome para snake_case sem acentos", () => {
+      expect(toSnakeCaseKey("Espada Élfica")).toBe("espada_elfica");
+    });
+
+    it("remove caracteres especiais e underscores nas pontas", () => {
+      expect(toSnakeCaseKey("  Anel de Fogo (Raro)!  ")).toBe("anel_de_fogo_raro");
     });
   });
 

@@ -1,5 +1,4 @@
 export type CatalogCategory =
-  | "sessions"
   | "items"
   | "characters"
   | "npcs"
@@ -10,7 +9,6 @@ export type CatalogCategory =
   | "scenario";
 
 export const CATALOG_CATEGORIES = [
-  "sessions",
   "items",
   "characters",
   "npcs",
@@ -22,7 +20,6 @@ export const CATALOG_CATEGORIES = [
 ] as const satisfies readonly CatalogCategory[];
 
 export const CATEGORY_LABELS: Record<CatalogCategory, string> = {
-  sessions: "Sessões",
   items: "Itens",
   characters: "PC's",
   npcs: "NPC's",

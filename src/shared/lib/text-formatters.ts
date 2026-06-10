@@ -46,6 +46,12 @@ export function getInitials(value: string, maxParts = 2): string {
     .join("");
 }
 
+export function toSnakeCaseKey(value: string): string {
+  return normalizeSearchText(value)
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
 export function capitalizeFirstLetter(value: string): string {
   if (value.length === 0) {
     return value;

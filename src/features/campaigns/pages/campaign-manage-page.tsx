@@ -18,7 +18,10 @@ import type {
   FactionType,
   MonsterType,
   ItemType,
+  WeaponCategory,
+  DamageType,
 } from "../types/campaign";
+import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
 import "./campaign-manage-page.css";
 
 type EntityType = "session" | "npc" | "pc" | "location" | "faction" | "monster" | "item";
@@ -71,6 +74,65 @@ const ITEM_TYPE_OPTIONS: readonly { value: ItemType; label: string }[] = [
   { value: "artefato", label: "Artefato" },
   { value: "outros", label: "Outros" },
 ];
+
+const WEAPON_CATEGORY_OPTIONS: readonly { value: WeaponCategory; label: string }[] = [
+  { value: "arcana", label: "Arcana" },
+  { value: "arco", label: "Arco" },
+  { value: "luta", label: "Luta" },
+  { value: "adaga", label: "Adaga" },
+  { value: "arma_de_fogo", label: "Arma de fogo" },
+  { value: "malho", label: "Malho" },
+  { value: "pesado", label: "Pesado" },
+  { value: "lança", label: "Lança" },
+  { value: "espada", label: "Espada" },
+  { value: "arremesso", label: "Arremesso" },
+];
+
+const DAMAGE_TYPE_OPTIONS: readonly { value: DamageType; label: string }[] = [
+  { value: "physical", label: "Físico" },
+  { value: "fire", label: "Fogo" },
+  { value: "ice", label: "Gelo" },
+  { value: "bolt", label: "Raio" },
+  { value: "earth", label: "Terra" },
+  { value: "air", label: "Ar" },
+  { value: "light", label: "Luz" },
+  { value: "dark", label: "Trevas" },
+  { value: "poison", label: "Veneno" },
+];
+
+const GRIP_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "uma_mao", label: "Uma Mão" },
+  { value: "duas_maos", label: "Duas Mãos" },
+];
+
+const DISTANCE_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "corpo_a_corpo", label: "Corpo a corpo" },
+  { value: "a_distancia", label: "À distância" },
+];
+
+const ATTRIBUTE_DIE_OPTIONS: readonly { value: string; label: string }[] = [
+  { value: "", label: "—" },
+  { value: "DES", label: "DES" },
+  { value: "AST", label: "AST" },
+  { value: "VIG", label: "VIG" },
+  { value: "VON", label: "VON" },
+];
+
+function buildDiceFormula(dice: readonly string[], bonus: string): string | null {
+  const selectedDice = dice.filter((d) => d !== "");
+  const bonusValue = bonus.trim() === "" ? 0 : Number(bonus);
+
+  if (selectedDice.length === 0 && bonusValue === 0) {
+    return null;
+  }
+
+  const parts = [...selectedDice];
+  if (bonusValue !== 0 || selectedDice.length === 0) {
+    parts.push(bonusValue >= 0 ? `+${bonusValue}` : `${bonusValue}`);
+  }
+
+  return parts.join(" + ");
+}
 
 type TileConfig = {
   type: EntityType;
@@ -1244,10 +1306,31 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [itemType, setItemType] = useState<ItemType>("outros");
   const [description, setDescription] = useState("");
   const [cost, setCost] = useState("");
+  const [isMartial, setIsMartial] = useState(false);
+
+  const [weaponCategory, setWeaponCategory] = useState<WeaponCategory>("espada");
+  const [accuracyDie1, setAccuracyDie1] = useState("");
+  const [accuracyDie2, setAccuracyDie2] = useState("");
+  const [accuracyBonus, setAccuracyBonus] = useState("");
+  const [damage, setDamage] = useState("");
+  const [damageType, setDamageType] = useState<DamageType>("physical");
+  const [grip, setGrip] = useState("uma_mao");
+  const [distance, setDistance] = useState("corpo_a_corpo");
+
+  const [defenseDice, setDefenseDice] = useState("");
+  const [defenseBonus, setDefenseBonus] = useState("");
+  const [magicDefenseDice, setMagicDefenseDice] = useState("");
+  const [magicDefenseBonus, setMagicDefenseBonus] = useState("");
+  const [initiative, setInitiative] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const canSubmit = name.trim() !== "";
+  const imgKey = name.trim() ? toSnakeCaseKey(name) : "";
+  const isWeapon = itemType === "arma";
+  const hasDefenseFields = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
+  const canBeMartial = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -1259,7 +1342,20 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         name: name.trim(),
         item_type: itemType,
         description: description.trim() || null,
+        img_key: imgKey || null,
         cost: cost.trim() === "" ? null : Number(cost),
+        weapon_category: isWeapon ? weaponCategory : null,
+        accuracy: isWeapon ? buildDiceFormula([accuracyDie1, accuracyDie2], accuracyBonus) : null,
+        damage: isWeapon ? (damage.trim() || null) : null,
+        damage_type: isWeapon ? damageType : null,
+        grip: isWeapon ? grip : null,
+        distance: isWeapon ? distance : null,
+        defense_dice: hasDefenseFields ? buildDiceFormula([defenseDice], defenseBonus) : null,
+        defense_bonus: null,
+        magic_defense_dice: hasDefenseFields ? buildDiceFormula([magicDefenseDice], magicDefenseBonus) : null,
+        magic_defense_bonus: null,
+        initiative: hasDefenseFields ? (initiative.trim() || null) : null,
+        is_martial: canBeMartial ? isMartial : false,
       });
       onSuccess();
     } catch (err) {
@@ -1287,6 +1383,7 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             required
             autoFocus
           />
+          {imgKey ? <p className="manage-form__hint">Chave de imagem: {imgKey}</p> : null}
         </div>
 
         <div className="manage-form__row">
@@ -1328,6 +1425,198 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             rows={4}
           />
         </div>
+
+        {canBeMartial ? (
+          <div className="manage-form__checkbox-field">
+            <input
+              id="it-martial"
+              type="checkbox"
+              className="manage-form__checkbox"
+              checked={isMartial}
+              onChange={(e) => setIsMartial(e.target.checked)}
+            />
+            <label htmlFor="it-martial" className="manage-form__checkbox-label">
+              Item marcial
+            </label>
+          </div>
+        ) : null}
+
+        {isWeapon ? (
+          <>
+            <p className="manage-form__section-label">Arma</p>
+
+            <div className="manage-form__field">
+              <label htmlFor="it-weapon-category" className="manage-form__label">Categoria</label>
+              <select
+                id="it-weapon-category"
+                className="manage-form__select"
+                value={weaponCategory}
+                onChange={(e) => setWeaponCategory(e.target.value as WeaponCategory)}
+              >
+                {WEAPON_CATEGORY_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="manage-form__field">
+              <label className="manage-form__label">Precisão</label>
+              <div className="manage-form__numbers-grid">
+                <select
+                  aria-label="Primeiro dado de precisão"
+                  className="manage-form__select"
+                  value={accuracyDie1}
+                  onChange={(e) => setAccuracyDie1(e.target.value)}
+                >
+                  {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <select
+                  aria-label="Segundo dado de precisão"
+                  className="manage-form__select"
+                  value={accuracyDie2}
+                  onChange={(e) => setAccuracyDie2(e.target.value)}
+                >
+                  {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <input
+                  aria-label="Bônus de precisão"
+                  type="number"
+                  className="manage-form__input"
+                  value={accuracyBonus}
+                  onChange={(e) => setAccuracyBonus(e.target.value)}
+                  placeholder="Bônus"
+                />
+              </div>
+            </div>
+
+            <div className="manage-form__field">
+              <label htmlFor="it-damage" className="manage-form__label">Dano</label>
+              <input
+                id="it-damage"
+                type="text"
+                className="manage-form__input"
+                value={damage}
+                onChange={(e) => setDamage(e.target.value)}
+              />
+            </div>
+
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor="it-damage-type" className="manage-form__label">Tipo de dano</label>
+                <select
+                  id="it-damage-type"
+                  className="manage-form__select"
+                  value={damageType}
+                  onChange={(e) => setDamageType(e.target.value as DamageType)}
+                >
+                  {DAMAGE_TYPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor="it-grip" className="manage-form__label">Empunhadura</label>
+                <select
+                  id="it-grip"
+                  className="manage-form__select"
+                  value={grip}
+                  onChange={(e) => setGrip(e.target.value)}
+                >
+                  {GRIP_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="manage-form__field">
+              <label htmlFor="it-distance" className="manage-form__label">Alcance</label>
+              <select
+                id="it-distance"
+                className="manage-form__select"
+                value={distance}
+                onChange={(e) => setDistance(e.target.value)}
+              >
+                {DISTANCE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          </>
+        ) : null}
+
+        {hasDefenseFields ? (
+          <>
+            <p className="manage-form__section-label">Defesa</p>
+
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor="it-defense-dice" className="manage-form__label">Dado de defesa</label>
+                <select
+                  id="it-defense-dice"
+                  className="manage-form__select"
+                  value={defenseDice}
+                  onChange={(e) => setDefenseDice(e.target.value)}
+                >
+                  {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor="it-defense-bonus" className="manage-form__label">Bônus de defesa</label>
+                <input
+                  id="it-defense-bonus"
+                  type="number"
+                  className="manage-form__input"
+                  value={defenseBonus}
+                  onChange={(e) => setDefenseBonus(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor="it-magic-defense-dice" className="manage-form__label">Dado de defesa mágica</label>
+                <select
+                  id="it-magic-defense-dice"
+                  className="manage-form__select"
+                  value={magicDefenseDice}
+                  onChange={(e) => setMagicDefenseDice(e.target.value)}
+                >
+                  {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor="it-magic-defense-bonus" className="manage-form__label">Bônus de defesa mágica</label>
+                <input
+                  id="it-magic-defense-bonus"
+                  type="number"
+                  className="manage-form__input"
+                  value={magicDefenseBonus}
+                  onChange={(e) => setMagicDefenseBonus(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="manage-form__field">
+              <label htmlFor="it-initiative" className="manage-form__label">Iniciativa</label>
+              <input
+                id="it-initiative"
+                type="text"
+                className="manage-form__input"
+                value={initiative}
+                onChange={(e) => setInitiative(e.target.value)}
+              />
+            </div>
+          </>
+        ) : null}
 
         <div className="manage-form__actions">
           <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
