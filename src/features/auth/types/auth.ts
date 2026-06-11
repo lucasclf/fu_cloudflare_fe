@@ -15,7 +15,7 @@ export type AuthResult = {
 };
 
 export type LoginInput = {
-  email: string;
+  identifier: string;
   password: string;
 };
 

@@ -266,6 +266,16 @@
   gap: var(--space-2);
 }
 
+.manage-form__relation-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.manage-form__relation-row .manage-form__select {
+  flex: 1;
+}
+
 .manage-form__checkbox-field {
   display: flex;
   align-items: center;

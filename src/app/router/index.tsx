@@ -18,11 +18,17 @@ const HomePage = lazy(() =>
 const CampaignsPage = lazy(() =>
   import("../../features/campaigns/pages/campaigns-page").then((m) => ({ default: m.CampaignsPage })),
 );
+const CampaignLayout = lazy(() =>
+  import("../../features/campaigns/pages/campaign-layout").then((m) => ({ default: m.CampaignLayout })),
+);
 const CampaignHomePage = lazy(() =>
   import("../../features/campaigns/pages/campaign-home-page").then((m) => ({ default: m.CampaignHomePage })),
 );
 const CampaignManagePage = lazy(() =>
   import("../../features/campaigns/pages/campaign-manage-page").then((m) => ({ default: m.CampaignManagePage })),
+);
+const InvitationsPage = lazy(() =>
+  import("../../features/invitations/pages/invitations-page").then((m) => ({ default: m.InvitationsPage })),
 );
 
 function withSuspense(element: ReactNode) {
@@ -58,11 +64,21 @@ export const router = createBrowserRouter([
           },
           {
             path: "/campaigns/:campaignId",
-            element: withSuspense(<CampaignHomePage />),
+            element: withSuspense(<CampaignLayout />),
+            children: [
+              {
+                index: true,
+                element: withSuspense(<CampaignHomePage />),
+              },
+              {
+                path: "manage",
+                element: withSuspense(<CampaignManagePage />),
+              },
+            ],
           },
           {
-            path: "/campaigns/:campaignId/manage",
-            element: withSuspense(<CampaignManagePage />),
+            path: "/invitations",
+            element: withSuspense(<InvitationsPage />),
           },
         ],
       },

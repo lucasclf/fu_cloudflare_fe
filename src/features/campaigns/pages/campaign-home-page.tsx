@@ -1,9 +1,10 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { LoadingState } from "@/shared/components/loading-state";
-import { ErrorState } from "@/shared/components/error-state";
-import { useCampaignHome } from "../hooks/use-campaign-home";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ConfirmationDialog } from "@/shared/components/confirmation-dialog";
+import { useCampaignHomeContext } from "../hooks/use-campaign-home-context";
 import { PcCard } from "../components/pc-card";
 import { InviteSearch } from "../components/invite-search";
+import { cancelInvitation } from "../api/cancel-invitation";
 import type { CampaignHomeMaster, CampaignHomePlayer, RecentSession, MemberWithNickname, PendingInvitation } from "../types/campaign";
 import "./campaign-home-page.css";
 
@@ -14,13 +15,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function CampaignHomePage() {
-  const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
-  const id = Number(campaignId);
-  const { data, loading, error, reload } = useCampaignHome(id);
-
-  if (loading) return <LoadingState />;
-  if (error || !data) return <ErrorState message={error ?? "Não foi possível carregar a campanha."} />;
+  const { data, reload, campaignId: id } = useCampaignHomeContext();
 
   return (
     <div className="campaign-home">
@@ -114,7 +110,12 @@ function MasterView({ data, onInvited }: { data: CampaignHomeMaster; onInvited: 
             <h2 className="campaign-home__section-title">Convites pendentes</h2>
             <ul className="campaign-home__invitations">
               {data.pendingInvitations.map((inv) => (
-                <PendingInvitationItem key={inv.id} invitation={inv} />
+                <PendingInvitationItem
+                  key={inv.id}
+                  invitation={inv}
+                  campaignId={data.campaign.id}
+                  onCancelled={onInvited}
+                />
               ))}
             </ul>
           </section>
@@ -233,11 +234,59 @@ function StatBadge({ value, label }: { value: number; label: string }) {
   );
 }
 
-function PendingInvitationItem({ invitation }: { invitation: PendingInvitation }) {
+function PendingInvitationItem({
+  invitation,
+  campaignId,
+  onCancelled,
+}: {
+  invitation: PendingInvitation;
+  campaignId: number;
+  onCancelled: () => void;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleConfirm() {
+    setCancelling(true);
+    setError(null);
+    try {
+      await cancelInvitation(campaignId, invitation.id);
+      setConfirming(false);
+      onCancelled();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Não foi possível cancelar o convite.");
+    } finally {
+      setCancelling(false);
+    }
+  }
+
   return (
     <li className="campaign-home__invitation">
       <span className="campaign-home__invitation-nickname">{invitation.invitee_nickname}</span>
       <span className="campaign-home__invitation-status">Pendente</span>
+      <button
+        type="button"
+        className="campaign-home__invitation-cancel"
+        title="Cancelar convite"
+        aria-label="Cancelar convite"
+        onClick={() => setConfirming(true)}
+      >
+        ×
+      </button>
+
+      {confirming ? (
+        <ConfirmationDialog
+          title="Cancelar convite"
+          message={`Cancelar o convite enviado para ${invitation.invitee_nickname}?`}
+          confirmLabel="Cancelar convite"
+          cancelLabel="Voltar"
+          onConfirm={handleConfirm}
+          onCancel={() => setConfirming(false)}
+          isLoading={cancelling}
+          error={error}
+        />
+      ) : null}
     </li>
   );
 }

@@ -129,6 +129,7 @@ export type CreateSessionInput = {
   summary: string;
   notes?: string | null;
   played_at: string;
+  visible_to_players: boolean;
 };
 
 export type CreateNpcInput = {
@@ -170,18 +171,37 @@ export type CreateLocationInput = {
   name: string;
   tagline: string;
   description: string;
+  img_key: string | null;
   location_type: LocationType;
+  visible_to_players: boolean;
 };
 
 export type FactionType =
   | "guild" | "kingdom" | "order" | "cult" | "clan"
   | "company" | "criminal" | "military" | "other";
 
+export type FactionLocationRelationType =
+  | "headquarters" | "origin" | "territory" | "influence"
+  | "presence" | "enemy_presence" | "other";
+
+export type FactionLocationRelation = {
+  location_id: number;
+  relation_type: FactionLocationRelationType;
+};
+
 export type CreateFactionInput = {
   name: string;
   tagline: string;
   description: string;
+  img_key: string | null;
   faction_type: FactionType;
+  faction_location_relation: FactionLocationRelation[];
+  visible_to_players: boolean;
+};
+
+export type LocationOption = {
+  id: number;
+  name: string;
 };
 
 export type MonsterType =
@@ -236,4 +256,5 @@ export type CreateItemInput = {
   magic_defense_bonus?: number | null;
   initiative?: string | null;
   is_martial?: boolean | null;
+  visible_to_players: boolean;
 };

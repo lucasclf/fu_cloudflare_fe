@@ -19,7 +19,7 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +35,7 @@ export function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      await login({ email, password });
+      await login({ identifier, password });
       navigate("/campaigns", { replace: true });
     } catch (submitError) {
       setError(
@@ -90,12 +90,12 @@ export function LoginPage() {
 
       <form className="login-page__form" onSubmit={handleSubmit} noValidate>
         <AuthField
-          id="login-email"
-          label="E-mail"
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={setEmail}
+          id="login-identifier"
+          label="E-mail ou apelido"
+          type="text"
+          autoComplete="username"
+          value={identifier}
+          onChange={setIdentifier}
           required
         />
 

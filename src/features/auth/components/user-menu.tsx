@@ -51,6 +51,11 @@ export function UserMenu() {
     navigate("/login", { replace: true });
   }
 
+  function handleInvitations() {
+    setIsOpen(false);
+    navigate("/invitations");
+  }
+
   return (
     <div className="user-menu" ref={containerRef}>
       <button
@@ -71,6 +76,14 @@ export function UserMenu() {
 
       {isOpen ? (
         <div className="user-menu__dropdown" role="menu">
+          <button
+            type="button"
+            role="menuitem"
+            className="user-menu__item"
+            onClick={handleInvitations}
+          >
+            Convites
+          </button>
           <button
             type="button"
             role="menuitem"

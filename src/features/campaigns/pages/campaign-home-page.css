@@ -378,6 +378,31 @@
   flex-shrink: 0;
 }
 
+.campaign-home__invitation-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  background: transparent;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.campaign-home__invitation-cancel:hover {
+  color: var(--color-danger);
+  background: var(--color-surface-muted);
+}
+
 /* ── Master Notes ────────────────────────────────────────────────────────────── */
 
 .campaign-home__notes {

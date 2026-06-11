@@ -1,21 +1,22 @@
 import { useState, useEffect } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { LoadingState } from "@/shared/components/loading-state";
-import { ErrorState } from "@/shared/components/error-state";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/button";
-import { useCampaignHome } from "../hooks/use-campaign-home";
+import { useCampaignHomeContext } from "../hooks/use-campaign-home-context";
 import { createSession } from "../api/create-session";
 import { createNpc } from "../api/create-npc";
 import { createPc } from "../api/create-pc";
 import { createLocation } from "../api/create-location";
 import { createFaction } from "../api/create-faction";
+import { listLocations } from "../api/list-locations";
 import { createMonster } from "../api/create-monster";
 import { createItem } from "../api/create-item";
 import type {
   AttributeDie,
   LocationType,
   FactionType,
+  FactionLocationRelationType,
+  LocationOption,
   MonsterType,
   ItemType,
   WeaponCategory,
@@ -52,6 +53,16 @@ const FACTION_TYPE_OPTIONS: readonly { value: FactionType; label: string }[] = [
   { value: "company", label: "Companhia" },
   { value: "criminal", label: "Organização criminosa" },
   { value: "military", label: "Militar" },
+  { value: "other", label: "Outro" },
+];
+
+const FACTION_LOCATION_RELATION_TYPE_OPTIONS: readonly { value: FactionLocationRelationType; label: string }[] = [
+  { value: "headquarters", label: "Sede" },
+  { value: "origin", label: "Origem" },
+  { value: "territory", label: "Território" },
+  { value: "influence", label: "Influência" },
+  { value: "presence", label: "Presença" },
+  { value: "enemy_presence", label: "Presença inimiga" },
   { value: "other", label: "Outro" },
 ];
 
@@ -225,15 +236,9 @@ const PLAYER_TILES: TileConfig[] = [MASTER_TILES[2]];
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function CampaignManagePage() {
-  const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
-  const id = Number(campaignId);
-  const { data, loading, error } = useCampaignHome(id);
+  const { data, campaignId: id } = useCampaignHomeContext();
   const [activeForm, setActiveForm] = useState<EntityType | null>(null);
-
-  if (loading) return <LoadingState />;
-  if (error || !data)
-    return <ErrorState message={error ?? "Não foi possível carregar a campanha."} />;
 
   const isMaster = data.role === "master";
   const tiles = isMaster ? MASTER_TILES : PLAYER_TILES;
@@ -356,6 +361,7 @@ function SessionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
   const [notes, setNotes] = useState("");
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -373,6 +379,7 @@ function SessionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         title: title.trim() || null,
         summary: summary.trim(),
         notes: notes.trim() || null,
+        visible_to_players: visibleToPlayers,
       });
       onSuccess();
     } catch (err) {
@@ -452,6 +459,19 @@ function SessionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
           />
+        </div>
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="s-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="s-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
         </div>
 
         <div className="manage-form__actions">
@@ -863,6 +883,7 @@ function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [locationType, setLocationType] = useState<LocationType>("other");
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -879,7 +900,9 @@ function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
+        img_key: toSnakeCaseKey(name.trim()) || null,
         location_type: locationType,
+        visible_to_players: visibleToPlayers,
       });
       onSuccess();
     } catch (err) {
@@ -954,6 +977,19 @@ function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps) {
           />
         </div>
 
+        <div className="manage-form__checkbox-field">
+          <input
+            id="loc-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="loc-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
+        </div>
+
         <div className="manage-form__actions">
           <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
             {submitting ? "Criando..." : "Criar local"}
@@ -974,11 +1010,41 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [factionType, setFactionType] = useState<FactionType>("other");
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
+  const [locations, setLocations] = useState<LocationOption[]>([]);
+  const [relations, setRelations] = useState<{ location_id: number; relation_type: FactionLocationRelationType }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    let cancelled = false;
+    listLocations(campaignId)
+      .then((data) => {
+        if (!cancelled) setLocations(data);
+      })
+      .catch(() => {
+        // lista de localidades é opcional; vínculo pode ser feito depois
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [campaignId]);
+
   const canSubmit =
     name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "";
+
+  function addRelation() {
+    if (locations.length === 0) return;
+    setRelations((prev) => [...prev, { location_id: locations[0].id, relation_type: "presence" }]);
+  }
+
+  function updateRelation(index: number, patch: Partial<{ location_id: number; relation_type: FactionLocationRelationType }>) {
+    setRelations((prev) => prev.map((r, i) => (i === index ? { ...r, ...patch } : r)));
+  }
+
+  function removeRelation(index: number) {
+    setRelations((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -990,7 +1056,10 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
+        img_key: toSnakeCaseKey(name.trim()) || null,
         faction_type: factionType,
+        faction_location_relation: relations,
+        visible_to_players: visibleToPlayers,
       });
       onSuccess();
     } catch (err) {
@@ -1063,6 +1132,67 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             rows={4}
             required
           />
+        </div>
+
+        {locations.length > 0 ? (
+          <>
+            <h3 className="manage-form__section-label">Localizações vinculadas</h3>
+            {relations.map((relation, index) => (
+              <div className="manage-form__row" key={index}>
+                <div className="manage-form__field">
+                  <label htmlFor={`fac-rel-location-${index}`} className="manage-form__label">
+                    Localização
+                  </label>
+                  <select
+                    id={`fac-rel-location-${index}`}
+                    className="manage-form__select"
+                    value={relation.location_id}
+                    onChange={(e) => updateRelation(index, { location_id: Number(e.target.value) })}
+                  >
+                    {locations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>{loc.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="manage-form__field">
+                  <label htmlFor={`fac-rel-type-${index}`} className="manage-form__label">
+                    Relação
+                  </label>
+                  <div className="manage-form__relation-row">
+                    <select
+                      id={`fac-rel-type-${index}`}
+                      className="manage-form__select"
+                      value={relation.relation_type}
+                      onChange={(e) => updateRelation(index, { relation_type: e.target.value as FactionLocationRelationType })}
+                    >
+                      {FACTION_LOCATION_RELATION_TYPE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                    <Button type="button" variant="ghost" onClick={() => removeRelation(index)}>
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button type="button" variant="ghost" onClick={addRelation}>
+              + Adicionar localização
+            </Button>
+          </>
+        ) : null}
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="fac-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="fac-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
         </div>
 
         <div className="manage-form__actions">
@@ -1323,6 +1453,7 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [magicDefenseBonus, setMagicDefenseBonus] = useState("");
   const [initiative, setInitiative] = useState("");
 
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -1356,6 +1487,7 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         magic_defense_bonus: null,
         initiative: hasDefenseFields ? (initiative.trim() || null) : null,
         is_martial: canBeMartial ? isMartial : false,
+        visible_to_players: visibleToPlayers,
       });
       onSuccess();
     } catch (err) {
@@ -1617,6 +1749,19 @@ function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             </div>
           </>
         ) : null}
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="it-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="it-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
+        </div>
 
         <div className="manage-form__actions">
           <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
