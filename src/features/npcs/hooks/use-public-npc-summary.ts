@@ -7,10 +7,10 @@ import {
 import { getPublicNpcSummary } from "../api/get-public-npc-summary";
 import type { NpcSummary } from "../types/npc";
 
-export function usePublicNpcSummary(): AsyncResourceState<NpcSummary[]> {
+export function usePublicNpcSummary(globalOnly: boolean): AsyncResourceState<NpcSummary[]> {
   const loader = useCallback((signal: AbortSignal) => {
-    return getPublicNpcSummary(signal);
-  }, []);
+    return getPublicNpcSummary(signal, globalOnly);
+  }, [globalOnly]);
 
   return useAsyncResource<NpcSummary[]>(loader);
 }

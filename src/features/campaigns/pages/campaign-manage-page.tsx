@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import type { FormEvent, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/components/button";
 import { useCampaignHomeContext } from "../hooks/use-campaign-home-context";
 import { createSession } from "../api/create-session";
@@ -21,8 +20,13 @@ import type {
   ItemType,
   WeaponCategory,
   DamageType,
+  NpcSpecialRuleType,
+  NpcInventoryRelationType,
+  CreateNpcInventoryItemInput,
+  CreateNpcEquipmentInput,
 } from "../types/campaign";
 import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
+import { usePublicItems } from "@/features/items/hooks/use-public-items";
 import "./campaign-manage-page.css";
 
 type EntityType = "session" | "npc" | "pc" | "location" | "faction" | "monster" | "item";
@@ -85,6 +89,28 @@ const ITEM_TYPE_OPTIONS: readonly { value: ItemType; label: string }[] = [
   { value: "artefato", label: "Artefato" },
   { value: "outros", label: "Outros" },
 ];
+
+const NPC_SPECIAL_RULE_TYPE_OPTIONS: readonly { value: NpcSpecialRuleType; label: string }[] = [
+  { value: "bonus", label: "Bônus" },
+  { value: "attack", label: "Ataque" },
+  { value: "penalty", label: "Penalidade" },
+  { value: "passive", label: "Passiva" },
+  { value: "reaction", label: "Reação" },
+  { value: "condition", label: "Condição" },
+  { value: "note", label: "Nota" },
+];
+
+const NPC_INVENTORY_RELATION_TYPE_OPTIONS: readonly { value: NpcInventoryRelationType; label: string }[] = [
+  { value: "inventory", label: "Inventário" },
+  { value: "shop_stock", label: "Estoque de loja" },
+];
+
+const ATTRIBUTE_DIE_VALUE: Record<AttributeDie, number> = {
+  d6: 6,
+  d8: 8,
+  d10: 10,
+  d12: 12,
+};
 
 const WEAPON_CATEGORY_OPTIONS: readonly { value: WeaponCategory; label: string }[] = [
   { value: "arcana", label: "Arcana" },
@@ -236,8 +262,7 @@ const PLAYER_TILES: TileConfig[] = [MASTER_TILES[2]];
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function CampaignManagePage() {
-  const navigate = useNavigate();
-  const { data, campaignId: id } = useCampaignHomeContext();
+  const { data } = useCampaignHomeContext();
   const [activeForm, setActiveForm] = useState<EntityType | null>(null);
 
   const isMaster = data.role === "master";
@@ -254,16 +279,6 @@ export function CampaignManagePage() {
   return (
     <div className="campaign-manage">
       <header className="campaign-manage__header">
-        <button
-          type="button"
-          className="campaign-manage__back"
-          onClick={() => navigate(`/campaigns/${id}`)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
-          Campanha
-        </button>
         <h1 className="campaign-manage__title">Administração</h1>
         <p className="campaign-manage__subtitle">{data.campaign.name}</p>
       </header>
@@ -489,6 +504,13 @@ function SessionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
 
 // ── NPC form ──────────────────────────────────────────────────────────────────
 
+type NpcSpecialRuleDraft = {
+  type: NpcSpecialRuleType;
+  title: string;
+  description: string;
+  metadata: { key: string; value: string }[];
+};
+
 function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -501,12 +523,38 @@ function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [hp, setHp] = useState("");
   const [mp, setMp] = useState("");
   const [initiative, setInitiative] = useState("");
+  const [defenseMode, setDefenseMode] = useState<"fixed" | "dex_bonus">("fixed");
   const [defense, setDefense] = useState("");
+  const [defenseBonus, setDefenseBonus] = useState("");
+  const [magicDefenseMode, setMagicDefenseMode] = useState<"fixed" | "ins_bonus">("fixed");
   const [magicDefense, setMagicDefense] = useState("");
+  const [magicDefenseBonus, setMagicDefenseBonus] = useState("");
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
+  const [inventory, setInventory] = useState<CreateNpcInventoryItemInput[]>([]);
+  const [equipmentEnabled, setEquipmentEnabled] = useState(false);
+  const [equipment, setEquipment] = useState<CreateNpcEquipmentInput>({
+    main_hand: null,
+    off_hand: null,
+    armor: null,
+    accessory: null,
+  });
+  const [specialRules, setSpecialRules] = useState<NpcSpecialRuleDraft[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = name.trim() !== "" && description.trim() !== "";
+  const { data: items } = usePublicItems(true);
+  const allItems = items ?? [];
+  const mainHandOptions = allItems.filter((item) => item.itemType === "arma" || item.itemType === "escudo");
+  const armorOptions = allItems.filter((item) => item.itemType === "armadura");
+  const accessoryOptions = allItems.filter((item) => item.itemType === "acessorio");
+
+  const canSubmit =
+    name.trim() !== "" &&
+    description.trim() !== "" &&
+    inventory.every((i) => i.item_id > 0 && i.quantity >= 1) &&
+    (!equipmentEnabled ||
+      equipment.main_hand || equipment.off_hand || equipment.armor || equipment.accessory) &&
+    specialRules.every((r) => r.title.trim() !== "" && r.description.trim() !== "");
 
   function parseDie(v: AttributeDie | ""): AttributeDie | null {
     return v === "" ? null : v;
@@ -515,6 +563,67 @@ function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   function parseNum(v: string): number | null {
     const n = Number(v);
     return v.trim() === "" || isNaN(n) ? null : n;
+  }
+
+  function computeDieBonus(die: AttributeDie | "", bonus: string): number {
+    const dieValue = die === "" ? 0 : ATTRIBUTE_DIE_VALUE[die];
+    return dieValue + (parseNum(bonus) ?? 0);
+  }
+
+  function addInventoryItem() {
+    if (allItems.length === 0) return;
+    setInventory((prev) => [...prev, { item_id: allItems[0].id, relation_type: "inventory", quantity: 1 }]);
+  }
+
+  function updateInventoryItem(index: number, patch: Partial<CreateNpcInventoryItemInput>) {
+    setInventory((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function removeInventoryItem(index: number) {
+    setInventory((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addSpecialRule() {
+    setSpecialRules((prev) => [...prev, { type: "note", title: "", description: "", metadata: [] }]);
+  }
+
+  function updateSpecialRule(index: number, patch: Partial<NpcSpecialRuleDraft>) {
+    setSpecialRules((prev) => prev.map((rule, i) => (i === index ? { ...rule, ...patch } : rule)));
+  }
+
+  function removeSpecialRule(index: number) {
+    setSpecialRules((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addMetadataEntry(ruleIndex: number) {
+    setSpecialRules((prev) =>
+      prev.map((rule, i) => (i === ruleIndex ? { ...rule, metadata: [...rule.metadata, { key: "", value: "" }] } : rule)),
+    );
+  }
+
+  function updateMetadataEntry(ruleIndex: number, entryIndex: number, patch: Partial<{ key: string; value: string }>) {
+    setSpecialRules((prev) =>
+      prev.map((rule, i) =>
+        i === ruleIndex
+          ? { ...rule, metadata: rule.metadata.map((entry, j) => (j === entryIndex ? { ...entry, ...patch } : entry)) }
+          : rule,
+      ),
+    );
+  }
+
+  function removeMetadataEntry(ruleIndex: number, entryIndex: number) {
+    setSpecialRules((prev) =>
+      prev.map((rule, i) =>
+        i === ruleIndex ? { ...rule, metadata: rule.metadata.filter((_, j) => j !== entryIndex) } : rule,
+      ),
+    );
+  }
+
+  function toMetadataRecord(entries: { key: string; value: string }[]): Record<string, unknown> | null {
+    const filtered = entries
+      .filter((entry) => entry.key.trim() !== "")
+      .map((entry) => [entry.key.trim(), entry.value] as const);
+    return filtered.length > 0 ? Object.fromEntries(filtered) : null;
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -535,8 +644,22 @@ function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         hp: parseNum(hp),
         mp: parseNum(mp),
         initiative: parseNum(initiative),
-        defense: parseNum(defense),
-        magic_defense: parseNum(magicDefense),
+        defense: defenseMode === "dex_bonus" ? computeDieBonus(dexDie, defenseBonus) : parseNum(defense),
+        magic_defense: magicDefenseMode === "ins_bonus" ? computeDieBonus(insDie, magicDefenseBonus) : parseNum(magicDefense),
+        img_key: toSnakeCaseKey(name.trim()) || null,
+        visible_to_players: visibleToPlayers,
+        specialRules: specialRules.map((rule) => ({
+          type: rule.type,
+          title: rule.title.trim(),
+          description: rule.description.trim(),
+          metadata: toMetadataRecord(rule.metadata),
+        })),
+        inventory: inventory.map((item) => ({
+          item_id: item.item_id,
+          relation_type: item.relation_type,
+          quantity: item.quantity,
+        })),
+        equipment: equipmentEnabled ? equipment : null,
       });
       onSuccess();
     } catch (err) {
@@ -634,27 +757,266 @@ function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         <p className="manage-form__section-label">Combate</p>
 
         <div className="manage-form__numbers-grid-5">
-          {(
-            [
-              { id: "n-hp", label: "PV", value: hp, setter: setHp },
-              { id: "n-mp", label: "PM", value: mp, setter: setMp },
-              { id: "n-ini", label: "INI", value: initiative, setter: setInitiative },
-              { id: "n-def", label: "DEF", value: defense, setter: setDefense },
-              { id: "n-mdef", label: "M.DEF", value: magicDefense, setter: setMagicDefense },
-            ] as const
-          ).map(({ id, label, value, setter }) => (
-            <div key={id} className="manage-form__field">
-              <label htmlFor={id} className="manage-form__label">{label}</label>
-              <input
-                id={id}
-                type="number"
-                className="manage-form__input"
-                value={value}
-                onChange={(e) => setter(e.target.value)}
-                min={0}
+          <div className="manage-form__field">
+            <label htmlFor="n-hp" className="manage-form__label">PV</label>
+            <input id="n-hp" type="number" className="manage-form__input" value={hp} onChange={(e) => setHp(e.target.value)} min={0} />
+          </div>
+          <div className="manage-form__field">
+            <label htmlFor="n-mp" className="manage-form__label">PM</label>
+            <input id="n-mp" type="number" className="manage-form__input" value={mp} onChange={(e) => setMp(e.target.value)} min={0} />
+          </div>
+          <div className="manage-form__field">
+            <label htmlFor="n-ini" className="manage-form__label">INI</label>
+            <input id="n-ini" type="number" className="manage-form__input" value={initiative} onChange={(e) => setInitiative(e.target.value)} min={0} />
+          </div>
+        </div>
+
+        <div className="manage-form__row">
+          <div className="manage-form__field">
+            <label htmlFor="n-def-mode" className="manage-form__label">DEF</label>
+            <select
+              id="n-def-mode"
+              className="manage-form__select"
+              value={defenseMode}
+              onChange={(e) => setDefenseMode(e.target.value as "fixed" | "dex_bonus")}
+            >
+              <option value="fixed">Valor fixo</option>
+              <option value="dex_bonus">Destreza (DES) + bônus</option>
+            </select>
+          </div>
+          {defenseMode === "fixed" ? (
+            <div className="manage-form__field">
+              <label htmlFor="n-def" className="manage-form__label">Valor</label>
+              <input id="n-def" type="number" className="manage-form__input" value={defense} onChange={(e) => setDefense(e.target.value)} min={0} />
+            </div>
+          ) : (
+            <div className="manage-form__field">
+              <label htmlFor="n-def-bonus" className="manage-form__label">Bônus</label>
+              <input id="n-def-bonus" type="number" className="manage-form__input" value={defenseBonus} onChange={(e) => setDefenseBonus(e.target.value)} />
+            </div>
+          )}
+        </div>
+
+        <div className="manage-form__row">
+          <div className="manage-form__field">
+            <label htmlFor="n-mdef-mode" className="manage-form__label">DEF. MÁGICA</label>
+            <select
+              id="n-mdef-mode"
+              className="manage-form__select"
+              value={magicDefenseMode}
+              onChange={(e) => setMagicDefenseMode(e.target.value as "fixed" | "ins_bonus")}
+            >
+              <option value="fixed">Valor fixo</option>
+              <option value="ins_bonus">Astúcia (AST) + bônus</option>
+            </select>
+          </div>
+          {magicDefenseMode === "fixed" ? (
+            <div className="manage-form__field">
+              <label htmlFor="n-mdef" className="manage-form__label">Valor</label>
+              <input id="n-mdef" type="number" className="manage-form__input" value={magicDefense} onChange={(e) => setMagicDefense(e.target.value)} min={0} />
+            </div>
+          ) : (
+            <div className="manage-form__field">
+              <label htmlFor="n-mdef-bonus" className="manage-form__label">Bônus</label>
+              <input id="n-mdef-bonus" type="number" className="manage-form__input" value={magicDefenseBonus} onChange={(e) => setMagicDefenseBonus(e.target.value)} />
+            </div>
+          )}
+        </div>
+
+        {allItems.length > 0 ? (
+          <>
+            <h3 className="manage-form__section-label">Inventário</h3>
+            {inventory.map((item, index) => (
+              <div className="manage-form__row" key={index}>
+                <div className="manage-form__field">
+                  <label htmlFor={`n-inv-item-${index}`} className="manage-form__label">Item</label>
+                  <select
+                    id={`n-inv-item-${index}`}
+                    className="manage-form__select"
+                    value={item.item_id}
+                    onChange={(e) => updateInventoryItem(index, { item_id: Number(e.target.value) })}
+                  >
+                    {allItems.map((option) => (
+                      <option key={option.id} value={option.id}>{option.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="manage-form__field">
+                  <label htmlFor={`n-inv-type-${index}`} className="manage-form__label">Relação / Quantidade</label>
+                  <div className="manage-form__relation-row">
+                    <select
+                      id={`n-inv-type-${index}`}
+                      className="manage-form__select"
+                      value={item.relation_type}
+                      onChange={(e) => updateInventoryItem(index, { relation_type: e.target.value as NpcInventoryRelationType })}
+                    >
+                      {NPC_INVENTORY_RELATION_TYPE_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="number"
+                      className="manage-form__input"
+                      style={{ width: "70px" }}
+                      value={item.quantity}
+                      onChange={(e) => updateInventoryItem(index, { quantity: Number(e.target.value) })}
+                      min={1}
+                    />
+                    <Button type="button" variant="ghost" onClick={() => removeInventoryItem(index)}>
+                      Remover
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            <Button type="button" variant="ghost" onClick={addInventoryItem}>
+              + Adicionar item
+            </Button>
+          </>
+        ) : null}
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="n-equipment-enabled"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={equipmentEnabled}
+            onChange={(e) => setEquipmentEnabled(e.target.checked)}
+          />
+          <label htmlFor="n-equipment-enabled" className="manage-form__checkbox-label">
+            Incluir equipamento
+          </label>
+        </div>
+
+        {equipmentEnabled ? (
+          <>
+            <h3 className="manage-form__section-label">Equipamento</h3>
+            <div className="manage-form__dice-grid">
+              <EquipmentSlotSelect
+                id="n-eq-main-hand"
+                label="Mão principal"
+                options={mainHandOptions}
+                value={equipment.main_hand ?? null}
+                onChange={(value) => setEquipment((prev) => ({ ...prev, main_hand: value }))}
+              />
+              <EquipmentSlotSelect
+                id="n-eq-off-hand"
+                label="Mão secundária"
+                options={mainHandOptions}
+                value={equipment.off_hand ?? null}
+                onChange={(value) => setEquipment((prev) => ({ ...prev, off_hand: value }))}
+              />
+              <EquipmentSlotSelect
+                id="n-eq-armor"
+                label="Armadura"
+                options={armorOptions}
+                value={equipment.armor ?? null}
+                onChange={(value) => setEquipment((prev) => ({ ...prev, armor: value }))}
+              />
+              <EquipmentSlotSelect
+                id="n-eq-accessory"
+                label="Acessório"
+                options={accessoryOptions}
+                value={equipment.accessory ?? null}
+                onChange={(value) => setEquipment((prev) => ({ ...prev, accessory: value }))}
               />
             </div>
-          ))}
+          </>
+        ) : null}
+
+        <h3 className="manage-form__section-label">Regras especiais</h3>
+        {specialRules.map((rule, index) => (
+          <div key={index} className="manage-form__field" style={{ border: "1px solid var(--color-border)", borderRadius: "8px", padding: "12px", marginBottom: "12px" }}>
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor={`n-rule-title-${index}`} className="manage-form__label">
+                  Título <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id={`n-rule-title-${index}`}
+                  type="text"
+                  className="manage-form__input"
+                  value={rule.title}
+                  onChange={(e) => updateSpecialRule(index, { title: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor={`n-rule-type-${index}`} className="manage-form__label">Tipo</label>
+                <select
+                  id={`n-rule-type-${index}`}
+                  className="manage-form__select"
+                  value={rule.type}
+                  onChange={(e) => updateSpecialRule(index, { type: e.target.value as NpcSpecialRuleType })}
+                >
+                  {NPC_SPECIAL_RULE_TYPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="manage-form__field">
+              <label htmlFor={`n-rule-desc-${index}`} className="manage-form__label">
+                Descrição <span aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id={`n-rule-desc-${index}`}
+                className="manage-form__textarea"
+                value={rule.description}
+                onChange={(e) => updateSpecialRule(index, { description: e.target.value })}
+                rows={2}
+                required
+              />
+            </div>
+
+            {rule.metadata.map((entry, entryIndex) => (
+              <div className="manage-form__relation-row" key={entryIndex}>
+                <input
+                  type="text"
+                  className="manage-form__input"
+                  placeholder="Chave"
+                  value={entry.key}
+                  onChange={(e) => updateMetadataEntry(index, entryIndex, { key: e.target.value })}
+                />
+                <input
+                  type="text"
+                  className="manage-form__input"
+                  placeholder="Valor"
+                  value={entry.value}
+                  onChange={(e) => updateMetadataEntry(index, entryIndex, { value: e.target.value })}
+                />
+                <Button type="button" variant="ghost" onClick={() => removeMetadataEntry(index, entryIndex)}>
+                  Remover
+                </Button>
+              </div>
+            ))}
+            <Button type="button" variant="ghost" onClick={() => addMetadataEntry(index)}>
+              + Adicionar metadado
+            </Button>
+
+            <div className="manage-form__actions">
+              <Button type="button" variant="ghost" onClick={() => removeSpecialRule(index)}>
+                Remover regra
+              </Button>
+            </div>
+          </div>
+        ))}
+        <Button type="button" variant="ghost" onClick={addSpecialRule}>
+          + Adicionar regra especial
+        </Button>
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="n-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="n-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
         </div>
 
         <div className="manage-form__actions">
@@ -667,6 +1029,37 @@ function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         </div>
       </form>
     </FormModal>
+  );
+}
+
+function EquipmentSlotSelect({
+  id,
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  options: { id: number; name: string }[];
+  value: number | null;
+  onChange: (value: number | null) => void;
+}) {
+  return (
+    <div className="manage-form__field">
+      <label htmlFor={id} className="manage-form__label">{label}</label>
+      <select
+        id={id}
+        className="manage-form__select"
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
+      >
+        <option value="">Nenhum</option>
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>{option.name}</option>
+        ))}
+      </select>
+    </div>
   );
 }
 

@@ -71,6 +71,18 @@ export type RecentSession = {
   played_at: string;
 };
 
+export type Session = {
+  id: number;
+  campaign_id: number;
+  session_number: number;
+  title: string | null;
+  summary: string;
+  notes: string | null;
+  played_at: string;
+  created_at: string;
+  updated_at: string | null;
+};
+
 export type PendingInvitation = {
   id: number;
   invitee_id: number;
@@ -132,6 +144,37 @@ export type CreateSessionInput = {
   visible_to_players: boolean;
 };
 
+export type NpcSpecialRuleType =
+  | "bonus"
+  | "attack"
+  | "penalty"
+  | "passive"
+  | "reaction"
+  | "condition"
+  | "note";
+
+export type NpcInventoryRelationType = "inventory" | "shop_stock";
+
+export type CreateNpcSpecialRuleInput = {
+  type: NpcSpecialRuleType;
+  title: string;
+  description: string;
+  metadata?: Record<string, unknown> | null;
+};
+
+export type CreateNpcInventoryItemInput = {
+  item_id: number;
+  relation_type: NpcInventoryRelationType;
+  quantity: number;
+};
+
+export type CreateNpcEquipmentInput = {
+  main_hand?: number | null;
+  off_hand?: number | null;
+  armor?: number | null;
+  accessory?: number | null;
+};
+
 export type CreateNpcInput = {
   name: string;
   description: string;
@@ -146,6 +189,11 @@ export type CreateNpcInput = {
   initiative?: number | null;
   defense?: number | null;
   magic_defense?: number | null;
+  img_key?: string | null;
+  visible_to_players: boolean;
+  specialRules?: CreateNpcSpecialRuleInput[];
+  inventory?: CreateNpcInventoryItemInput[];
+  equipment?: CreateNpcEquipmentInput | null;
 };
 
 export type CreatePcInput = {

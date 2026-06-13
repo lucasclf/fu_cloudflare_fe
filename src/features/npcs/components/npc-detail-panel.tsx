@@ -16,7 +16,7 @@ import {
 } from "../lib/npc-formatters";
 import type {
   NpcDetail,
-  NpcEquipmentItem,
+  NpcEquipment,
   NpcInventoryItem,
   NpcItem,
   NpcSpecialRule,
@@ -94,16 +94,8 @@ export function NpcDetailPanel({ npc, onBackToList }: Props) {
         </section>
       ) : null}
 
-      {npc.equipment.length > 0 ? (
-        <section style={styles.section}>
-          <SectionTitle>Equipamentos</SectionTitle>
-
-          <div className={panelStyles.itemGrid}>
-            {npc.equipment.map((item) => (
-              <EquipmentCard key={`${item.item.id}-${item.slot}`} item={item} />
-            ))}
-          </div>
-        </section>
+      {npc.equipment ? (
+        <EquipmentSection equipment={npc.equipment} />
       ) : null}
     </div>
   );
@@ -190,12 +182,34 @@ function InventoryCard({ item }: { item: NpcInventoryItem }) {
   );
 }
 
-function EquipmentCard({ item }: { item: NpcEquipmentItem }) {
+function EquipmentSection({ equipment }: { equipment: NpcEquipment }) {
+  const slots = (
+    [
+      ["main_hand", equipment.main_hand],
+      ["off_hand", equipment.off_hand],
+      ["armor", equipment.armor],
+      ["accessory", equipment.accessory],
+    ] as const
+  ).filter(
+    (entry): entry is [typeof entry[0], NpcItem] => entry[1] !== null,
+  );
+
+  if (slots.length === 0) return null;
+
   return (
-    <NpcItemCard
-      item={item.item}
-      headerLabel={formatEquipmentSlot(item.slot)}
-    />
+    <section style={styles.section}>
+      <SectionTitle>Equipamentos</SectionTitle>
+
+      <div className={panelStyles.itemGrid}>
+        {slots.map(([slot, item]) => (
+          <NpcItemCard
+            key={slot}
+            item={item}
+            headerLabel={formatEquipmentSlot(slot)}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
 

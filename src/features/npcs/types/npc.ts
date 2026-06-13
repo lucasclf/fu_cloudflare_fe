@@ -30,10 +30,12 @@ export type NpcInventoryItem = {
   quantity: number | null;
 };
 
-export type NpcEquipmentItem = {
+export type NpcEquipment = {
   npc_id: number;
-  item: NpcItem;
-  slot: string;
+  main_hand: NpcItem | null;
+  off_hand: NpcItem | null;
+  armor: NpcItem | null;
+  accessory: NpcItem | null;
 };
 
 export type NpcDetail = NpcSummary & {
@@ -47,7 +49,7 @@ export type NpcDetail = NpcSummary & {
   updated_at: string | null;
   specialRules: NpcSpecialRule[];
   inventory: NpcInventoryItem[];
-  equipment: NpcEquipmentItem[];
+  equipment?: NpcEquipment;
 };
 
 export type NpcItem = {

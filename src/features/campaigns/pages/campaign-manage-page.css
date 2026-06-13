@@ -10,24 +10,6 @@
   margin-bottom: var(--space-8);
 }
 
-.campaign-manage__back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: none;
-  border: none;
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  cursor: pointer;
-  padding: 0;
-  margin-bottom: var(--space-4);
-  transition: color var(--transition-fast);
-}
-
-.campaign-manage__back:hover {
-  color: var(--color-text);
-}
-
 .campaign-manage__title {
   font-family: var(--font-heading);
   font-size: 1.875rem;

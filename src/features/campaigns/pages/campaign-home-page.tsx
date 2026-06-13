@@ -35,6 +35,17 @@ export function CampaignHomePage() {
           <button
             type="button"
             className="campaign-home__manage-button"
+            onClick={() => navigate(`/campaigns/${id}/entities`)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20.59 13.41L13.42 20.58a2 2 0 01-2.83 0L2.59 12.6a2 2 0 010-2.83l7.17-7.17a2 2 0 012.83 0l7.83 7.83a2 2 0 010 2.83z" />
+              <circle cx="7.5" cy="7.5" r="1.5" />
+            </svg>
+            Entidades
+          </button>
+          <button
+            type="button"
+            className="campaign-home__manage-button"
             onClick={() => navigate(`/campaigns/${id}/manage`)}
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

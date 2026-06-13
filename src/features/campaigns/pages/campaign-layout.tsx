@@ -3,6 +3,7 @@ import { LoadingState } from "@/shared/components/loading-state";
 import { ErrorState } from "@/shared/components/error-state";
 import { useCampaignHome } from "../hooks/use-campaign-home";
 import type { CampaignHomeContext } from "../hooks/use-campaign-home-context";
+import { CampaignTopbar } from "../components/campaign-topbar";
 
 export function CampaignLayout() {
   const { campaignId } = useParams<{ campaignId: string }>();
@@ -14,5 +15,10 @@ export function CampaignLayout() {
 
   const context: CampaignHomeContext = { data, reload, campaignId: id };
 
-  return <Outlet context={context} />;
+  return (
+    <>
+      <CampaignTopbar campaignId={id} campaignName={data.campaign.name} />
+      <Outlet context={context} />
+    </>
+  );
 }

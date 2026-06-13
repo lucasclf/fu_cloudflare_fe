@@ -4,8 +4,10 @@ import type { NpcSummary } from "../types/npc";
 
 export async function getPublicNpcSummary(
   signal?: AbortSignal,
+  globalOnly?: boolean,
 ): Promise<NpcSummary[]> {
-  return httpGet<NpcSummary[]>(`${API_BASE_URL}/public/npcs/summary`, {
-    signal,
-  });
+  const url = globalOnly
+    ? `${API_BASE_URL}/public/npcs/summary?scope=global`
+    : `${API_BASE_URL}/public/npcs/summary`;
+  return httpGet<NpcSummary[]>(url, { signal });
 }

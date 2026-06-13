@@ -4,6 +4,10 @@ import type { PcSummary } from "../types/pc";
 
 export async function getPublicPcSummary(
   signal?: AbortSignal,
+  globalOnly?: boolean,
 ): Promise<PcSummary[]> {
-  return httpGet<PcSummary[]>(`${API_BASE_URL}/public/pcs/summary`, { signal });
+  const url = globalOnly
+    ? `${API_BASE_URL}/public/pcs/summary?scope=global`
+    : `${API_BASE_URL}/public/pcs/summary`;
+  return httpGet<PcSummary[]>(url, { signal });
 }

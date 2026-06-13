@@ -1,27 +1,33 @@
 import { useMemo, useState } from "react";
-import { CategorySwitcher } from "../../catalog/components/category-switcher";
-import { CatalogLayout } from "../../catalog/components/catalog-layout";
-import type { CatalogCategory } from "../../catalog/types/category";
-import { ErrorState } from "../../../shared/components/error-state";
-import { LoadingState } from "../../../shared/components/loading-state";
-import { PCS_CATALOG_CONFIG } from "../config/pcs-catalog-config";
-import { usePublicPcSummary } from "../hooks/use-public-pc-summary";
-import { usePublicPcDetail } from "../hooks/use-public-pc-detail";
-import { PcCardsPanel } from "../components/pc-cards-panel";
-import { PcDetailPanel } from "../components/pc-detail-panel";
-import { PcListSidebar } from "../components/pc-list-sidebar";
-import { normalizePcText } from "../lib/pc-formatters";
+import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import { ErrorState } from "@/shared/components/error-state";
+import { LoadingState } from "@/shared/components/loading-state";
+import { PCS_CATALOG_CONFIG } from "@/features/pcs/config/pcs-catalog-config";
+import { usePublicPcSummary } from "@/features/pcs/hooks/use-public-pc-summary";
+import { usePublicPcDetail } from "@/features/pcs/hooks/use-public-pc-detail";
+import { PcCardsPanel } from "@/features/pcs/components/pc-cards-panel";
+import { PcDetailPanel } from "@/features/pcs/components/pc-detail-panel";
+import { PcListSidebar } from "@/features/pcs/components/pc-list-sidebar";
+import { normalizePcText } from "@/features/pcs/lib/pc-formatters";
+import { useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
+import { useCampaignPcs } from "../hooks/use-campaign-pcs";
+import { CampaignCategorySwitcher } from "./campaign-category-switcher";
+import type { CampaignEntityCategory } from "../types/campaign-entity-category";
 
-type PcsCatalogViewProps = {
-  category: CatalogCategory;
-  onCategoryChange: (category: CatalogCategory) => void;
+type CampaignPcsCatalogViewProps = {
+  category: CampaignEntityCategory;
+  onCategoryChange: (category: CampaignEntityCategory) => void;
+  campaignId: number;
 };
 
-export function PcsCatalogView({
+export function CampaignPcsCatalogView({
   category,
   onCategoryChange,
-}: PcsCatalogViewProps) {
-  const { data: pcs, loading, error } = usePublicPcSummary(false);
+  campaignId,
+}: CampaignPcsCatalogViewProps) {
+  const global = usePublicPcSummary(true);
+  const campaign = useCampaignPcs(campaignId);
+  const { data: pcs, loading, error } = useCombinedCatalog(global, campaign);
   const [search, setSearch] = useState("");
   const [selectedPcId, setSelectedPcId] = useState<number | null>(null);
   const {
@@ -62,7 +68,7 @@ export function PcsCatalogView({
       searchValue={search}
       onSearchChange={handleSearchChange}
       categorySwitcher={
-        <CategorySwitcher value={category} onChange={onCategoryChange} />
+        <CampaignCategorySwitcher value={category} onChange={onCategoryChange} />
       }
       sidebarContent={
         loading ? (

@@ -1,27 +1,33 @@
 import { useMemo, useState } from "react";
-import { CategorySwitcher } from "../../catalog/components/category-switcher";
-import { CatalogLayout } from "../../catalog/components/catalog-layout";
-import type { CatalogCategory } from "../../catalog/types/category";
-import { ErrorState } from "../../../shared/components/error-state";
-import { LoadingState } from "../../../shared/components/loading-state";
-import { NPCS_CATALOG_CONFIG } from "../config/npcs-catalog-config";
-import { usePublicNpcSummary } from "../hooks/use-public-npc-summary";
-import { usePublicNpcDetail } from "../hooks/use-public-npc-detail";
-import { NpcCardsPanel } from "../components/npc-cards-panel";
-import { NpcDetailPanel } from "../components/npc-detail-panel";
-import { NpcListSidebar } from "../components/npc-list-sidebar";
-import { normalizeNpcText } from "../lib/npc-formatters";
+import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
+import { ErrorState } from "@/shared/components/error-state";
+import { LoadingState } from "@/shared/components/loading-state";
+import { NPCS_CATALOG_CONFIG } from "@/features/npcs/config/npcs-catalog-config";
+import { usePublicNpcSummary } from "@/features/npcs/hooks/use-public-npc-summary";
+import { usePublicNpcDetail } from "@/features/npcs/hooks/use-public-npc-detail";
+import { NpcCardsPanel } from "@/features/npcs/components/npc-cards-panel";
+import { NpcDetailPanel } from "@/features/npcs/components/npc-detail-panel";
+import { NpcListSidebar } from "@/features/npcs/components/npc-list-sidebar";
+import { normalizeNpcText } from "@/features/npcs/lib/npc-formatters";
+import { useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
+import { useCampaignNpcs } from "../hooks/use-campaign-npcs";
+import { CampaignCategorySwitcher } from "./campaign-category-switcher";
+import type { CampaignEntityCategory } from "../types/campaign-entity-category";
 
-type NpcsCatalogViewProps = {
-  category: CatalogCategory;
-  onCategoryChange: (category: CatalogCategory) => void;
+type CampaignNpcsCatalogViewProps = {
+  category: CampaignEntityCategory;
+  onCategoryChange: (category: CampaignEntityCategory) => void;
+  campaignId: number;
 };
 
-export function NpcsCatalogView({
+export function CampaignNpcsCatalogView({
   category,
   onCategoryChange,
-}: NpcsCatalogViewProps) {
-  const { data: npcs, loading, error } = usePublicNpcSummary(false);
+  campaignId,
+}: CampaignNpcsCatalogViewProps) {
+  const global = usePublicNpcSummary(true);
+  const campaign = useCampaignNpcs(campaignId);
+  const { data: npcs, loading, error } = useCombinedCatalog(global, campaign);
   const [search, setSearch] = useState("");
   const [selectedNpcId, setSelectedNpcId] = useState<number | null>(null);
   const {
@@ -63,7 +69,7 @@ export function NpcsCatalogView({
       searchValue={search}
       onSearchChange={handleSearchChange}
       categorySwitcher={
-        <CategorySwitcher value={category} onChange={onCategoryChange} />
+        <CampaignCategorySwitcher value={category} onChange={onCategoryChange} />
       }
       sidebarContent={
         loading ? (

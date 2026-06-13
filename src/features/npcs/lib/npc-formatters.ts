@@ -40,8 +40,8 @@ export function formatEquipmentSlot(slot: string): string {
   const labels: Record<string, string> = {
     main_hand: "Mão principal",
     off_hand: "Mão secundária",
-    armor_slot: "Armadura",
-    accessory_slot: "Acessório",
+    armor: "Armadura",
+    accessory: "Acessório",
   };
 
   return labels[slot] ?? formatFallbackLabel(slot);

@@ -27,6 +27,9 @@ const CampaignHomePage = lazy(() =>
 const CampaignManagePage = lazy(() =>
   import("../../features/campaigns/pages/campaign-manage-page").then((m) => ({ default: m.CampaignManagePage })),
 );
+const CampaignEntitiesPage = lazy(() =>
+  import("../../features/campaigns/pages/campaign-entities-page").then((m) => ({ default: m.CampaignEntitiesPage })),
+);
 const InvitationsPage = lazy(() =>
   import("../../features/invitations/pages/invitations-page").then((m) => ({ default: m.InvitationsPage })),
 );
@@ -73,6 +76,14 @@ export const router = createBrowserRouter([
               {
                 path: "manage",
                 element: withSuspense(<CampaignManagePage />),
+              },
+              {
+                path: "entities",
+                element: withSuspense(<CampaignEntitiesPage />),
+              },
+              {
+                path: "items",
+                element: <Navigate to="../entities" replace />,
               },
             ],
           },
