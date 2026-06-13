@@ -262,7 +262,7 @@ const PLAYER_TILES: TileConfig[] = [MASTER_TILES[2]];
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function CampaignManagePage() {
-  const { data } = useCampaignHomeContext();
+  const { data, campaignId: id } = useCampaignHomeContext();
   const [activeForm, setActiveForm] = useState<EntityType | null>(null);
 
   const isMaster = data.role === "master";
