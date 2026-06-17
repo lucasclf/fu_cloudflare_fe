@@ -276,7 +276,7 @@ function getRelatedFactions(
     .filter(isFaction)
     .map((faction) => {
       const relationTypes = unique(
-        faction.location_relations
+        (faction.location_relations ?? [])
           .filter(
             (relation) => getLocationUid(relation.location_id) === location.uid,
           )

@@ -173,7 +173,7 @@ function FactionSubItem({
   selected,
   onSelect,
 }: FactionSubItemProps) {
-  const relationTypes = faction.location_relations
+  const relationTypes = (faction.location_relations ?? [])
     .filter(
       (relation) =>
         getLocationUidFromRelation(relation.location_id) === location.uid,

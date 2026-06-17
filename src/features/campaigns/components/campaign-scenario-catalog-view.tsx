@@ -33,7 +33,14 @@ export function CampaignScenarioCatalogView({
   const global = usePublicScenarioEntities();
   const campaign = useCampaignScenarioEntities(campaignId);
   const { data: entities, loading, error } = useCombinedCatalog(global, campaign);
-  const entitiesList = useMemo(() => entities ?? [], [entities]);
+  const entitiesList = useMemo(() => {
+    const seen = new Set<string>();
+    return (entities ?? []).filter((e) => {
+      if (seen.has(e.uid)) return false;
+      seen.add(e.uid);
+      return true;
+    });
+  }, [entities]);
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<ScenarioTypeFilterValue>(null);
@@ -88,7 +95,7 @@ export function CampaignScenarioCatalogView({
         entity.description ?? "",
         isFaction(entity) ? (entity.subtype ?? "") : "",
         isFaction(entity)
-          ? entity.location_relations
+          ? (entity.location_relations ?? [])
               .map(
                 (relation) =>
                   `${relation.location_name} ${relation.relation_type}`,

@@ -1,5 +1,4 @@
 import type { CSSProperties } from "react";
-import { getPcPortraitImageSrc } from "../lib/get-pc-image-src";
 import { renderPcValue } from "../lib/pc-formatters";
 import type { PcSummary } from "../types/pc";
 
@@ -27,11 +26,11 @@ export function PcCardsPanel({ pcs, selectedPcId, onSelectPc }: Props) {
           }}
         >
           <div style={styles.imageFrame}>
-            <img
-              src={getPcPortraitImageSrc(pc.img_key)}
-              alt={pc.name}
-              style={styles.image}
-            />
+            {pc.img_key ? (
+              <img src={pc.img_key} alt={pc.name} style={styles.image} />
+            ) : (
+              <div style={styles.imagePlaceholder}>Sem imagem</div>
+            )}
           </div>
 
           <div style={styles.content}>
@@ -85,6 +84,17 @@ const styles: Record<string, CSSProperties> = {
     display: "block",
     padding: "10px",
     boxSizing: "border-box",
+  },
+
+  imagePlaceholder: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#5f574c",
+    fontSize: "13px",
+    fontStyle: "italic",
   },
 
   content: {

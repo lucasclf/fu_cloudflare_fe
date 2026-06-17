@@ -100,7 +100,7 @@ export function ScenarioCatalogView({
         entity.description ?? "",
         isFaction(entity) ? (entity.subtype ?? "") : "",
         isFaction(entity)
-          ? entity.location_relations
+          ? (entity.location_relations ?? [])
               .map(
                 (relation) =>
                   `${relation.location_name} ${relation.relation_type}`,

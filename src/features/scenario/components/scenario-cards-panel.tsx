@@ -80,9 +80,9 @@ function ScenarioCard({ entity }: ScenarioCardProps) {
           <div style={styles.relationsBlock}>
             <div style={styles.infoLabel}>Relações com locais</div>
 
-            {entity.location_relations.length > 0 ? (
+            {(entity.location_relations ?? []).length > 0 ? (
               <div style={styles.relationList}>
-                {entity.location_relations.map((relation, index) => (
+                {(entity.location_relations ?? []).map((relation, index) => (
                   <div
                     key={`${relation.location_id}-${relation.relation_type}-${index}`}
                     style={styles.relationItem}

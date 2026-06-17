@@ -1,6 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 
-import { getPcImageSrc } from "../lib/get-pc-image-src";
 import panelStyles from "./pc-detail-panel.module.css";
 import {
   formatBondAxis,
@@ -47,11 +46,11 @@ export function PcDetailPanel({ pc, onBackToList }: Props) {
 
       <article className={panelStyles.heroCard} style={styles.heroCard}>
         <div className={panelStyles.imageFrame} style={styles.imageFrame}>
-          <img
-            src={getPcImageSrc(pc.img_key)}
-            alt={pc.name}
-            style={styles.image}
-          />
+          {pc.img_key ? (
+            <img src={pc.img_key} alt={pc.name} style={styles.image} />
+          ) : (
+            <div style={styles.imagePlaceholder}>Sem imagem</div>
+          )}
         </div>
 
         <div className={panelStyles.heroContent} style={styles.heroContent}>
@@ -636,6 +635,17 @@ const styles: Record<string, CSSProperties> = {
     display: "block",
     padding: "16px",
     boxSizing: "border-box",
+  },
+
+  imagePlaceholder: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#5f574c",
+    fontSize: "13px",
+    fontStyle: "italic",
   },
 
   heroContent: {},

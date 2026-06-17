@@ -23,7 +23,7 @@ export type ScenarioLocation = ScenarioEntityBase & {
 
 export type ScenarioFaction = ScenarioEntityBase & {
   type: "faction";
-  location_relations: ScenarioLocationRelation[];
+  location_relations: ScenarioLocationRelation[] | undefined;
 };
 
 export type ScenarioEntity = ScenarioLocation | ScenarioFaction;
