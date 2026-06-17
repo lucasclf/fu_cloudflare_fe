@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
 import { ErrorState } from "@/shared/components/error-state";
 import { LoadingState } from "@/shared/components/loading-state";
+import { ListSidebar } from "@/shared/components/list-sidebar";
 import { normalizeSearchText } from "@/shared/lib/text-formatters";
 import { useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
 import { usePublicArcanas } from "@/features/arcanas/hooks/use-public-arcanas";
@@ -28,6 +29,7 @@ export function CampaignArcanasCatalogView({
   const arcanasList = useMemo(() => arcanas ?? [], [arcanas]);
 
   const [search, setSearch] = useState("");
+  const [selectedArcanaId, setSelectedArcanaId] = useState<number | null>(null);
 
   const filteredArcanas = useMemo(() => {
     const query = normalizeSearchText(search);
@@ -40,13 +42,32 @@ export function CampaignArcanasCatalogView({
     });
   }, [arcanasList, search]);
 
+  const visibleArcanas = useMemo(() => {
+    if (selectedArcanaId === null) return filteredArcanas;
+    return filteredArcanas.filter((a) => a.id === selectedArcanaId);
+  }, [filteredArcanas, selectedArcanaId]);
+
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    setSelectedArcanaId(null);
+  }
+
+  const sidebarItems = useMemo(() =>
+    filteredArcanas.map((a) => ({
+      id: a.id,
+      title: a.name,
+      subtitle: a.domain,
+    })),
+    [filteredArcanas],
+  );
+
   return (
     <CatalogLayout
       sidebarHeaderTitle="Arcana"
       sidebarHeaderSubtitle="Arcanas globais e desta campanha"
       searchPlaceholder="Buscar arcana..."
       searchValue={search}
-      onSearchChange={setSearch}
+      onSearchChange={handleSearchChange}
       categorySwitcher={
         <CampaignCategorySwitcher value={category} onChange={onCategoryChange} />
       }
@@ -56,9 +77,15 @@ export function CampaignArcanasCatalogView({
         ) : error ? (
           <ErrorState message={error} />
         ) : (
-          <p className={styles.sidebarCount}>
-            {filteredArcanas.length} arcana(s)
-          </p>
+          <ListSidebar
+            ariaLabel="Lista de arcanas"
+            items={sidebarItems}
+            selectedItemId={selectedArcanaId}
+            clearSelectionLabel="Mostrar todas"
+            emptyMessage="Nenhuma arcana encontrada."
+            onSelect={setSelectedArcanaId}
+            onClearSelection={() => setSelectedArcanaId(null)}
+          />
         )
       }
       mainContent={
@@ -66,11 +93,11 @@ export function CampaignArcanasCatalogView({
           <LoadingState message="Carregando arcanas..." />
         ) : error ? (
           <ErrorState message={error} />
-        ) : filteredArcanas.length === 0 ? (
+        ) : visibleArcanas.length === 0 ? (
           <p className={styles.empty}>Nenhuma arcana encontrada.</p>
         ) : (
           <ul className={styles.list}>
-            {filteredArcanas.map((arcana) => (
+            {visibleArcanas.map((arcana) => (
               <li key={arcana.id} className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h3 className={styles.cardTitle}>{arcana.name}</h3>

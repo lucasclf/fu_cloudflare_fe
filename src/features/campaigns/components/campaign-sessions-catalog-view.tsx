@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
 import { ErrorState } from "@/shared/components/error-state";
 import { LoadingState } from "@/shared/components/loading-state";
+import { ListSidebar } from "@/shared/components/list-sidebar";
 import { normalizeSearchText } from "@/shared/lib/text-formatters";
 import { useEmptyResource, useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
 import { useCampaignSessions } from "../hooks/use-campaign-sessions";
@@ -28,6 +29,7 @@ export function CampaignSessionsCatalogView({
   const sessionsList = useMemo(() => sessions ?? [], [sessions]);
 
   const [search, setSearch] = useState("");
+  const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
 
   const filteredSessions = useMemo(() => {
     const query = normalizeSearchText(search);
@@ -47,13 +49,32 @@ export function CampaignSessionsCatalogView({
       .sort((a, b) => b.session_number - a.session_number);
   }, [sessionsList, search]);
 
+  const visibleSessions = useMemo(() => {
+    if (selectedSessionId === null) return filteredSessions;
+    return filteredSessions.filter((s) => s.id === selectedSessionId);
+  }, [filteredSessions, selectedSessionId]);
+
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    setSelectedSessionId(null);
+  }
+
+  const sidebarItems = useMemo(() =>
+    filteredSessions.map((s) => ({
+      id: s.id,
+      title: `#${s.session_number} — ${s.title ?? "Sessão sem título"}`,
+      subtitle: formatDate(s.played_at),
+    })),
+    [filteredSessions],
+  );
+
   return (
     <CatalogLayout
       sidebarHeaderTitle="Sessões"
       sidebarHeaderSubtitle="Sessões registradas nesta campanha"
       searchPlaceholder="Buscar sessão..."
       searchValue={search}
-      onSearchChange={setSearch}
+      onSearchChange={handleSearchChange}
       categorySwitcher={
         <CampaignCategorySwitcher value={category} onChange={onCategoryChange} />
       }
@@ -63,9 +84,15 @@ export function CampaignSessionsCatalogView({
         ) : error ? (
           <ErrorState message={error} />
         ) : (
-          <p className={styles.sidebarCount}>
-            {filteredSessions.length} sessão(ões)
-          </p>
+          <ListSidebar
+            ariaLabel="Lista de sessões"
+            items={sidebarItems}
+            selectedItemId={selectedSessionId}
+            clearSelectionLabel="Mostrar todas"
+            emptyMessage="Nenhuma sessão encontrada."
+            onSelect={setSelectedSessionId}
+            onClearSelection={() => setSelectedSessionId(null)}
+          />
         )
       }
       mainContent={
@@ -73,11 +100,11 @@ export function CampaignSessionsCatalogView({
           <LoadingState message="Carregando sessões..." />
         ) : error ? (
           <ErrorState message={error} />
-        ) : filteredSessions.length === 0 ? (
+        ) : visibleSessions.length === 0 ? (
           <p className={styles.empty}>Nenhuma sessão encontrada.</p>
         ) : (
           <ul className={styles.list}>
-            {filteredSessions.map((session) => (
+            {visibleSessions.map((session) => (
               <li key={session.id} className={styles.card}>
                 <div className={styles.cardHeader}>
                   <h3 className={styles.cardTitle}>
