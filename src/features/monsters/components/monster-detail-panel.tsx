@@ -52,17 +52,25 @@ const ACTION_GROUPS = [
 type Props = {
   monster: MonsterDetail;
   onBackToList: () => void;
+  onEdit?: () => void;
 };
 
-export function MonsterDetailPanel({ monster, onBackToList }: Props) {
+export function MonsterDetailPanel({ monster, onBackToList, onEdit }: Props) {
   const imageSrc = getMonsterImageSrc(monster.img_key);
   const affinity = monster.affinities[0];
 
   return (
     <div style={styles.wrapper}>
-      <button type="button" onClick={onBackToList} style={styles.backButton}>
-        ← Voltar para o bestiário
-      </button>
+      <div style={styles.topActions}>
+        <button type="button" onClick={onBackToList} style={styles.backButton}>
+          ← Voltar para o bestiário
+        </button>
+        {onEdit ? (
+          <button type="button" onClick={onEdit} className={panelStyles.editButton}>
+            ✏️ Editar
+          </button>
+        ) : null}
+      </div>
 
       <article className={panelStyles.heroCard} style={styles.heroCard}>
         <div className={panelStyles.imageFrame} style={styles.imageFrame}>
@@ -345,8 +353,13 @@ const styles: Record<string, CSSProperties> = {
     gap: "22px",
   },
 
+  topActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+
   backButton: {
-    alignSelf: "flex-start",
     border: "1px solid #3d2d5c",
     borderRadius: "8px",
     background: "#131018",

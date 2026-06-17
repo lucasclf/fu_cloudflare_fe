@@ -10,6 +10,7 @@ import type { NpcDetail } from "../types/npc";
 
 export function usePublicNpcDetail(
   npcId: number | null,
+  reloadTrigger = 0,
 ): AsyncResourceByKeyState<NpcDetail> {
   const loader = useCallback(
     (id: number, signal: AbortSignal) => getPublicNpcById(id, signal),
@@ -26,5 +27,6 @@ export function usePublicNpcDetail(
     keyValue: npcId,
     loader,
     getErrorMessage,
+    reloadTrigger,
   });
 }

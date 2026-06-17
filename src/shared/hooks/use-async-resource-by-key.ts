@@ -16,6 +16,7 @@ type UseAsyncResourceByKeyParams<TKey, TData> = {
   loader: AsyncResourceByKeyLoader<TKey, TData>;
   getErrorMessage?: (error: unknown) => string;
   clearDataOnLoad?: boolean;
+  reloadTrigger?: number;
 };
 
 export function useAsyncResourceByKey<TKey, TData>({
@@ -23,6 +24,7 @@ export function useAsyncResourceByKey<TKey, TData>({
   loader,
   getErrorMessage = getDefaultErrorMessage,
   clearDataOnLoad = true,
+  reloadTrigger = 0,
 }: UseAsyncResourceByKeyParams<TKey, TData>): AsyncResourceByKeyState<TData> {
   const [state, setState] = useState<AsyncResourceByKeyState<TData>>({
     data: null,
@@ -78,7 +80,7 @@ export function useAsyncResourceByKey<TKey, TData>({
     void loadResource();
 
     return () => controller.abort();
-  }, [keyValue, loader, getErrorMessage, clearDataOnLoad]);
+  }, [keyValue, loader, getErrorMessage, clearDataOnLoad, reloadTrigger]);
 
   return state;
 }

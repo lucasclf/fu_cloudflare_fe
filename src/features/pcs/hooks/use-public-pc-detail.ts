@@ -10,6 +10,7 @@ import type { PcDetail } from "../types/pc";
 
 export function usePublicPcDetail(
   pcId: number | null,
+  reloadTrigger = 0,
 ): AsyncResourceByKeyState<PcDetail> {
   const loader = useCallback(
     (id: number, signal: AbortSignal) => getPublicPcById(id, signal),
@@ -26,5 +27,6 @@ export function usePublicPcDetail(
     keyValue: pcId,
     loader,
     getErrorMessage,
+    reloadTrigger,
   });
 }

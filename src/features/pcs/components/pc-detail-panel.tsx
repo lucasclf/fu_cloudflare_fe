@@ -28,6 +28,7 @@ import { getPcBondImageSrc } from "../lib/get-pc-bond-image-src.ts";
 type Props = {
   pc: PcDetail;
   onBackToList: () => void;
+  onEdit?: () => void;
 };
 
 type CollapsibleSectionProps = {
@@ -37,12 +38,17 @@ type CollapsibleSectionProps = {
   children: ReactNode;
 };
 
-export function PcDetailPanel({ pc, onBackToList }: Props) {
+export function PcDetailPanel({ pc, onBackToList, onEdit }: Props) {
   return (
     <div style={styles.wrapper}>
       <button type="button" onClick={onBackToList} style={styles.backButton}>
         ← Voltar para personagens
       </button>
+      {onEdit && (
+        <button type="button" onClick={onEdit} className={panelStyles.editButton}>
+          ✏️ Editar
+        </button>
+      )}
 
       <article className={panelStyles.heroCard} style={styles.heroCard}>
         <div className={panelStyles.imageFrame} style={styles.imageFrame}>

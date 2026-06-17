@@ -10,6 +10,7 @@ import type { MonsterDetail } from "../types/monster";
 
 export function usePublicMonsterDetail(
   monsterId: number | null,
+  reloadTrigger = 0,
 ): AsyncResourceByKeyState<MonsterDetail> {
   const loader = useCallback(
     (id: number, signal: AbortSignal) => getPublicMonsterById(id, signal),
@@ -26,5 +27,6 @@ export function usePublicMonsterDetail(
     keyValue: monsterId,
     loader,
     getErrorMessage,
+    reloadTrigger,
   });
 }

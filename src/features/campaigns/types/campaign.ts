@@ -360,6 +360,8 @@ export type DamageType =
   | "physical" | "air" | "bolt" | "dark"
   | "earth" | "fire" | "ice" | "light" | "poison";
 
+export type UpdateItemInput = CreateItemInput;
+
 export type CreateItemInput = {
   name: string;
   item_type: ItemType;

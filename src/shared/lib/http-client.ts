@@ -121,6 +121,78 @@ export async function httpPost<T>(
   return body.data;
 }
 
+export async function httpPatch<T>(
+  url: string,
+  payload: unknown,
+  options: HttpPostOptions = {},
+): Promise<T> {
+  const response = await fetch(url, {
+    method: "PATCH",
+    signal: options.signal,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const body = await parseJsonResponse<T>(response);
+
+  if (!response.ok) {
+    if (body && !body.success) {
+      throw new Error(resolveErrorMessage(body.error));
+    }
+    throw new Error(`Requisição falhou com status ${response.status}.`);
+  }
+
+  if (!body) {
+    throw new Error("Resposta inválida da API.");
+  }
+
+  if (!body.success) {
+    throw new Error(resolveErrorMessage(body.error));
+  }
+
+  return body.data;
+}
+
+export async function httpPut<T>(
+  url: string,
+  payload: unknown,
+  options: HttpPostOptions = {},
+): Promise<T> {
+  const response = await fetch(url, {
+    method: "PUT",
+    signal: options.signal,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  const body = await parseJsonResponse<T>(response);
+
+  if (!response.ok) {
+    if (body && !body.success) {
+      throw new Error(resolveErrorMessage(body.error));
+    }
+    throw new Error(`Requisição falhou com status ${response.status}.`);
+  }
+
+  if (!body) {
+    throw new Error("Resposta inválida da API.");
+  }
+
+  if (!body.success) {
+    throw new Error(resolveErrorMessage(body.error));
+  }
+
+  return body.data;
+}
+
 export async function httpDelete(
   url: string,
   options: HttpDeleteOptions = {},

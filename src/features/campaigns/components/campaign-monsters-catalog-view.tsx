@@ -12,8 +12,11 @@ import { MonsterLevelFilter } from "@/features/monsters/components/monster-level
 import { MonsterTypeFilter } from "@/features/monsters/components/monster-type-filter";
 import { useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
 import { useCampaignMonsters } from "../hooks/use-campaign-monsters";
+import { useCampaignHomeContext } from "../hooks/use-campaign-home-context";
 import { CampaignCategorySwitcher } from "./campaign-category-switcher";
+import { MonsterFormModal } from "./monster-form-modal";
 import type { CampaignEntityCategory } from "../types/campaign-entity-category";
+import type { MonsterDetail } from "@/features/monsters/types/monster";
 
 import pageStyles from "@/features/monsters/pages/monsters-catalog-view.module.css";
 
@@ -28,19 +31,27 @@ export function CampaignMonstersCatalogView({
   onCategoryChange,
   campaignId,
 }: CampaignMonstersCatalogViewProps) {
+  const { data: homeData } = useCampaignHomeContext();
+  const isMaster = homeData?.role === "master";
+
   const global = usePublicMonsterSummary(true);
   const campaign = useCampaignMonsters(campaignId);
   const { data: monsters, loading, error } = useCombinedCatalog(global, campaign);
   const monstersList = useMemo(() => monsters ?? [], [monsters]);
 
-  const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(
-    null,
+  const campaignMonsterIds = useMemo(
+    () => new Set(campaign.data?.map((m) => m.id) ?? []),
+    [campaign.data],
   );
+
+  const [selectedMonsterId, setSelectedMonsterId] = useState<number | null>(null);
+  const [editingMonster, setEditingMonster] = useState<{ monster: MonsterDetail; id: number } | null>(null);
+  const [detailVersion, setDetailVersion] = useState(0);
   const {
     data: selectedMonster,
     loading: detailLoading,
     error: detailError,
-  } = usePublicMonsterDetail(selectedMonsterId);
+  } = usePublicMonsterDetail(selectedMonsterId, detailVersion);
 
   const handleBackToList = useCallback(() => {
     setSelectedMonsterId(null);
@@ -74,6 +85,7 @@ export function CampaignMonstersCatalogView({
   }
 
   return (
+    <>
     <CatalogLayout
       sidebarHeaderTitle={MONSTERS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
       sidebarHeaderSubtitle={
@@ -152,6 +164,11 @@ export function CampaignMonstersCatalogView({
           <MonsterDetailPanel
             monster={selectedMonster}
             onBackToList={handleBackToList}
+            onEdit={
+              isMaster && selectedMonsterId !== null && campaignMonsterIds.has(selectedMonsterId)
+                ? () => setEditingMonster({ monster: selectedMonster, id: selectedMonster.id })
+                : undefined
+            }
           />
         ) : (
           <MonsterCardsPanel
@@ -162,5 +179,20 @@ export function CampaignMonstersCatalogView({
         )
       }
     />
+
+    {editingMonster ? (
+      <MonsterFormModal
+        campaignId={campaignId}
+        initialMonster={editingMonster.monster}
+        monsterId={editingMonster.id}
+        onClose={() => setEditingMonster(null)}
+        onSuccess={() => {
+          setEditingMonster(null);
+          campaign.reload();
+          setDetailVersion((v) => v + 1);
+        }}
+      />
+    ) : null}
+    </>
   );
 }

@@ -11,8 +11,11 @@ import { NpcListSidebar } from "@/features/npcs/components/npc-list-sidebar";
 import { normalizeNpcText } from "@/features/npcs/lib/npc-formatters";
 import { useCombinedCatalog } from "@/features/catalog/hooks/use-combined-catalog";
 import { useCampaignNpcs } from "../hooks/use-campaign-npcs";
+import { useCampaignHomeContext } from "../hooks/use-campaign-home-context";
 import { CampaignCategorySwitcher } from "./campaign-category-switcher";
+import { NpcFormModal } from "./npc-form-modal";
 import type { CampaignEntityCategory } from "../types/campaign-entity-category";
+import type { NpcDetail } from "@/features/npcs/types/npc";
 
 type CampaignNpcsCatalogViewProps = {
   category: CampaignEntityCategory;
@@ -30,11 +33,20 @@ export function CampaignNpcsCatalogView({
   const { data: npcs, loading, error } = useCombinedCatalog(global, campaign);
   const [search, setSearch] = useState("");
   const [selectedNpcId, setSelectedNpcId] = useState<number | null>(null);
+  const [editingNpc, setEditingNpc] = useState<{ npc: NpcDetail; id: number } | null>(null);
+  const [detailVersion, setDetailVersion] = useState(0);
   const {
     data: selectedNpc,
     loading: detailLoading,
     error: detailError,
-  } = usePublicNpcDetail(selectedNpcId);
+  } = usePublicNpcDetail(selectedNpcId, detailVersion);
+
+  const { data: homeData } = useCampaignHomeContext();
+  const isMaster = homeData.role === "master";
+  const campaignNpcIds = useMemo(
+    () => new Set(campaign.data?.map((n) => n.id) ?? []),
+    [campaign.data],
+  );
 
   const filteredNpcs = useMemo(() => {
     const query = normalizeNpcText(search);
@@ -62,6 +74,7 @@ export function CampaignNpcsCatalogView({
   }
 
   return (
+    <>
     <CatalogLayout
       sidebarHeaderTitle={NPCS_CATALOG_CONFIG.layout.sidebarHeaderTitle}
       sidebarHeaderSubtitle={NPCS_CATALOG_CONFIG.layout.sidebarHeaderSubtitle}
@@ -99,7 +112,15 @@ export function CampaignNpcsCatalogView({
         ) : detailError ? (
           <ErrorState message={detailError} />
         ) : selectedNpc ? (
-          <NpcDetailPanel npc={selectedNpc} onBackToList={handleBackToList} />
+          <NpcDetailPanel
+            npc={selectedNpc}
+            onBackToList={handleBackToList}
+            onEdit={
+              isMaster && campaignNpcIds.has(selectedNpc.id)
+                ? () => setEditingNpc({ npc: selectedNpc, id: selectedNpc.id })
+                : undefined
+            }
+          />
         ) : (
           <NpcCardsPanel
             npcs={filteredNpcs}
@@ -109,5 +130,19 @@ export function CampaignNpcsCatalogView({
         )
       }
     />
+    {editingNpc ? (
+      <NpcFormModal
+        campaignId={campaignId}
+        initialNpc={editingNpc.npc}
+        npcId={editingNpc.id}
+        onClose={() => setEditingNpc(null)}
+        onSuccess={() => {
+          setEditingNpc(null);
+          campaign.reload();
+          setDetailVersion((v) => v + 1);
+        }}
+      />
+    ) : null}
+    </>
   );
 }

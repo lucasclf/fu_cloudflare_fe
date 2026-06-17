@@ -8,6 +8,8 @@ type ItemTypeSectionProps = {
   items: Item[];
   isExpanded: boolean;
   onToggle: (itemType: ItemType) => void;
+  onEditItem?: (item: Item) => void;
+  editableItemIds?: Set<number>;
 };
 
 export function ItemTypeSection({
@@ -15,6 +17,8 @@ export function ItemTypeSection({
   items,
   isExpanded,
   onToggle,
+  onEditItem,
+  editableItemIds,
 }: ItemTypeSectionProps) {
   const sectionId = `item-section-${itemType}`;
 
@@ -28,7 +32,11 @@ export function ItemTypeSection({
       contentClassName="item-cards-panel__cards"
     >
       {items.map((item) => (
-        <ItemCard key={item.id} item={item} />
+        <ItemCard
+          key={item.id}
+          item={item}
+          onEdit={onEditItem && editableItemIds?.has(item.id) ? () => onEditItem(item) : undefined}
+        />
       ))}
     </CollapsibleSection>
   );

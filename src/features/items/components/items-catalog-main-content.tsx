@@ -8,6 +8,8 @@ type ItemsCatalogMainContentProps = {
   error: string | null;
   items: Item[];
   selectedType: ItemType | null;
+  onEditItem?: (item: Item) => void;
+  editableItemIds?: Set<number>;
 };
 
 export function ItemsCatalogMainContent({
@@ -15,6 +17,8 @@ export function ItemsCatalogMainContent({
   error,
   items,
   selectedType,
+  onEditItem,
+  editableItemIds,
 }: ItemsCatalogMainContentProps) {
   return (
     <CatalogStateBoundary
@@ -27,7 +31,7 @@ export function ItemsCatalogMainContent({
         description: ITEMS_CATALOG_COPY.emptyState.description,
       }}
     >
-      <ItemCardsPanel items={items} selectedType={selectedType} />
+      <ItemCardsPanel items={items} selectedType={selectedType} onEditItem={onEditItem} editableItemIds={editableItemIds} />
     </CatalogStateBoundary>
   );
 }

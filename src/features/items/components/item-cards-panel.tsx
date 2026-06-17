@@ -13,9 +13,11 @@ import "./item-cards-panel.css";
 type ItemCardsPanelProps = {
   items: Item[];
   selectedType: ItemType | null;
+  onEditItem?: (item: Item) => void;
+  editableItemIds?: Set<number>;
 };
 
-export function ItemCardsPanel({ items, selectedType }: ItemCardsPanelProps) {
+export function ItemCardsPanel({ items, selectedType, onEditItem, editableItemIds }: ItemCardsPanelProps) {
   const { isItemTypeExpanded, toggleItemType } =
     useExpandedItemTypes(selectedType);
 
@@ -51,6 +53,8 @@ export function ItemCardsPanel({ items, selectedType }: ItemCardsPanelProps) {
             items={typeItems}
             isExpanded={isItemTypeExpanded(itemType)}
             onToggle={toggleItemType}
+            onEditItem={onEditItem}
+            editableItemIds={editableItemIds}
           />
         );
       })}

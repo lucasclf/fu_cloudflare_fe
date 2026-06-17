@@ -27,16 +27,24 @@ import { formatItemDefenseValue } from "../../items/lib/item-formatters.ts";
 type Props = {
   npc: NpcDetail;
   onBackToList: () => void;
+  onEdit?: () => void;
 };
 
-export function NpcDetailPanel({ npc, onBackToList }: Props) {
+export function NpcDetailPanel({ npc, onBackToList, onEdit }: Props) {
   const imageSrc = getNpcImageSrc(npc.img_key);
 
   return (
     <div style={styles.wrapper}>
-      <button type="button" onClick={onBackToList} style={styles.backButton}>
-        ← Voltar para NPCs
-      </button>
+      <div style={styles.headerActions}>
+        <button type="button" onClick={onBackToList} style={styles.backButton}>
+          ← Voltar para NPCs
+        </button>
+        {onEdit ? (
+          <button type="button" onClick={onEdit} className={panelStyles.editButton}>
+            ✏️ Editar
+          </button>
+        ) : null}
+      </div>
 
       <article className={panelStyles.heroCard} style={styles.heroCard}>
         <div className={panelStyles.imageFrame} style={styles.imageFrame}>
@@ -349,6 +357,12 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "22px",
+  },
+
+  headerActions: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
   },
 
   backButton: {
