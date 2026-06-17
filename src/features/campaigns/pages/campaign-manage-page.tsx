@@ -10,6 +10,14 @@ import { createFaction } from "../api/create-faction";
 import { listLocations } from "../api/list-locations";
 import { createMonster } from "../api/create-monster";
 import { createItem } from "../api/create-item";
+import { listCampaignItems } from "../api/list-items";
+import { listCampaignPcs } from "../api/list-pcs";
+import { listCampaignNpcs } from "../api/list-npcs";
+import { listCampaignMonsters } from "../api/list-monsters";
+import { getPublicJobCatalog } from "@/features/jobs/api/get-public-job-catalog";
+import { getPublicPowers } from "@/features/powers/api/get-public-powers";
+import { getPublicSpells } from "@/features/spells/api/get-public-spells";
+import { getPublicItems } from "@/features/items/api/get-public-items";
 import type {
   AttributeDie,
   LocationType,
@@ -17,6 +25,11 @@ import type {
   FactionLocationRelationType,
   LocationOption,
   MonsterType,
+  MonsterAffinityType,
+  MonsterActionType,
+  MonsterActionIcon,
+  CreateMonsterAffinitiesInput,
+  CreateMonsterActionInput,
   ItemType,
   WeaponCategory,
   DamageType,
@@ -24,7 +37,18 @@ import type {
   NpcInventoryRelationType,
   CreateNpcInventoryItemInput,
   CreateNpcEquipmentInput,
+  BondTargetType,
+  AdmirationAxis,
+  LoyaltyAxis,
+  AffectionAxis,
 } from "../types/campaign";
+import type { JobCatalogItem } from "@/features/jobs/types/job";
+import type { Power } from "@/features/powers/types/power";
+import type { Spell } from "@/features/spells/types/spell";
+import type { Item } from "@/features/items/types/item";
+import type { PcSummary } from "@/features/pcs/types/pc";
+import type { NpcSummary } from "@/features/npcs/types/npc";
+import type { MonsterSummary } from "@/features/monsters/types/monster";
 import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
 import { usePublicItems } from "@/features/items/hooks/use-public-items";
 import "./campaign-manage-page.css";
@@ -136,6 +160,65 @@ const DAMAGE_TYPE_OPTIONS: readonly { value: DamageType; label: string }[] = [
   { value: "dark", label: "Trevas" },
   { value: "poison", label: "Veneno" },
 ];
+
+const AFFINITY_TYPE_OPTIONS: readonly { value: MonsterAffinityType; label: string }[] = [
+  { value: "normal", label: "Normal" },
+  { value: "vulnerable", label: "Vulnerável" },
+  { value: "resistant", label: "Resistente" },
+  { value: "immune", label: "Imune" },
+  { value: "absorbs", label: "Absorve" },
+];
+
+const ACTION_TYPE_OPTIONS: readonly { value: MonsterActionType; label: string }[] = [
+  { value: "basic_attack", label: "Ataque básico" },
+  { value: "spell", label: "Magia" },
+  { value: "other_action", label: "Outra ação" },
+  { value: "special_rule", label: "Regra especial" },
+];
+
+const ACTION_ICON_OPTIONS: readonly { value: MonsterActionIcon; label: string }[] = [
+  { value: "melee", label: "Corpo a corpo" },
+  { value: "ranged", label: "À distância" },
+  { value: "spell", label: "Magia" },
+  { value: "support", label: "Suporte" },
+  { value: "passive", label: "Passiva" },
+];
+
+const ACTION_ICON_OPTIONS_BY_TYPE: Record<MonsterActionType, readonly { value: MonsterActionIcon; label: string }[]> = {
+  spell: ACTION_ICON_OPTIONS.filter((o) => o.value === "spell"),
+  basic_attack: ACTION_ICON_OPTIONS.filter((o) => o.value === "melee" || o.value === "ranged"),
+  special_rule: ACTION_ICON_OPTIONS.filter((o) => o.value === "support" || o.value === "passive"),
+  other_action: ACTION_ICON_OPTIONS,
+};
+
+type MonsterActionFieldVisibility = {
+  damageType: boolean;
+  checkFormula: boolean;
+  accuracyBonus: boolean;
+  cost: boolean;
+  target: boolean;
+  duration: boolean;
+  isOffensive: boolean;
+};
+
+const ACTION_FIELD_VISIBILITY: Record<MonsterActionType, MonsterActionFieldVisibility> = {
+  special_rule: {
+    damageType: false, checkFormula: false, accuracyBonus: false,
+    cost: false, target: false, duration: false, isOffensive: false,
+  },
+  basic_attack: {
+    damageType: true, checkFormula: true, accuracyBonus: true,
+    cost: false, target: false, duration: false, isOffensive: true,
+  },
+  spell: {
+    damageType: true, checkFormula: true, accuracyBonus: true,
+    cost: true, target: true, duration: true, isOffensive: true,
+  },
+  other_action: {
+    damageType: true, checkFormula: true, accuracyBonus: true,
+    cost: true, target: true, duration: true, isOffensive: true,
+  },
+};
 
 const GRIP_OPTIONS: readonly { value: string; label: string }[] = [
   { value: "uma_mao", label: "Uma Mão" },
@@ -1065,6 +1148,27 @@ function EquipmentSlotSelect({
 
 // ── PC form ───────────────────────────────────────────────────────────────────
 
+type PcLevelEntry = {
+  job_id: number | null;
+  power_id: number | null;
+  spell_id: number | null;
+};
+
+type PcBondEntry = {
+  target_type: BondTargetType;
+  target_id: number | null;
+  target_name: string;
+  admiration_axis: AdmirationAxis | "";
+  loyalty_axis: LoyaltyAxis | "";
+  affection_axis: AffectionAxis | "";
+  description: string;
+};
+
+type PcInventoryEntry = {
+  item_id: number | null;
+  quantity: number;
+};
+
 function PcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -1078,15 +1182,142 @@ function PcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [insDie, setInsDie] = useState<AttributeDie>("d8");
   const [mgtDie, setMgtDie] = useState<AttributeDie>("d8");
   const [wilDie, setWilDie] = useState<AttributeDie>("d8");
+
+  const [pcLevels, setPcLevels] = useState<PcLevelEntry[]>([]);
+  const [heroicPowerByJobId, setHeroicPowerByJobId] = useState<Record<number, number | null>>({});
+  const [equipmentEnabled, setEquipmentEnabled] = useState(false);
+  const [equipment, setEquipment] = useState<{ main_hand: number | null; off_hand: number | null; armor: number | null; accessory: number | null }>({ main_hand: null, off_hand: null, armor: null, accessory: null });
+  const [inventory, setInventory] = useState<PcInventoryEntry[]>([]);
+  const [bonds, setBonds] = useState<PcBondEntry[]>([]);
+
+  const [campaignJobs, setCampaignJobs] = useState<JobCatalogItem[]>([]);
+  const [campaignPowers, setCampaignPowers] = useState<Power[]>([]);
+  const [campaignSpells, setCampaignSpells] = useState<Spell[]>([]);
+  const [campaignItems, setCampaignItems] = useState<Item[]>([]);
+  const [campaignPcs, setCampaignPcs] = useState<PcSummary[]>([]);
+  const [campaignNpcs, setCampaignNpcs] = useState<NpcSummary[]>([]);
+  const [campaignMonsters, setCampaignMonsters] = useState<MonsterSummary[]>([]);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      getPublicJobCatalog(),
+      getPublicPowers(),
+      getPublicSpells(),
+      getPublicItems(),
+      listCampaignItems(campaignId),
+      listCampaignPcs(campaignId),
+      listCampaignNpcs(campaignId),
+      listCampaignMonsters(campaignId),
+    ]).then(([jobs, powers, spells, globalItems, campaignOnlyItems, pcs, npcs, monsters]) => {
+      if (!cancelled) {
+        setCampaignJobs(jobs);
+        setCampaignPowers(powers);
+        setCampaignSpells(spells);
+        // Mescla itens globais + exclusivos da campanha, sem duplicar por ID
+        const globalIds = new Set(globalItems.map((i) => i.id));
+        const mergedItems = [...globalItems, ...campaignOnlyItems.filter((i) => !globalIds.has(i.id))];
+        setCampaignItems(mergedItems);
+        setCampaignPcs(pcs);
+        setCampaignNpcs(npcs);
+        setCampaignMonsters(monsters);
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [campaignId]);
+
+  function computeJobLevelCounts(): Map<number, number> {
+    const counts = new Map<number, number>();
+    for (const lv of pcLevels) {
+      if (lv.job_id !== null) counts.set(lv.job_id, (counts.get(lv.job_id) ?? 0) + 1);
+    }
+    return counts;
+  }
+
+  // Retorna poderes comuns disponíveis para o nível `levelIndex`, com o nivel atual de cada um.
+  // Poderes heroicos são excluídos. Um poder some quando atinge max_level via outras seleções,
+  // mas permanece visível se estiver selecionado neste próprio nível (para manter o valor atual).
+  function getAvailableCommonPowersForLevel(levelIndex: number, job: JobCatalogItem | null): Array<{ power: Power; currentLevel: number }> {
+    const basePowers = campaignPowers.filter((p) =>
+      p.type !== "heroic" &&
+      (job === null ? p.is_global : p.is_global || p.job_name.includes(job.name)),
+    );
+    const currentSelectedId = pcLevels[levelIndex]?.power_id ?? null;
+    const countsFromOthers = new Map<number, number>();
+    for (let i = 0; i < pcLevels.length; i++) {
+      if (i === levelIndex) continue;
+      const lvPow = pcLevels[i].power_id;
+      if (lvPow !== null) countsFromOthers.set(lvPow, (countsFromOthers.get(lvPow) ?? 0) + 1);
+    }
+    return basePowers
+      .filter((p) => (countsFromOthers.get(p.id) ?? 0) < p.max_level || p.id === currentSelectedId)
+      .map((p) => ({ power: p, currentLevel: countsFromOthers.get(p.id) ?? 0 }));
+  }
+
+  function getAvailableHeroicPowers(level10JobNames: Set<string>): Power[] {
+    return campaignPowers.filter(
+      (p) => p.type === "heroic" && (p.is_global || p.job_name.some((jn) => level10JobNames.has(jn))),
+    );
+  }
+
+  function jobAllowsSpells(job: JobCatalogItem | null): boolean {
+    if (!job) return false;
+    return Boolean(job.allowsArcane) || Boolean(job.allowsRituals);
+  }
+
+  function addLevel() {
+    const defaultJobId = campaignJobs.length > 0 ? campaignJobs[0].id : null;
+    setPcLevels((prev) => [...prev, { job_id: defaultJobId, power_id: null, spell_id: null }]);
+  }
+
+  function updateLevel(index: number, patch: Partial<PcLevelEntry>) {
+    setPcLevels((prev) => prev.map((l, i) => (i === index ? { ...l, ...patch } : l)));
+  }
+
+  function removeLevel(index: number) {
+    setPcLevels((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addInventoryItem() {
+    if (campaignItems.length === 0) return;
+    setInventory((prev) => [...prev, { item_id: campaignItems[0].id, quantity: 1 }]);
+  }
+
+  function updateInventoryItem(index: number, patch: Partial<PcInventoryEntry>) {
+    setInventory((prev) => prev.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function removeInventoryItem(index: number) {
+    setInventory((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addBond() {
+    setBonds((prev) => [...prev, { target_type: "freeform", target_id: null, target_name: "", admiration_axis: "", loyalty_axis: "", affection_axis: "", description: "" }]);
+  }
+
+  function updateBond(index: number, patch: Partial<PcBondEntry>) {
+    setBonds((prev) => prev.map((b, i) => (i === index ? { ...b, ...patch } : b)));
+  }
+
+  function removeBond(index: number) {
+    setBonds((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  const weaponItems = campaignItems.filter((i) => i.itemType === "arma" || i.itemType === "escudo");
+  const armorItems = campaignItems.filter((i) => i.itemType === "armadura");
+  const accessoryItems = campaignItems.filter((i) => i.itemType === "acessorio");
 
   const canSubmit =
     name.trim() !== "" &&
     description.trim() !== "" &&
     origin.trim() !== "" &&
     identity.trim() !== "" &&
-    theme.trim() !== "";
+    theme.trim() !== "" &&
+    inventory.every((i) => i.item_id !== null && i.quantity >= 1) &&
+    bonds.every((b) => b.target_type === "freeform" ? b.target_name.trim() !== "" : b.target_id !== null);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -1094,6 +1325,28 @@ function PcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
     setError(null);
     setSubmitting(true);
     try {
+      const jobMap = new Map<number, { job_id: number; level: number }>();
+      for (const lv of pcLevels) {
+        if (lv.job_id === null) continue;
+        const existing = jobMap.get(lv.job_id);
+        if (existing) existing.level++;
+        else jobMap.set(lv.job_id, { job_id: lv.job_id, level: 1 });
+      }
+      const powerMap = new Map<number, { power_id: number; level: number }>();
+      for (const lv of pcLevels) {
+        if (lv.power_id === null) continue;
+        const existing = powerMap.get(lv.power_id);
+        if (existing) existing.level++;
+        else powerMap.set(lv.power_id, { power_id: lv.power_id, level: 1 });
+      }
+      for (const heroicPowerId of Object.values(heroicPowerByJobId)) {
+        if (heroicPowerId === null) continue;
+        const existing = powerMap.get(heroicPowerId);
+        if (existing) existing.level++;
+        else powerMap.set(heroicPowerId, { power_id: heroicPowerId, level: 1 });
+      }
+      const spellIds = Array.from(new Set(pcLevels.filter((l) => l.spell_id !== null).map((l) => l.spell_id as number)));
+
       await createPc(campaignId, {
         name: name.trim(),
         description: description.trim(),
@@ -1107,6 +1360,20 @@ function PcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         insight_die: insDie,
         might_die: mgtDie,
         willpower_die: wilDie,
+        jobs: Array.from(jobMap.values()).map((j) => ({ ...j, ignore_hp_bonus: false, ignore_mp_bonus: false })),
+        powers: Array.from(powerMap.values()),
+        spells: spellIds,
+        equipment: equipmentEnabled ? equipment : undefined,
+        inventory: inventory.map((i) => ({ item_id: i.item_id!, quantity: i.quantity })),
+        bonds: bonds.map((b) => ({
+          target_type: b.target_type,
+          target_id: b.target_type !== "freeform" ? b.target_id : null,
+          target_name: b.target_type === "freeform" ? b.target_name.trim() : null,
+          admiration_axis: b.admiration_axis || null,
+          loyalty_axis: b.loyalty_axis || null,
+          affection_axis: b.affection_axis || null,
+          description: b.description.trim() || null,
+        })),
       });
       onSuccess();
     } catch (err) {
@@ -1123,138 +1390,320 @@ function PcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
 
         <div className="manage-form__row">
           <div className="manage-form__field">
-            <label htmlFor="pc-name" className="manage-form__label">
-              Nome <span aria-hidden="true">*</span>
-            </label>
-            <input
-              id="pc-name"
-              type="text"
-              className="manage-form__input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoFocus
-            />
+            <label htmlFor="pc-name" className="manage-form__label">Nome <span aria-hidden="true">*</span></label>
+            <input id="pc-name" type="text" className="manage-form__input" value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
           </div>
           <div className="manage-form__field">
             <label htmlFor="pc-pronouns" className="manage-form__label">Pronomes</label>
-            <input
-              id="pc-pronouns"
-              type="text"
-              className="manage-form__input"
-              value={pronouns}
-              onChange={(e) => setPronouns(e.target.value)}
-              placeholder="ex.: ele/dele"
-            />
+            <input id="pc-pronouns" type="text" className="manage-form__input" value={pronouns} onChange={(e) => setPronouns(e.target.value)} placeholder="ex.: ele/dele" />
           </div>
         </div>
 
         <div className="manage-form__field">
           <label htmlFor="pc-tagline" className="manage-form__label">Tagline</label>
-          <input
-            id="pc-tagline"
-            type="text"
-            className="manage-form__input"
-            value={tagline}
-            onChange={(e) => setTagline(e.target.value)}
-          />
+          <input id="pc-tagline" type="text" className="manage-form__input" value={tagline} onChange={(e) => setTagline(e.target.value)} />
         </div>
 
         <div className="manage-form__field">
-          <label htmlFor="pc-desc" className="manage-form__label">
-            Descrição <span aria-hidden="true">*</span>
-          </label>
-          <textarea
-            id="pc-desc"
-            className="manage-form__textarea"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-            required
-          />
+          <label htmlFor="pc-desc" className="manage-form__label">Descrição <span aria-hidden="true">*</span></label>
+          <textarea id="pc-desc" className="manage-form__textarea" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} required />
         </div>
 
         <div className="manage-form__row">
           <div className="manage-form__field">
-            <label htmlFor="pc-origin" className="manage-form__label">
-              Origem <span aria-hidden="true">*</span>
-            </label>
-            <input
-              id="pc-origin"
-              type="text"
-              className="manage-form__input"
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              required
-            />
+            <label htmlFor="pc-origin" className="manage-form__label">Origem <span aria-hidden="true">*</span></label>
+            <input id="pc-origin" type="text" className="manage-form__input" value={origin} onChange={(e) => setOrigin(e.target.value)} required />
           </div>
           <div className="manage-form__field">
             <label htmlFor="pc-money" className="manage-form__label">Zeni</label>
-            <input
-              id="pc-money"
-              type="number"
-              className="manage-form__input"
-              value={money}
-              onChange={(e) => setMoney(e.target.value)}
-              min={0}
-            />
+            <input id="pc-money" type="number" className="manage-form__input" value={money} onChange={(e) => setMoney(e.target.value)} min={0} />
           </div>
         </div>
 
         <div className="manage-form__field">
-          <label htmlFor="pc-identity" className="manage-form__label">
-            Identidade <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="pc-identity"
-            type="text"
-            className="manage-form__input"
-            value={identity}
-            onChange={(e) => setIdentity(e.target.value)}
-            required
-          />
+          <label htmlFor="pc-identity" className="manage-form__label">Identidade <span aria-hidden="true">*</span></label>
+          <input id="pc-identity" type="text" className="manage-form__input" value={identity} onChange={(e) => setIdentity(e.target.value)} required />
         </div>
 
         <div className="manage-form__field">
-          <label htmlFor="pc-theme" className="manage-form__label">
-            Tema <span aria-hidden="true">*</span>
-          </label>
-          <input
-            id="pc-theme"
-            type="text"
-            className="manage-form__input"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            required
-          />
+          <label htmlFor="pc-theme" className="manage-form__label">Tema <span aria-hidden="true">*</span></label>
+          <input id="pc-theme" type="text" className="manage-form__input" value={theme} onChange={(e) => setTheme(e.target.value)} required />
         </div>
 
         <p className="manage-form__section-label">Atributos base</p>
 
         <div className="manage-form__dice-grid">
-          {(
-            [
-              { id: "pc-dex", label: "DES", value: dexDie, setter: setDexDie },
-              { id: "pc-ins", label: "INT", value: insDie, setter: setInsDie },
-              { id: "pc-mgt", label: "FOR", value: mgtDie, setter: setMgtDie },
-              { id: "pc-wil", label: "VON", value: wilDie, setter: setWilDie },
-            ] as const
-          ).map(({ id, label, value, setter }) => (
+          {([
+            { id: "pc-dex", label: "DES", value: dexDie, setter: setDexDie },
+            { id: "pc-ins", label: "AST", value: insDie, setter: setInsDie },
+            { id: "pc-mgt", label: "VIG", value: mgtDie, setter: setMgtDie },
+            { id: "pc-wil", label: "VON", value: wilDie, setter: setWilDie },
+          ] as const).map(({ id, label, value, setter }) => (
             <div key={id} className="manage-form__field">
               <label htmlFor={id} className="manage-form__label">{label}</label>
-              <select
-                id={id}
-                className="manage-form__select"
-                value={value}
-                onChange={(e) => setter(e.target.value as AttributeDie)}
-              >
-                {DICE_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
+              <select id={id} className="manage-form__select" value={value} onChange={(e) => setter(e.target.value as AttributeDie)}>
+                {DICE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
             </div>
           ))}
         </div>
+
+        <p className="manage-form__section-label">Níveis</p>
+        {campaignJobs.length === 0 ? (
+          <p className="manage-form__hint">Carregando classes…</p>
+        ) : null}
+        {pcLevels.map((lv, index) => {
+          const selectedJob = campaignJobs.find((j) => j.id === lv.job_id) ?? null;
+          const availablePowers = getAvailableCommonPowersForLevel(index, selectedJob);
+          const showSpell = jobAllowsSpells(selectedJob);
+          const jobCountsExcludingThis = new Map<number, number>();
+          for (let i = 0; i < pcLevels.length; i++) {
+            if (i === index) continue;
+            const jid = pcLevels[i].job_id;
+            if (jid !== null) jobCountsExcludingThis.set(jid, (jobCountsExcludingThis.get(jid) ?? 0) + 1);
+          }
+          return (
+            <div key={index} className="manage-form__level-entry">
+              <div className="manage-form__level-header">
+                <span className="manage-form__label">Nível {index + 1}</span>
+                <Button type="button" variant="ghost" onClick={() => removeLevel(index)}>Remover</Button>
+              </div>
+              <div className="manage-form__row">
+                <div className="manage-form__field">
+                  <label htmlFor={`pc-lv-job-${index}`} className="manage-form__label">Classe</label>
+                  <select
+                    id={`pc-lv-job-${index}`}
+                    className="manage-form__select"
+                    value={lv.job_id ?? ""}
+                    onChange={(e) => {
+                      const newJobId = e.target.value === "" ? null : Number(e.target.value);
+                      updateLevel(index, { job_id: newJobId, power_id: null, spell_id: null });
+                    }}
+                  >
+                    <option value="">— selecione —</option>
+                    {campaignJobs.map((j) => {
+                      const countElsewhere = jobCountsExcludingThis.get(j.id) ?? 0;
+                      const atMax = countElsewhere >= 10 && lv.job_id !== j.id;
+                      return (
+                        <option key={j.id} value={j.id} disabled={atMax}>
+                          {j.name}{atMax ? " (máx. 10)" : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="manage-form__field">
+                  <label htmlFor={`pc-lv-pow-${index}`} className="manage-form__label">Poder</label>
+                  <select
+                    id={`pc-lv-pow-${index}`}
+                    className="manage-form__select"
+                    value={lv.power_id ?? ""}
+                    onChange={(e) => updateLevel(index, { power_id: e.target.value === "" ? null : Number(e.target.value) })}
+                  >
+                    <option value="">— selecione —</option>
+                    {availablePowers.map(({ power: p, currentLevel }) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} ({currentLevel}/{p.max_level})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              {showSpell ? (
+                <div className="manage-form__field">
+                  <label htmlFor={`pc-lv-spell-${index}`} className="manage-form__label">Magia (opcional)</label>
+                  <select
+                    id={`pc-lv-spell-${index}`}
+                    className="manage-form__select"
+                    value={lv.spell_id ?? ""}
+                    onChange={(e) => updateLevel(index, { spell_id: e.target.value === "" ? null : Number(e.target.value) })}
+                  >
+                    <option value="">— nenhuma —</option>
+                    {campaignSpells.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  </select>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+        <Button type="button" variant="ghost" disabled={campaignJobs.length === 0} onClick={addLevel}>
+          + Adicionar nível
+        </Button>
+        {(() => {
+          const jobLevelCounts = computeJobLevelCounts();
+          const level10Jobs = campaignJobs.filter((j) => (jobLevelCounts.get(j.id) ?? 0) >= 10);
+          if (level10Jobs.length === 0) return null;
+          const level10JobNames = new Set(level10Jobs.map((j) => j.name));
+          const heroicOptions = getAvailableHeroicPowers(level10JobNames);
+          return (
+            <>
+              <p className="manage-form__section-label">Poderes heroicos</p>
+              {level10Jobs.map((job) => (
+                <div key={job.id} className="manage-form__field">
+                  <label htmlFor={`pc-heroic-${job.id}`} className="manage-form__label">
+                    Poder heroico — {job.name}
+                  </label>
+                  <select
+                    id={`pc-heroic-${job.id}`}
+                    className="manage-form__select"
+                    value={heroicPowerByJobId[job.id] ?? ""}
+                    onChange={(e) =>
+                      setHeroicPowerByJobId((prev) => ({
+                        ...prev,
+                        [job.id]: e.target.value === "" ? null : Number(e.target.value),
+                      }))
+                    }
+                  >
+                    <option value="">— selecione —</option>
+                    {heroicOptions.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </>
+          );
+        })()}
+
+        <p className="manage-form__section-label">Inventário</p>
+        {campaignItems.length === 0 ? (
+          <p className="manage-form__hint">Nenhum item vinculado a esta campanha.</p>
+        ) : null}
+        {inventory.map((item, index) => (
+          <div className="manage-form__row" key={index}>
+            <div className="manage-form__field">
+              <label htmlFor={`pc-inv-item-${index}`} className="manage-form__label">Item</label>
+              <select
+                id={`pc-inv-item-${index}`}
+                className="manage-form__select"
+                value={item.item_id ?? ""}
+                onChange={(e) => updateInventoryItem(index, { item_id: e.target.value === "" ? null : Number(e.target.value) })}
+              >
+                <option value="">— selecione —</option>
+                {campaignItems.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
+              </select>
+            </div>
+            <div className="manage-form__field">
+              <label htmlFor={`pc-inv-qty-${index}`} className="manage-form__label">Quantidade</label>
+              <div className="manage-form__relation-row">
+                <input
+                  id={`pc-inv-qty-${index}`}
+                  type="number"
+                  className="manage-form__input"
+                  style={{ width: "80px" }}
+                  value={item.quantity}
+                  onChange={(e) => updateInventoryItem(index, { quantity: Number(e.target.value) })}
+                  min={1}
+                />
+                <Button type="button" variant="ghost" onClick={() => removeInventoryItem(index)}>Remover</Button>
+              </div>
+            </div>
+          </div>
+        ))}
+        <Button type="button" variant="ghost" disabled={campaignItems.length === 0} onClick={addInventoryItem}>
+          + Adicionar item
+        </Button>
+
+        <div className="manage-form__checkbox-field">
+          <input id="pc-equipment-enabled" type="checkbox" className="manage-form__checkbox" checked={equipmentEnabled} onChange={(e) => setEquipmentEnabled(e.target.checked)} disabled={campaignItems.length === 0} />
+          <label htmlFor="pc-equipment-enabled" className="manage-form__checkbox-label">Incluir equipamento</label>
+        </div>
+
+        {equipmentEnabled && campaignItems.length > 0 ? (
+          <>
+            <p className="manage-form__section-label">Equipamento</p>
+            <div className="manage-form__dice-grid">
+              <EquipmentSlotSelect id="pc-eq-main-hand" label="Mão principal" options={weaponItems} value={equipment.main_hand} onChange={(value) => setEquipment((prev) => ({ ...prev, main_hand: value }))} />
+              <EquipmentSlotSelect id="pc-eq-off-hand" label="Mão secundária" options={weaponItems} value={equipment.off_hand} onChange={(value) => setEquipment((prev) => ({ ...prev, off_hand: value }))} />
+              <EquipmentSlotSelect id="pc-eq-armor" label="Armadura" options={armorItems} value={equipment.armor} onChange={(value) => setEquipment((prev) => ({ ...prev, armor: value }))} />
+              <EquipmentSlotSelect id="pc-eq-accessory" label="Acessório" options={accessoryItems} value={equipment.accessory} onChange={(value) => setEquipment((prev) => ({ ...prev, accessory: value }))} />
+            </div>
+          </>
+        ) : null}
+
+        <p className="manage-form__section-label">Vínculos</p>
+        {bonds.map((bond, index) => (
+          <div key={index} className="manage-form__level-entry">
+            <div className="manage-form__level-header">
+              <span className="manage-form__label">Vínculo {index + 1}</span>
+              <Button type="button" variant="ghost" onClick={() => removeBond(index)}>Remover</Button>
+            </div>
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor={`pc-bond-type-${index}`} className="manage-form__label">Tipo de alvo</label>
+                <select
+                  id={`pc-bond-type-${index}`}
+                  className="manage-form__select"
+                  value={bond.target_type}
+                  onChange={(e) => updateBond(index, { target_type: e.target.value as BondTargetType, target_id: null, target_name: "" })}
+                >
+                  <option value="freeform">Texto livre</option>
+                  <option value="pc">Personagem (PC)</option>
+                  <option value="npc">NPC</option>
+                  <option value="monster">Monstro</option>
+                </select>
+              </div>
+              <div className="manage-form__field">
+                {bond.target_type === "freeform" ? (
+                  <>
+                    <label htmlFor={`pc-bond-name-${index}`} className="manage-form__label">Nome <span aria-hidden="true">*</span></label>
+                    <input id={`pc-bond-name-${index}`} type="text" className="manage-form__input" value={bond.target_name} onChange={(e) => updateBond(index, { target_name: e.target.value })} />
+                  </>
+                ) : (
+                  <>
+                    <label htmlFor={`pc-bond-target-${index}`} className="manage-form__label">
+                      {bond.target_type === "pc" ? "Personagem" : bond.target_type === "npc" ? "NPC" : "Monstro"} <span aria-hidden="true">*</span>
+                    </label>
+                    <select
+                      id={`pc-bond-target-${index}`}
+                      className="manage-form__select"
+                      value={bond.target_id ?? ""}
+                      onChange={(e) => updateBond(index, { target_id: e.target.value === "" ? null : Number(e.target.value) })}
+                    >
+                      <option value="">— selecione —</option>
+                      {bond.target_type === "pc"
+                        ? campaignPcs.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)
+                        : bond.target_type === "npc"
+                          ? campaignNpcs.map((n) => <option key={n.id} value={n.id}>{n.name}</option>)
+                          : campaignMonsters.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+                    </select>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="manage-form__numbers-grid">
+              <div className="manage-form__field">
+                <label htmlFor={`pc-bond-adm-${index}`} className="manage-form__label">Admiração</label>
+                <select id={`pc-bond-adm-${index}`} className="manage-form__select" value={bond.admiration_axis} onChange={(e) => updateBond(index, { admiration_axis: e.target.value as AdmirationAxis | "" })}>
+                  <option value="">—</option>
+                  <option value="admiration">Admiração</option>
+                  <option value="inferiority">Inferioridade</option>
+                </select>
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor={`pc-bond-loy-${index}`} className="manage-form__label">Lealdade</label>
+                <select id={`pc-bond-loy-${index}`} className="manage-form__select" value={bond.loyalty_axis} onChange={(e) => updateBond(index, { loyalty_axis: e.target.value as LoyaltyAxis | "" })}>
+                  <option value="">—</option>
+                  <option value="loyalty">Lealdade</option>
+                  <option value="mistrust">Desconfiança</option>
+                </select>
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor={`pc-bond-aff-${index}`} className="manage-form__label">Afeto</label>
+                <select id={`pc-bond-aff-${index}`} className="manage-form__select" value={bond.affection_axis} onChange={(e) => updateBond(index, { affection_axis: e.target.value as AffectionAxis | "" })}>
+                  <option value="">—</option>
+                  <option value="affection">Afeto</option>
+                  <option value="hatred">Ódio</option>
+                </select>
+              </div>
+            </div>
+            <div className="manage-form__field">
+              <label htmlFor={`pc-bond-desc-${index}`} className="manage-form__label">Descrição</label>
+              <input id={`pc-bond-desc-${index}`} type="text" className="manage-form__input" value={bond.description} onChange={(e) => updateBond(index, { description: e.target.value })} />
+            </div>
+          </div>
+        ))}
+        <Button type="button" variant="ghost" onClick={addBond}>+ Adicionar vínculo</Button>
 
         <div className="manage-form__actions">
           <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
@@ -1423,8 +1872,17 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
     };
   }, [campaignId]);
 
+  const duplicateRelationIndices = new Set(
+    relations.flatMap((rel, i) =>
+      relations.some((other, j) => j !== i && other.location_id === rel.location_id && other.relation_type === rel.relation_type)
+        ? [i]
+        : [],
+    ),
+  );
+
   const canSubmit =
-    name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "";
+    name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "" &&
+    duplicateRelationIndices.size === 0;
 
   function addRelation() {
     if (locations.length === 0) return;
@@ -1531,7 +1989,7 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
           <>
             <h3 className="manage-form__section-label">Localizações vinculadas</h3>
             {relations.map((relation, index) => (
-              <div className="manage-form__row" key={index}>
+              <div className={`manage-form__row${duplicateRelationIndices.has(index) ? " manage-form__row--error" : ""}`} key={index}>
                 <div className="manage-form__field">
                   <label htmlFor={`fac-rel-location-${index}`} className="manage-form__label">
                     Localização
@@ -1569,6 +2027,11 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
                 </div>
               </div>
             ))}
+            {duplicateRelationIndices.size > 0 ? (
+              <p className="manage-form__error">
+                Vínculos duplicados: mesma localização com a mesma relação. Altere a relação ou remova o vínculo repetido.
+              </p>
+            ) : null}
             <Button type="button" variant="ghost" onClick={addRelation}>
               + Adicionar localização
             </Button>
@@ -1603,6 +2066,40 @@ function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) {
 
 // ── Monster form ──────────────────────────────────────────────────────────────
 
+type MonsterActionFormState = Omit<CreateMonsterActionInput, "check_formula"> & {
+  check_die1: string;
+  check_die2: string;
+};
+
+const DEFAULT_MONSTER_AFFINITIES: CreateMonsterAffinitiesInput = {
+  physical: "normal",
+  air: "normal",
+  bolt: "normal",
+  dark: "normal",
+  earth: "normal",
+  fire: "normal",
+  ice: "normal",
+  light: "normal",
+  poison: "normal",
+};
+
+function createEmptyMonsterAction(): MonsterActionFormState {
+  return {
+    action_type: "basic_attack",
+    action_icon: null,
+    name: "",
+    description: "",
+    check_die1: "",
+    check_die2: "",
+    accuracy_bonus: null,
+    damage_type: null,
+    cost: null,
+    target: null,
+    duration: null,
+    is_offensive: false,
+  };
+}
+
 function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -1619,8 +2116,64 @@ function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [magicDefense, setMagicDefense] = useState("");
   const [isVillain, setIsVillain] = useState(false);
   const [ultimaPoints, setUltimaPoints] = useState("0");
+  const [traits, setTraits] = useState<string[]>([]);
+  const [affinities, setAffinities] = useState<CreateMonsterAffinitiesInput>(DEFAULT_MONSTER_AFFINITIES);
+  const [actions, setActions] = useState<MonsterActionFormState[]>([]);
+  const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function addTrait() {
+    setTraits((prev) => (prev.length >= 4 ? prev : [...prev, ""]));
+  }
+
+  function updateTrait(index: number, value: string) {
+    setTraits((prev) => prev.map((trait, i) => (i === index ? value : trait)));
+  }
+
+  function removeTrait(index: number) {
+    setTraits((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addAction() {
+    setActions((prev) => [...prev, createEmptyMonsterAction()]);
+  }
+
+  function updateAction(index: number, patch: Partial<MonsterActionFormState>) {
+    setActions((prev) => prev.map((action, i) => (i === index ? { ...action, ...patch } : action)));
+  }
+
+  function updateActionType(index: number, actionType: MonsterActionType) {
+    const visibility = ACTION_FIELD_VISIBILITY[actionType];
+    const allowedIcons = ACTION_ICON_OPTIONS_BY_TYPE[actionType].map((o) => o.value);
+    setActions((prev) => prev.map((action, i) => {
+      if (i !== index) return action;
+      const currentIcon = action.action_icon ?? null;
+      const newIcon: MonsterActionIcon | null =
+        actionType === "spell"
+          ? "spell"
+          : currentIcon !== null && !allowedIcons.includes(currentIcon)
+            ? null
+            : currentIcon;
+      return {
+        ...action,
+        action_type: actionType,
+        action_icon: newIcon,
+        damage_type: visibility.damageType ? action.damage_type : null,
+        check_die1: visibility.checkFormula ? action.check_die1 : "",
+        check_die2: visibility.checkFormula ? action.check_die2 : "",
+        accuracy_bonus: visibility.accuracyBonus ? action.accuracy_bonus : null,
+        cost: visibility.cost ? action.cost : null,
+        target: visibility.target ? action.target : null,
+        duration: visibility.duration ? action.duration : null,
+        is_offensive: visibility.isOffensive ? action.is_offensive : false,
+      };
+    }));
+  }
+
+  function removeAction(index: number) {
+    setActions((prev) => prev.filter((_, i) => i !== index));
+  }
 
   const canSubmit =
     name.trim() !== "" &&
@@ -1630,7 +2183,14 @@ function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) {
     mp !== "" &&
     initiative !== "" &&
     defense !== "" &&
-    magicDefense !== "";
+    magicDefense !== "" &&
+    traits.every((trait) => trait.trim() !== "") &&
+    actions.every((action) =>
+      action.name.trim() !== "" &&
+      action.description.trim() !== "" &&
+      (action.action_type !== "spell" ||
+        (!!action.cost?.trim() && !!action.target?.trim() && !!action.duration?.trim())),
+    );
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -1654,6 +2214,18 @@ function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         magic_defense: Number(magicDefense),
         is_villain: isVillain,
         ultima_points: isVillain ? Number(ultimaPoints) : 0,
+        traits: traits.map((trait) => ({ trait: trait.trim() })),
+        affinities,
+        actions: actions.map(({ check_die1, check_die2, ...action }) => ({
+          ...action,
+          name: action.name.trim(),
+          description: action.description.trim(),
+          check_formula: buildDiceFormula([check_die1, check_die2], ""),
+          cost: action.cost?.trim() || null,
+          target: action.target?.trim() || null,
+          duration: action.duration?.trim() || null,
+        })),
+        visible_to_players: visibleToPlayers,
       });
       onSuccess();
     } catch (err) {
@@ -1808,6 +2380,251 @@ function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             />
           </div>
         ) : null}
+
+        <h3 className="manage-form__section-label">Traits (até 4)</h3>
+        {traits.map((trait, index) => (
+          <div className="manage-form__relation-row" key={index}>
+            <input
+              type="text"
+              className="manage-form__input"
+              value={trait}
+              onChange={(e) => updateTrait(index, e.target.value)}
+              required
+            />
+            <Button type="button" variant="ghost" onClick={() => removeTrait(index)}>
+              Remover
+            </Button>
+          </div>
+        ))}
+        <Button type="button" variant="ghost" onClick={addTrait} disabled={traits.length >= 4}>
+          + Adicionar trait
+        </Button>
+
+        <h3 className="manage-form__section-label">Afinidades</h3>
+        <div className="manage-form__numbers-grid-5">
+          {DAMAGE_TYPE_OPTIONS.map((damageType) => (
+            <div key={damageType.value} className="manage-form__field">
+              <label htmlFor={`mo-aff-${damageType.value}`} className="manage-form__label">{damageType.label}</label>
+              <select
+                id={`mo-aff-${damageType.value}`}
+                className="manage-form__select"
+                value={affinities[damageType.value]}
+                onChange={(e) =>
+                  setAffinities((prev) => ({ ...prev, [damageType.value]: e.target.value as MonsterAffinityType }))
+                }
+              >
+                {AFFINITY_TYPE_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+
+        <h3 className="manage-form__section-label">Ações</h3>
+        {actions.map((action, index) => {
+          const visibility = ACTION_FIELD_VISIBILITY[action.action_type];
+          return (
+          <div key={index} className="manage-form__field" style={{ border: "1px solid var(--color-border)", borderRadius: "8px", padding: "12px", marginBottom: "12px" }}>
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor={`mo-act-name-${index}`} className="manage-form__label">
+                  Nome <span aria-hidden="true">*</span>
+                </label>
+                <input
+                  id={`mo-act-name-${index}`}
+                  type="text"
+                  className="manage-form__input"
+                  value={action.name}
+                  onChange={(e) => updateAction(index, { name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="manage-form__field">
+                <label htmlFor={`mo-act-type-${index}`} className="manage-form__label">Tipo</label>
+                <select
+                  id={`mo-act-type-${index}`}
+                  className="manage-form__select"
+                  value={action.action_type}
+                  onChange={(e) => updateActionType(index, e.target.value as MonsterActionType)}
+                >
+                  {ACTION_TYPE_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="manage-form__field">
+              <label htmlFor={`mo-act-desc-${index}`} className="manage-form__label">
+                Descrição <span aria-hidden="true">*</span>
+              </label>
+              <textarea
+                id={`mo-act-desc-${index}`}
+                className="manage-form__textarea"
+                value={action.description}
+                onChange={(e) => updateAction(index, { description: e.target.value })}
+                rows={2}
+                required
+              />
+            </div>
+
+            <div className="manage-form__row">
+              <div className="manage-form__field">
+                <label htmlFor={`mo-act-icon-${index}`} className="manage-form__label">Ícone</label>
+                <select
+                  id={`mo-act-icon-${index}`}
+                  className="manage-form__select"
+                  disabled={action.action_type === "spell"}
+                  value={action.action_icon ?? ""}
+                  onChange={(e) => updateAction(index, { action_icon: (e.target.value || null) as MonsterActionIcon | null })}
+                >
+                  {action.action_type !== "spell" ? <option value="">—</option> : null}
+                  {ACTION_ICON_OPTIONS_BY_TYPE[action.action_type].map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+              </div>
+              {visibility.damageType ? (
+                <div className="manage-form__field">
+                  <label htmlFor={`mo-act-damage-${index}`} className="manage-form__label">Tipo de dano</label>
+                  <select
+                    id={`mo-act-damage-${index}`}
+                    className="manage-form__select"
+                    value={action.damage_type ?? ""}
+                    onChange={(e) => updateAction(index, { damage_type: (e.target.value || null) as DamageType | null })}
+                  >
+                    <option value="">—</option>
+                    {DAMAGE_TYPE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+            </div>
+
+            {visibility.checkFormula ? (
+              <div className="manage-form__field">
+                <label className="manage-form__label">Fórmula de teste</label>
+                <div className="manage-form__numbers-grid">
+                  <select
+                    aria-label="Primeiro dado de teste"
+                    className="manage-form__select"
+                    value={action.check_die1}
+                    onChange={(e) => updateAction(index, { check_die1: e.target.value })}
+                  >
+                    {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  <select
+                    aria-label="Segundo dado de teste"
+                    className="manage-form__select"
+                    value={action.check_die2}
+                    onChange={(e) => updateAction(index, { check_die2: e.target.value })}
+                  >
+                    {ATTRIBUTE_DIE_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>{o.label}</option>
+                    ))}
+                  </select>
+                  <input
+                    id={`mo-act-accuracy-${index}`}
+                    type="number"
+                    placeholder="Bônus"
+                    className="manage-form__input"
+                    value={action.accuracy_bonus ?? ""}
+                    onChange={(e) => updateAction(index, { accuracy_bonus: e.target.value === "" ? null : Number(e.target.value) })}
+                  />
+                </div>
+              </div>
+            ) : null}
+
+            {visibility.cost || visibility.target || visibility.duration ? (
+              <div className="manage-form__row">
+                {visibility.cost ? (
+                  <div className="manage-form__field">
+                    <label htmlFor={`mo-act-cost-${index}`} className="manage-form__label">
+                      Custo {action.action_type === "spell" ? <span aria-hidden="true">*</span> : null}
+                    </label>
+                    <input
+                      id={`mo-act-cost-${index}`}
+                      type="text"
+                      className="manage-form__input"
+                      value={action.cost ?? ""}
+                      onChange={(e) => updateAction(index, { cost: e.target.value || null })}
+                      required={action.action_type === "spell"}
+                    />
+                  </div>
+                ) : null}
+                {visibility.target ? (
+                  <div className="manage-form__field">
+                    <label htmlFor={`mo-act-target-${index}`} className="manage-form__label">
+                      Alvo {action.action_type === "spell" ? <span aria-hidden="true">*</span> : null}
+                    </label>
+                    <input
+                      id={`mo-act-target-${index}`}
+                      type="text"
+                      className="manage-form__input"
+                      value={action.target ?? ""}
+                      onChange={(e) => updateAction(index, { target: e.target.value || null })}
+                      required={action.action_type === "spell"}
+                    />
+                  </div>
+                ) : null}
+                {visibility.duration ? (
+                  <div className="manage-form__field">
+                    <label htmlFor={`mo-act-duration-${index}`} className="manage-form__label">
+                      Duração {action.action_type === "spell" ? <span aria-hidden="true">*</span> : null}
+                    </label>
+                    <input
+                      id={`mo-act-duration-${index}`}
+                      type="text"
+                      className="manage-form__input"
+                      value={action.duration ?? ""}
+                      onChange={(e) => updateAction(index, { duration: e.target.value || null })}
+                      required={action.action_type === "spell"}
+                    />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {visibility.isOffensive ? (
+              <label className="manage-form__checkbox-field">
+                <input
+                  type="checkbox"
+                  className="manage-form__checkbox"
+                  checked={action.is_offensive ?? false}
+                  onChange={(e) => updateAction(index, { is_offensive: e.target.checked })}
+                />
+                <span className="manage-form__checkbox-label">Ofensiva</span>
+              </label>
+            ) : null}
+
+            <div className="manage-form__actions">
+              <Button type="button" variant="ghost" onClick={() => removeAction(index)}>
+                Remover ação
+              </Button>
+            </div>
+          </div>
+          );
+        })}
+        <Button type="button" variant="ghost" onClick={addAction}>
+          + Adicionar ação
+        </Button>
+
+        <div className="manage-form__checkbox-field">
+          <input
+            id="mo-visible"
+            type="checkbox"
+            className="manage-form__checkbox"
+            checked={visibleToPlayers}
+            onChange={(e) => setVisibleToPlayers(e.target.checked)}
+          />
+          <label htmlFor="mo-visible" className="manage-form__checkbox-label">
+            Visível para os jogadores
+          </label>
+        </div>
 
         <div className="manage-form__actions">
           <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>

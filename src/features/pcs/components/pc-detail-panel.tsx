@@ -341,6 +341,7 @@ function SpellCard({ spell }: { spell: PcSpell | PcArcana }) {
 }
 
 function EquipmentSection({ pc }: { pc: PcDetail }) {
+  if (!pc.equipment) return null;
   const equipment = [
     { slot: "main_hand", item: pc.equipment.main_hand },
     { slot: "off_hand", item: pc.equipment.off_hand },

@@ -196,6 +196,45 @@ export type CreateNpcInput = {
   equipment?: CreateNpcEquipmentInput | null;
 };
 
+export type BondTargetType = "pc" | "npc" | "monster" | "freeform";
+export type AdmirationAxis = "admiration" | "inferiority";
+export type LoyaltyAxis = "loyalty" | "mistrust";
+export type AffectionAxis = "affection" | "hatred";
+
+export type CreatePcBondInput = {
+  target_type: BondTargetType;
+  target_id?: number | null;
+  target_name?: string | null;
+  admiration_axis?: AdmirationAxis | null;
+  loyalty_axis?: LoyaltyAxis | null;
+  affection_axis?: AffectionAxis | null;
+  description?: string | null;
+};
+
+export type CreatePcJobInput = {
+  job_id: number;
+  level: number;
+  ignore_hp_bonus: boolean;
+  ignore_mp_bonus: boolean;
+};
+
+export type CreatePcPowerInput = {
+  power_id: number;
+  level: number;
+};
+
+export type CreatePcInventoryInput = {
+  item_id: number;
+  quantity: number;
+};
+
+export type CreatePcEquipmentInput = {
+  main_hand?: number | null;
+  off_hand?: number | null;
+  armor?: number | null;
+  accessory?: number | null;
+};
+
 export type CreatePcInput = {
   name: string;
   description: string;
@@ -209,6 +248,12 @@ export type CreatePcInput = {
   insight_die: AttributeDie;
   might_die: AttributeDie;
   willpower_die: AttributeDie;
+  jobs?: CreatePcJobInput[];
+  powers?: CreatePcPowerInput[];
+  spells?: number[];
+  equipment?: CreatePcEquipmentInput | null;
+  inventory?: CreatePcInventoryInput[];
+  bonds?: CreatePcBondInput[];
 };
 
 export type LocationType =
@@ -256,6 +301,31 @@ export type MonsterType =
   | "construct" | "demon" | "elemental" | "beast"
   | "humanoid" | "monster" | "undead" | "plant";
 
+export type MonsterAffinityType =
+  | "normal" | "vulnerable" | "resistant" | "immune" | "absorbs";
+
+export type MonsterActionType =
+  | "basic_attack" | "spell" | "other_action" | "special_rule";
+
+export type MonsterActionIcon =
+  | "melee" | "ranged" | "spell" | "support" | "passive";
+
+export type CreateMonsterAffinitiesInput = Record<DamageType, MonsterAffinityType>;
+
+export type CreateMonsterActionInput = {
+  action_type: MonsterActionType;
+  action_icon?: MonsterActionIcon | null;
+  name: string;
+  description: string;
+  check_formula?: string | null;
+  accuracy_bonus?: number | null;
+  damage_type?: DamageType | null;
+  cost?: string | null;
+  target?: string | null;
+  duration?: string | null;
+  is_offensive?: boolean;
+};
+
 export type CreateMonsterInput = {
   name: string;
   description: string;
@@ -272,6 +342,10 @@ export type CreateMonsterInput = {
   magic_defense: number;
   is_villain?: boolean;
   ultima_points?: number;
+  traits: { trait: string }[];
+  affinities?: CreateMonsterAffinitiesInput;
+  actions: CreateMonsterActionInput[];
+  visible_to_players: boolean;
 };
 
 export type ItemType =

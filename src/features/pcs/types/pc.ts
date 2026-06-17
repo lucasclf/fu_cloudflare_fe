@@ -156,7 +156,7 @@ export type PcDetail = PcSummary & {
   spells: PcSpell[];
   monsterSpells: PcSpell[];
   arcanas: PcArcana[];
-  equipment: PcEquipment;
+  equipment: PcEquipment | null | undefined;
   inventories: PcInventoryItem[];
   bonds: PcBond[];
 };
