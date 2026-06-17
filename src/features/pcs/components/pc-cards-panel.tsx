@@ -52,9 +52,9 @@ const styles: Record<string, CSSProperties> = {
 
   card: {
     minHeight: "260px",
-    border: "1px solid #3a2e22",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
-    background: "#161210",
+    background: "#131018",
     overflow: "hidden",
     display: "grid",
     gridTemplateRows: "190px 1fr",
@@ -64,13 +64,13 @@ const styles: Record<string, CSSProperties> = {
   },
 
   cardSelected: {
-    borderColor: "#c9963a",
-    boxShadow: "0 0 0 1px rgba(201, 150, 58, 0.24)",
+    borderColor: "#a855f7",
+    boxShadow: "0 0 0 1px rgba(168, 85, 247, 0.24)",
   },
 
   imageFrame: {
-    background: "#0e0c0a",
-    borderBottom: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderBottom: "1px solid #3d2d5c",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -92,7 +92,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#5f574c",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
@@ -106,21 +106,21 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "22px",
     lineHeight: 1.15,
   },
 
   tagline: {
     margin: 0,
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "13px",
     lineHeight: 1.4,
     fontStyle: "italic",
   },
 
   empty: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 };

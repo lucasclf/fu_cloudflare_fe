@@ -109,8 +109,8 @@ function ScenarioCard({ entity }: ScenarioCardProps) {
 const styles: Record<string, CSSProperties> = {
   card: {
     minHeight: "420px",
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#131018",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
     overflow: "hidden",
     display: "flex",
@@ -120,8 +120,8 @@ const styles: Record<string, CSSProperties> = {
   imageFrame: {
     width: "100%",
     aspectRatio: "16 / 9",
-    background: "#0e0c0a",
-    borderBottom: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderBottom: "1px solid #3d2d5c",
     overflow: "hidden",
   },
 
@@ -138,7 +138,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#5f574c",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
@@ -168,24 +168,24 @@ const styles: Record<string, CSSProperties> = {
   },
 
   locationBadge: {
-    border: "1px solid #516744",
-    background: "#141f12",
-    color: "#aad18f",
+    border: "1px solid rgba(74, 222, 128, 0.48)",
+    background: "rgba(20, 83, 45, 0.22)",
+    color: "#86efac",
   },
 
   factionBadge: {
-    border: "1px solid #7a5a22",
-    background: "#1e1a16",
-    color: "#c9963a",
+    border: "1px solid #7c3aed",
+    background: "#1c1826",
+    color: "#a855f7",
   },
 
   secondaryBadge: {
     display: "inline-flex",
     alignItems: "center",
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#9f8f73",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 700,
@@ -193,14 +193,14 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "22px",
     lineHeight: 1.15,
   },
 
   tagline: {
     margin: 0,
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "14px",
     lineHeight: 1.45,
     fontStyle: "italic",
@@ -208,7 +208,7 @@ const styles: Record<string, CSSProperties> = {
 
   description: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "14px",
     lineHeight: 1.55,
     whiteSpace: "pre-line",
@@ -216,7 +216,7 @@ const styles: Record<string, CSSProperties> = {
 
   relationsBlock: {
     marginTop: "auto",
-    borderTop: "1px solid #34291f",
+    borderTop: "1px solid #3d2d5c",
     paddingTop: "12px",
     display: "flex",
     flexDirection: "column",
@@ -224,7 +224,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   infoLabel: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "11px",
     letterSpacing: "0.08em",
     textTransform: "uppercase",
@@ -238,9 +238,9 @@ const styles: Record<string, CSSProperties> = {
   },
 
   relationItem: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "8px",
-    background: "#110e0c",
+    background: "#0b0a0f",
     padding: "8px 10px",
     display: "flex",
     alignItems: "center",
@@ -249,26 +249,26 @@ const styles: Record<string, CSSProperties> = {
   },
 
   relationLocation: {
-    color: "#f5efe2",
+    color: "#e2d9f3",
     fontSize: "13px",
     fontWeight: 700,
   },
 
   relationType: {
-    color: "#c9963a",
+    color: "#a855f7",
     fontSize: "12px",
     fontWeight: 700,
     whiteSpace: "nowrap",
   },
 
   noRelations: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
 
   empty: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 };

@@ -14,22 +14,24 @@
     "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, Consolas,
     "Liberation Mono", monospace;
 
-  --color-background: #0e0c0a;
-  --color-background-elevated: #161210;
-  --color-surface: #1e1a16;
-  --color-surface-muted: rgba(30, 26, 22, 0.65);
+  --color-background: #0b0a0f;
+  --color-background-elevated: #131018;
+  --color-surface: #1c1826;
+  --color-surface-muted: rgba(28, 24, 38, 0.65);
 
-  --color-border: #3a2e22;
-  --color-border-strong: #7a5a22;
+  --color-border: #3d2d5c;
+  --color-border-strong: #7c3aed;
 
-  --color-text: #d4c9b0;
-  --color-text-muted: #7a6e5a;
-  --color-heading: #f2e4c8;
+  --color-text: #e2d9f3;
+  --color-text-muted: #8b7aa8;
+  --color-heading: #f0e6ff;
 
-  --color-accent: #c9963a;
-  --color-accent-strong: #e8c875;
-  --color-accent-bg: rgba(201, 150, 58, 0.12);
-  --color-accent-border: rgba(232, 200, 117, 0.48);
+  --color-accent: #a855f7;
+  --color-accent-strong: #c084fc;
+  --color-accent-bg: rgba(168, 85, 247, 0.12);
+  --color-accent-border: rgba(192, 132, 252, 0.40);
+  --color-accent-glow-low: rgba(168, 85, 247, 0.18);
+  --color-accent-glow-mid: rgba(168, 85, 247, 0.24);
 
   --color-danger: #fca5a5;
   --color-danger-bg: rgba(127, 29, 29, 0.22);

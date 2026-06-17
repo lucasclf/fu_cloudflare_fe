@@ -213,17 +213,17 @@ const styles: Record<string, CSSProperties> = {
   },
 
   locationBlock: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "8px",
     overflow: "hidden",
-    background: "#110e0c",
+    background: "#0b0a0f",
   },
 
   locationButton: {
     width: "100%",
     border: 0,
     background: "transparent",
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     padding: "10px",
     display: "flex",
     alignItems: "flex-start",
@@ -241,14 +241,14 @@ const styles: Record<string, CSSProperties> = {
   },
 
   locationName: {
-    color: "#f5efe2",
+    color: "#e2d9f3",
     fontSize: "13px",
     fontWeight: 800,
     lineHeight: 1.2,
   },
 
   locationTagline: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "12px",
     lineHeight: 1.35,
   },
@@ -257,20 +257,20 @@ const styles: Record<string, CSSProperties> = {
     display: "inline-flex",
     alignItems: "center",
     gap: "6px",
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "12px",
     fontWeight: 700,
     flexShrink: 0,
   },
 
   chevron: {
-    color: "#c9963a",
+    color: "#a855f7",
     fontSize: "12px",
   },
 
   factionList: {
-    borderTop: "1px solid #34291f",
-    background: "#15110f",
+    borderTop: "1px solid #3d2d5c",
+    background: "#131018",
     padding: "8px",
     display: "flex",
     flexDirection: "column",
@@ -279,7 +279,7 @@ const styles: Record<string, CSSProperties> = {
 
   factionSubItem: {
     border: 0,
-    borderLeft: "2px solid #7a5a22",
+    borderLeft: "2px solid #7c3aed",
     background: "transparent",
     padding: "4px 0 4px 8px",
     display: "flex",
@@ -290,7 +290,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   factionName: {
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "12px",
     fontWeight: 700,
   },
@@ -302,35 +302,35 @@ const styles: Record<string, CSSProperties> = {
   },
 
   relationBadge: {
-    border: "1px solid #4c3922",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    color: "#c9963a",
-    background: "#1e1a16",
+    color: "#a855f7",
+    background: "#1c1826",
     padding: "2px 7px",
     fontSize: "10px",
     fontWeight: 700,
   },
 
   noRelations: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "12px",
     fontStyle: "italic",
   },
 
   empty: {
     padding: "12px 16px 16px",
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 
   locationButtonActive: {
-    background: "#1e1a16",
-    boxShadow: "inset 3px 0 0 #c9963a",
+    background: "#1c1826",
+    boxShadow: "inset 3px 0 0 #a855f7",
   },
 
   factionSubItemActive: {
-    background: "#1e1a16",
-    borderLeftColor: "#c9963a",
+    background: "#1c1826",
+    borderLeftColor: "#a855f7",
     borderRadius: "0 6px 6px 0",
   },
 };

@@ -87,8 +87,8 @@ export function CatalogPage({ category, onCategoryChange }: CatalogPageProps) {
 const styles: Record<string, React.CSSProperties> = {
   comingSoon: {
     minHeight: "100vh",
-    background: "#0e0c0a",
-    color: "#d4c9b0",
+    background: "#0b0a0f",
+    color: "#e2d9f3",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -99,11 +99,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   title: {
     margin: 0,
-    color: "#c9963a",
+    color: "#a855f7",
     fontSize: "28px",
   },
   text: {
     margin: 0,
-    color: "#7a6e5a",
+    color: "#8b7aa8",
   },
 };

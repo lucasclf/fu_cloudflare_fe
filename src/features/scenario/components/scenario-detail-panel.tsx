@@ -342,15 +342,15 @@ const styles: Record<string, CSSProperties> = {
   },
 
   mainCard: {
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#131018",
+    border: "1px solid #3d2d5c",
     borderRadius: "12px",
     overflow: "hidden",
   },
 
   mainImageFrame: {
-    background: "#0e0c0a",
-    borderRight: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderRight: "1px solid #3d2d5c",
   },
 
   mainImage: {
@@ -367,7 +367,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#5f574c",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
@@ -396,24 +396,24 @@ const styles: Record<string, CSSProperties> = {
   },
 
   locationBadge: {
-    border: "1px solid #516744",
-    background: "#141f12",
-    color: "#aad18f",
+    border: "1px solid rgba(74, 222, 128, 0.48)",
+    background: "rgba(20, 83, 45, 0.22)",
+    color: "#86efac",
   },
 
   factionBadge: {
-    border: "1px solid #7a5a22",
-    background: "#1e1a16",
-    color: "#c9963a",
+    border: "1px solid #7c3aed",
+    background: "#1c1826",
+    color: "#a855f7",
   },
 
   secondaryBadge: {
     display: "inline-flex",
     alignItems: "center",
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#9f8f73",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 700,
@@ -421,14 +421,14 @@ const styles: Record<string, CSSProperties> = {
 
   mainTitle: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "34px",
     lineHeight: 1.05,
   },
 
   tagline: {
     margin: 0,
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "16px",
     lineHeight: 1.5,
     fontStyle: "italic",
@@ -436,7 +436,7 @@ const styles: Record<string, CSSProperties> = {
 
   description: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "15px",
     lineHeight: 1.65,
     whiteSpace: "pre-line",
@@ -453,26 +453,26 @@ const styles: Record<string, CSSProperties> = {
   sectionDivider: {
     height: "1px",
     background:
-      "linear-gradient(90deg, transparent, rgba(201, 150, 58, 0.7), transparent)",
+      "linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.7), transparent)",
   },
 
   sectionTitle: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
     fontSize: "28px",
     fontWeight: 700,
     letterSpacing: "0.08em",
     textTransform: "uppercase",
     textAlign: "center",
-    textShadow: "0 0 18px rgba(201, 150, 58, 0.25)",
+    textShadow: "0 0 18px rgba(168, 85, 247, 0.25)",
   },
 
   smallGrid: {},
 
   smallCard: {
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#131018",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
     overflow: "hidden",
     display: "flex",
@@ -483,8 +483,8 @@ const styles: Record<string, CSSProperties> = {
   smallImageFrame: {
     width: "100%",
     aspectRatio: "16 / 9",
-    background: "#0e0c0a",
-    borderBottom: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderBottom: "1px solid #3d2d5c",
     overflow: "hidden",
   },
 
@@ -505,14 +505,14 @@ const styles: Record<string, CSSProperties> = {
 
   smallTitle: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "18px",
     lineHeight: 1.15,
   },
 
   smallTagline: {
     margin: 0,
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "13px",
     lineHeight: 1.4,
     fontStyle: "italic",
@@ -520,7 +520,7 @@ const styles: Record<string, CSSProperties> = {
 
   smallDescription: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "13px",
     lineHeight: 1.5,
     whiteSpace: "pre-line",
@@ -535,17 +535,17 @@ const styles: Record<string, CSSProperties> = {
   },
 
   relationBadge: {
-    border: "1px solid #4c3922",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    color: "#c9963a",
-    background: "#1e1a16",
+    color: "#a855f7",
+    background: "#1c1826",
     padding: "3px 8px",
     fontSize: "11px",
     fontWeight: 700,
   },
 
   empty: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 };

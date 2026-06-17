@@ -56,10 +56,10 @@ const styles: Record<string, CSSProperties> = {
 
   button: {
     width: "100%",
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "8px",
-    background: "#110e0c",
-    color: "#7a6e5a",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "9px 10px",
     cursor: "pointer",
     fontSize: "13px",
@@ -68,9 +68,9 @@ const styles: Record<string, CSSProperties> = {
   },
 
   buttonActive: {
-    background: "#1e1a16",
-    color: "#f5efe2",
-    borderColor: "#c9963a",
-    boxShadow: "0 0 0 1px rgba(201, 150, 58, 0.18)",
+    background: "#1c1826",
+    color: "#e2d9f3",
+    borderColor: "#a855f7",
+    boxShadow: "0 0 0 1px rgba(168, 85, 247, 0.18)",
   },
 };

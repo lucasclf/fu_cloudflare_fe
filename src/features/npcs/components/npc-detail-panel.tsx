@@ -353,10 +353,10 @@ const styles: Record<string, CSSProperties> = {
 
   backButton: {
     alignSelf: "flex-start",
-    border: "1px solid #4c3922",
+    border: "1px solid #3d2d5c",
     borderRadius: "8px",
-    background: "#15110f",
-    color: "#c9963a",
+    background: "#131018",
+    color: "#a855f7",
     padding: "9px 12px",
     cursor: "pointer",
     fontSize: "13px",
@@ -364,15 +364,15 @@ const styles: Record<string, CSSProperties> = {
   },
 
   heroCard: {
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#1c1826",
+    border: "1px solid #3d2d5c",
     borderRadius: "12px",
     overflow: "hidden",
   },
 
   imageFrame: {
-    background: "#0e0c0a",
-    borderRight: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderRight: "1px solid #3d2d5c",
     overflow: "hidden",
   },
 
@@ -388,7 +388,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#5f574c",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
@@ -400,7 +400,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexDirection: "column",
     gap: "14px",
-    borderBottom: "1px solid #3a2e22",
+    borderBottom: "1px solid #3d2d5c",
   },
 
   heroStatsBlock: {
@@ -411,14 +411,14 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "34px",
     lineHeight: 1.05,
   },
 
   tagline: {
     margin: 0,
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "16px",
     lineHeight: 1.5,
     fontStyle: "italic",
@@ -426,7 +426,7 @@ const styles: Record<string, CSSProperties> = {
 
   description: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "15px",
     lineHeight: 1.65,
     whiteSpace: "pre-line",
@@ -459,7 +459,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   statLabel: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "11px",
     fontWeight: 800,
     textTransform: "uppercase",
@@ -467,7 +467,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   statValue: {
-    color: "#f5efe2",
+    color: "#e2d9f3",
     fontSize: "18px",
     fontWeight: 900,
     lineHeight: 1,
@@ -481,20 +481,20 @@ const styles: Record<string, CSSProperties> = {
 
   sectionTitle: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
     fontSize: "26px",
     fontWeight: 700,
     letterSpacing: "0.08em",
     textTransform: "uppercase",
-    textShadow: "0 0 18px rgba(201, 150, 58, 0.25)",
+    textShadow: "0 0 18px rgba(168, 85, 247, 0.25)",
   },
 
   ruleGrid: {},
 
   ruleCard: {
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#1c1826",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
     padding: "16px",
     display: "flex",
@@ -509,10 +509,10 @@ const styles: Record<string, CSSProperties> = {
   },
 
   typeBadge: {
-    border: "1px solid #7a5a22",
+    border: "1px solid #7c3aed",
     borderRadius: "999px",
-    background: "#1e1a16",
-    color: "#c9963a",
+    background: "#1c1826",
+    color: "#a855f7",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 800,
@@ -520,14 +520,14 @@ const styles: Record<string, CSSProperties> = {
 
   cardTitle: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "20px",
     lineHeight: 1.15,
   },
 
   cardDescription: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "14px",
     lineHeight: 1.55,
     whiteSpace: "pre-line",
@@ -541,10 +541,10 @@ const styles: Record<string, CSSProperties> = {
   },
 
   metadataBadge: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#9f8f73",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "4px 8px",
     fontSize: "11px",
     fontWeight: 700,
@@ -553,8 +553,8 @@ const styles: Record<string, CSSProperties> = {
   itemGrid: {},
 
   itemCard: {
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#1c1826",
+    border: "1px solid #3d2d5c",
     borderRadius: "9px",
     overflow: "hidden",
     display: "grid",
@@ -563,8 +563,8 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemImageColumn: {
-    background: "#0e0c0a",
-    borderRight: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderRight: "1px solid #3d2d5c",
     display: "grid",
     gridTemplateRows: "auto 1fr auto",
     alignItems: "center",
@@ -582,7 +582,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemImageTopLabel: {
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "10px",
     fontWeight: 800,
     lineHeight: 1.15,
@@ -590,7 +590,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemImageBottomLabel: {
-    color: "#c9963a",
+    color: "#a855f7",
     fontSize: "10px",
     fontWeight: 900,
     lineHeight: 1.15,
@@ -622,7 +622,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemTitle: {
-    color: "#f5efe2",
+    color: "#e2d9f3",
     fontSize: "13px",
     fontWeight: 800,
     lineHeight: 1.15,
@@ -632,10 +632,10 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemTypeBadge: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#c9963a",
+    background: "#0b0a0f",
+    color: "#a855f7",
     padding: "2px 7px",
     fontSize: "10px",
     fontWeight: 800,
@@ -647,7 +647,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     gap: "5px",
-    color: "#9f8f73",
+    color: "#8b7aa8",
     fontSize: "11px",
     fontWeight: 700,
     minWidth: 0,
@@ -657,11 +657,11 @@ const styles: Record<string, CSSProperties> = {
   },
 
   separator: {
-    color: "#5f574c",
+    color: "#8b7aa8",
   },
 
   itemCost: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "11px",
     fontWeight: 700,
   },
@@ -670,7 +670,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     flexWrap: "wrap",
     gap: "4px 8px",
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "11px",
     fontWeight: 700,
     lineHeight: 1.25,
@@ -682,7 +682,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   itemMeta: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "11px",
     fontWeight: 700,
   },

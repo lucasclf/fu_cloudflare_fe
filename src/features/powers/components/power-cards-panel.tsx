@@ -82,8 +82,8 @@ function PowerCard({ power }: PowerCardProps) {
 const styles: Record<string, CSSProperties> = {
   card: {
     minHeight: "260px",
-    background: "#161210",
-    border: "1px solid #3a2e22",
+    background: "#131018",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
     padding: "18px",
     display: "flex",
@@ -114,24 +114,24 @@ const styles: Record<string, CSSProperties> = {
   },
 
   heroicBadge: {
-    border: "1px solid #8a6a25",
-    background: "#241c10",
-    color: "#e8c875",
+    border: "1px solid #7c3aed",
+    background: "#1c1826",
+    color: "#c084fc",
   },
 
   commonBadge: {
-    border: "1px solid #5a4630",
-    background: "#241d18",
-    color: "#d4c9b0",
+    border: "1px solid #3d2d5c",
+    background: "#1c1826",
+    color: "#e2d9f3",
   },
 
   levelBadge: {
     display: "inline-flex",
     alignItems: "center",
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#9f8f73",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 700,
@@ -151,7 +151,7 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "22px",
     lineHeight: 1.15,
   },
@@ -165,10 +165,10 @@ const styles: Record<string, CSSProperties> = {
   jobBadge: {
     display: "inline-flex",
     alignItems: "center",
-    border: "1px solid #7a5a22",
+    border: "1px solid #7c3aed",
     borderRadius: "999px",
-    background: "#1e1a16",
-    color: "#c9963a",
+    background: "#1c1826",
+    color: "#a855f7",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 700,
@@ -177,10 +177,10 @@ const styles: Record<string, CSSProperties> = {
   unrestrictedJobBadge: {
     display: "inline-flex",
     alignItems: "center",
-    border: "1px solid #4c4338",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#1b1713",
-    color: "#d4c9b0",
+    background: "#1c1826",
+    color: "#e2d9f3",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 700,
@@ -188,7 +188,7 @@ const styles: Record<string, CSSProperties> = {
 
   description: {
     margin: 0,
-    color: "#d4c9b0",
+    color: "#e2d9f3",
     fontSize: "14px",
     lineHeight: 1.55,
     whiteSpace: "pre-line",
@@ -196,7 +196,7 @@ const styles: Record<string, CSSProperties> = {
   },
 
   empty: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 };

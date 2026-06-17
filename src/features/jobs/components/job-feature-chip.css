@@ -33,7 +33,7 @@
   min-height: 30px;
   gap: 7px;
   padding: 6px 10px;
-  box-shadow: 0 0 12px rgba(232, 200, 117, 0.08);
+  box-shadow: 0 0 12px rgba(192, 132, 252, 0.08);
 }
 
 .job-feature-chip--with-text {

@@ -97,9 +97,9 @@ function Die({ label, value }: { label: string; value: string }) {
 const styles: Record<string, CSSProperties> = {
   card: {
     minHeight: "210px",
-    border: "1px solid #3a2e22",
+    border: "1px solid #3d2d5c",
     borderRadius: "10px",
-    background: "#161210",
+    background: "#131018",
     color: "inherit",
     overflow: "hidden",
     display: "grid",
@@ -110,14 +110,14 @@ const styles: Record<string, CSSProperties> = {
   },
 
   cardSelected: {
-    borderColor: "#c9963a",
-    boxShadow: "0 0 0 1px rgba(201, 150, 58, 0.24)",
+    borderColor: "#a855f7",
+    boxShadow: "0 0 0 1px rgba(168, 85, 247, 0.24)",
   },
 
   imageFrame: {
     minHeight: "210px",
-    background: "#0e0c0a",
-    borderRight: "1px solid #3a2e22",
+    background: "#0b0a0f",
+    borderRight: "1px solid #3d2d5c",
     overflow: "hidden",
   },
 
@@ -135,7 +135,7 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "#5f574c",
+    color: "#8b7aa8",
     fontSize: "13px",
     fontStyle: "italic",
   },
@@ -154,20 +154,20 @@ const styles: Record<string, CSSProperties> = {
   },
 
   typeBadge: {
-    border: "1px solid #7a5a22",
+    border: "1px solid #7c3aed",
     borderRadius: "999px",
-    background: "#1e1a16",
-    color: "#c9963a",
+    background: "#1c1826",
+    color: "#a855f7",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 800,
   },
 
   levelBadge: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "999px",
-    background: "#110e0c",
-    color: "#9f8f73",
+    background: "#0b0a0f",
+    color: "#8b7aa8",
     padding: "4px 10px",
     fontSize: "12px",
     fontWeight: 800,
@@ -175,7 +175,7 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     margin: 0,
-    color: "#e8c875",
+    color: "#c084fc",
     fontSize: "22px",
     lineHeight: 1.15,
   },
@@ -188,9 +188,9 @@ const styles: Record<string, CSSProperties> = {
   },
 
   die: {
-    border: "1px solid #34291f",
+    border: "1px solid #3d2d5c",
     borderRadius: "8px",
-    background: "#110e0c",
+    background: "#0b0a0f",
     padding: "8px",
     display: "flex",
     flexDirection: "column",
@@ -199,19 +199,19 @@ const styles: Record<string, CSSProperties> = {
   },
 
   dieLabel: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontSize: "11px",
     fontWeight: 800,
   },
 
   dieValue: {
-    color: "#f5efe2",
+    color: "#e2d9f3",
     fontSize: "15px",
     fontWeight: 900,
   },
 
   empty: {
-    color: "#7a6e5a",
+    color: "#8b7aa8",
     fontStyle: "italic",
   },
 };
