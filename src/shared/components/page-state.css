@@ -10,10 +10,16 @@
 }
 
 .page-state--loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   color: var(--color-text);
 }
 
 .page-state--empty {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
   color: var(--color-text);
 }
 
@@ -21,6 +27,31 @@
   border-color: var(--color-danger-border);
   color: var(--color-danger);
   background: var(--color-danger-bg);
+}
+
+.page-state__icon {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.page-state__icon--spin {
+  animation: page-state-spin 900ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-state__icon--spin {
+    animation: none;
+  }
+}
+
+@keyframes page-state-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.page-state__content {
+  min-width: 0;
 }
 
 .page-state__title {
