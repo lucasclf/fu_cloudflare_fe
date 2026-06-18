@@ -1,6 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import type { UserCampaign } from "../types/campaign";
+import { Link } from "react-router-dom";
+import type { CampaignStatus, UserCampaign } from "../types/campaign";
 import "./campaign-card.css";
+
+const STATUS_LABEL: Record<CampaignStatus, string> = {
+  active: "Ativa",
+  hiatus: "Em pausa",
+  completed: "Concluída",
+};
 
 type CampaignCardProps = {
   campaign: UserCampaign;
@@ -8,25 +14,19 @@ type CampaignCardProps = {
 };
 
 export function CampaignCard({ campaign, onDelete }: CampaignCardProps) {
-  const navigate = useNavigate();
-
-  function handleClick() {
-    navigate(`/campaigns/${campaign.id}`);
-  }
-
   return (
-    <article
-      className="campaign-card"
-      onClick={handleClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleClick(); }}
-    >
+    <article className="campaign-card">
+      <Link
+        to={`/campaigns/${campaign.id}`}
+        className="campaign-card__link"
+        aria-label={campaign.name}
+      />
+
       {onDelete ? (
         <button
           type="button"
           className="campaign-card__delete"
-          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          onClick={onDelete}
           title="Deletar campanha"
           aria-label={`Deletar campanha ${campaign.name}`}
         >
@@ -43,6 +43,12 @@ export function CampaignCard({ campaign, onDelete }: CampaignCardProps) {
       {campaign.description ? (
         <p className="campaign-card__description">{campaign.description}</p>
       ) : null}
+
+      <footer className="campaign-card__footer">
+        <span className={`campaign-card__status campaign-card__status--${campaign.status}`}>
+          {STATUS_LABEL[campaign.status]}
+        </span>
+      </footer>
     </article>
   );
 }
