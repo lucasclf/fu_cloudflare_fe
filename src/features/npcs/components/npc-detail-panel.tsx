@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { getNpcImageSrc } from "../lib/get-npc-image-src";
 import panelStyles from "./npc-detail-panel.module.css";
 import {
@@ -34,9 +33,9 @@ export function NpcDetailPanel({ npc, onBackToList, onEdit }: Props) {
   const imageSrc = getNpcImageSrc(npc.img_key);
 
   return (
-    <div style={styles.wrapper}>
-      <div style={styles.headerActions}>
-        <button type="button" onClick={onBackToList} style={styles.backButton}>
+    <div className={panelStyles.wrapper}>
+      <div className={panelStyles.headerActions}>
+        <button type="button" onClick={onBackToList} className={panelStyles.backButton}>
           ← Voltar para NPCs
         </button>
         {onEdit ? (
@@ -46,37 +45,36 @@ export function NpcDetailPanel({ npc, onBackToList, onEdit }: Props) {
         ) : null}
       </div>
 
-      <article className={panelStyles.heroCard} style={styles.heroCard}>
-        <div className={panelStyles.imageFrame} style={styles.imageFrame}>
+      <article className={panelStyles.heroCard}>
+        <div className={panelStyles.imageFrame}>
           {imageSrc ? (
             <img
               src={imageSrc}
               alt={npc.name}
               className={panelStyles.image}
-              style={styles.image}
             />
           ) : (
-            <div style={styles.imagePlaceholder}>Sem imagem</div>
+            <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
           )}
         </div>
 
-        <div className={panelStyles.heroContent} style={styles.heroContent}>
-          <div style={styles.heroInfoBlock}>
-            <h2 style={styles.title}>{npc.name}</h2>
+        <div className={panelStyles.heroContent}>
+          <div className={panelStyles.heroInfoBlock}>
+            <h2 className={panelStyles.title}>{npc.name}</h2>
 
-            <p style={styles.tagline}>“{renderNpcValue(npc.tagline)}”</p>
+            <p className={panelStyles.tagline}>“{renderNpcValue(npc.tagline)}”</p>
 
-            <p style={styles.description}>{renderNpcValue(npc.description)}</p>
+            <p className={panelStyles.description}>{renderNpcValue(npc.description)}</p>
           </div>
 
-          <div style={styles.heroStatsBlock}>
+          <div className={panelStyles.heroStatsBlock}>
             <NpcStats npc={npc} />
           </div>
         </div>
       </article>
 
       {npc.specialRules.length > 0 ? (
-        <section style={styles.section}>
+        <section className={panelStyles.section}>
           <SectionTitle>Regras Especiais</SectionTitle>
 
           <div className={panelStyles.ruleGrid}>
@@ -88,7 +86,7 @@ export function NpcDetailPanel({ npc, onBackToList, onEdit }: Props) {
       ) : null}
 
       {npc.inventory.length > 0 ? (
-        <section style={styles.section}>
+        <section className={panelStyles.section}>
           <SectionTitle>Inventário</SectionTitle>
 
           <div className={panelStyles.itemGrid}>
@@ -111,21 +109,21 @@ export function NpcDetailPanel({ npc, onBackToList, onEdit }: Props) {
 
 function NpcStats({ npc }: { npc: NpcDetail }) {
   return (
-    <div style={styles.stats}>
-      <div style={styles.statRowFour}>
+    <div className={panelStyles.stats}>
+      <div className={panelStyles.statRowFour}>
         <Stat label="DES" value={npc.dexterity_die} />
         <Stat label="AST" value={npc.insight_die} />
         <Stat label="VIG" value={npc.might_die} />
         <Stat label="VON" value={npc.willpower_die} />
       </div>
 
-      <div style={styles.statRowThree}>
+      <div className={panelStyles.statRowThree}>
         <Stat label="PV" value={npc.hp} />
         <Stat label="PM" value={npc.mp} />
         <Stat label="Nível" value={npc.level} />
       </div>
 
-      <div style={styles.statRowThree}>
+      <div className={panelStyles.statRowThree}>
         <Stat label="DEF" value={npc.defense} />
         <Stat label="DEF M." value={npc.magic_defense} />
         <Stat label="INI" value={npc.initiative} />
@@ -142,9 +140,9 @@ function Stat({
   value: string | number | null;
 }) {
   return (
-    <div style={styles.stat}>
-      <span style={styles.statLabel}>{label}</span>
-      <span style={styles.statValue}>{renderNpcValue(value)}</span>
+    <div className={panelStyles.stat}>
+      <span className={panelStyles.statLabel}>{label}</span>
+      <span className={panelStyles.statValue}>{renderNpcValue(value)}</span>
     </div>
   );
 }
@@ -153,19 +151,19 @@ function SpecialRuleCard({ rule }: { rule: NpcSpecialRule }) {
   const metadataEntries = rule.metadata ? Object.entries(rule.metadata) : [];
 
   return (
-    <article style={styles.ruleCard}>
-      <div style={styles.badges}>
-        <span style={styles.typeBadge}>{formatSpecialRuleType(rule.type)}</span>
+    <article className={panelStyles.ruleCard}>
+      <div className={panelStyles.badges}>
+        <span className={panelStyles.typeBadge}>{formatSpecialRuleType(rule.type)}</span>
       </div>
 
-      <h3 style={styles.cardTitle}>{rule.title}</h3>
+      <h3 className={panelStyles.cardTitle}>{rule.title}</h3>
 
-      <p style={styles.cardDescription}>{rule.description}</p>
+      <p className={panelStyles.cardDescription}>{rule.description}</p>
 
       {metadataEntries.length > 0 ? (
-        <div style={styles.metadataList}>
+        <div className={panelStyles.metadataList}>
           {metadataEntries.map(([key, value]) => (
-            <span key={key} style={styles.metadataBadge}>
+            <span key={key} className={panelStyles.metadataBadge}>
               {key}: {String(value)}
             </span>
           ))}
@@ -205,7 +203,7 @@ function EquipmentSection({ equipment }: { equipment: NpcEquipment }) {
   if (slots.length === 0) return null;
 
   return (
-    <section style={styles.section}>
+    <section className={panelStyles.section}>
       <SectionTitle>Equipamentos</SectionTitle>
 
       <div className={panelStyles.itemGrid}>
@@ -236,40 +234,40 @@ function NpcItemCard({
   const details = getNpcItemCompactDetails(item);
 
   return (
-    <article style={styles.itemCard}>
-      <div style={styles.itemImageColumn}>
+    <article className={panelStyles.itemCard}>
+      <div className={panelStyles.itemImageColumn}>
         {imageTopLabel ? (
-          <div style={styles.itemImageTopLabel}>{imageTopLabel}</div>
+          <div className={panelStyles.itemImageTopLabel}>{imageTopLabel}</div>
         ) : null}
 
-        <div style={styles.itemImageFrame}>
-          <img src={imageSrc} alt={item.name} style={styles.itemImage} />
+        <div className={panelStyles.itemImageFrame}>
+          <img src={imageSrc} alt={item.name} className={panelStyles.itemImage} loading="lazy" />
         </div>
 
         {imageBottomLabel ? (
-          <div style={styles.itemImageBottomLabel}>{imageBottomLabel}</div>
+          <div className={panelStyles.itemImageBottomLabel}>{imageBottomLabel}</div>
         ) : null}
       </div>
 
-      <div style={styles.itemContent}>
-        <div style={styles.itemTopLine}>
-          <strong style={styles.itemTitle}>{item.name}</strong>
+      <div className={panelStyles.itemContent}>
+        <div className={panelStyles.itemTopLine}>
+          <strong className={panelStyles.itemTitle}>{item.name}</strong>
 
-          <span style={styles.itemTypeBadge}>
+          <span className={panelStyles.itemTypeBadge}>
             {formatNpcItemType(item.item_type)}
           </span>
         </div>
 
-        <div style={styles.itemSubLine}>
+        <div className={panelStyles.itemSubLine}>
           <span>{headerLabel}</span>
         </div>
 
         {details.length > 0 ? (
-          <div style={styles.itemDetailsLine}>
+          <div className={panelStyles.itemDetailsLine}>
             {details.map((detail, index) => (
               <span
                 key={`${detail.label}-${index}`}
-                style={styles.itemDetailText}
+                className={panelStyles.itemDetailText}
               >
                 {detail.value}
               </span>
@@ -349,355 +347,5 @@ function getNpcItemCompactDetails(item: NpcItem): Array<{
 }
 
 function SectionTitle({ children }: { children: string }) {
-  return <h2 style={styles.sectionTitle}>{children}</h2>;
+  return <h2 className={panelStyles.sectionTitle}>{children}</h2>;
 }
-
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "22px",
-  },
-
-  headerActions: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-
-  backButton: {
-    alignSelf: "flex-start",
-    border: "1px solid #3d2d5c",
-    borderRadius: "8px",
-    background: "#131018",
-    color: "#a855f7",
-    padding: "9px 12px",
-    cursor: "pointer",
-    fontSize: "13px",
-    fontWeight: 800,
-  },
-
-  heroCard: {
-    background: "#1c1826",
-    border: "1px solid #3d2d5c",
-    borderRadius: "12px",
-    overflow: "hidden",
-  },
-
-  imageFrame: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    overflow: "hidden",
-  },
-
-  image: {
-    width: "100%",
-    height: "100%",
-    display: "block",
-  },
-
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#8b7aa8",
-    fontSize: "13px",
-    fontStyle: "italic",
-  },
-
-  heroContent: {},
-
-  heroInfoBlock: {
-    padding: "26px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-    borderBottom: "1px solid #3d2d5c",
-  },
-
-  heroStatsBlock: {
-    padding: "22px 26px",
-    display: "flex",
-    alignItems: "center",
-  },
-
-  title: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "34px",
-    lineHeight: 1.05,
-  },
-
-  tagline: {
-    margin: 0,
-    color: "#8b7aa8",
-    fontSize: "16px",
-    lineHeight: 1.5,
-    fontStyle: "italic",
-  },
-
-  description: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "15px",
-    lineHeight: 1.65,
-    whiteSpace: "pre-line",
-  },
-
-  stats: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-
-  statRowFour: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "10px",
-  },
-
-  statRowThree: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "10px",
-  },
-
-  stat: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "5px",
-  },
-
-  statLabel: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 800,
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-  },
-
-  statValue: {
-    color: "#e2d9f3",
-    fontSize: "18px",
-    fontWeight: 900,
-    lineHeight: 1,
-  },
-
-  section: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-
-  sectionTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
-    fontSize: "26px",
-    fontWeight: 700,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    textShadow: "0 0 18px rgba(168, 85, 247, 0.25)",
-  },
-
-  ruleGrid: {},
-
-  ruleCard: {
-    background: "#1c1826",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-
-  badges: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-  },
-
-  typeBadge: {
-    border: "1px solid #7c3aed",
-    borderRadius: "999px",
-    background: "#1c1826",
-    color: "#a855f7",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  cardTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "20px",
-    lineHeight: 1.15,
-  },
-
-  cardDescription: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "14px",
-    lineHeight: 1.55,
-    whiteSpace: "pre-line",
-  },
-
-  metadataList: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "6px",
-    marginTop: "auto",
-  },
-
-  metadataBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#8b7aa8",
-    padding: "4px 8px",
-    fontSize: "11px",
-    fontWeight: 700,
-  },
-
-  itemGrid: {},
-
-  itemCard: {
-    background: "#1c1826",
-    border: "1px solid #3d2d5c",
-    borderRadius: "9px",
-    overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "72px minmax(0, 1fr)",
-    minHeight: "104px",
-  },
-
-  itemImageColumn: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    display: "grid",
-    gridTemplateRows: "auto 1fr auto",
-    alignItems: "center",
-    justifyItems: "center",
-    padding: "6px",
-    gap: "4px",
-  },
-
-  itemImageFrame: {
-    width: "100%",
-    minHeight: "42px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  itemImageTopLabel: {
-    color: "#8b7aa8",
-    fontSize: "10px",
-    fontWeight: 800,
-    lineHeight: 1.15,
-    textAlign: "center",
-  },
-
-  itemImageBottomLabel: {
-    color: "#a855f7",
-    fontSize: "10px",
-    fontWeight: 900,
-    lineHeight: 1.15,
-    textAlign: "center",
-  },
-
-  itemImage: {
-    width: "100%",
-    height: "100%",
-    maxHeight: "48px",
-    objectFit: "contain",
-    display: "block",
-  },
-
-  itemContent: {
-    padding: "9px 10px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-    minWidth: 0,
-  },
-
-  itemTopLine: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "8px",
-    minWidth: 0,
-  },
-
-  itemTitle: {
-    color: "#e2d9f3",
-    fontSize: "13px",
-    fontWeight: 800,
-    lineHeight: 1.15,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-
-  itemTypeBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#a855f7",
-    padding: "2px 7px",
-    fontSize: "10px",
-    fontWeight: 800,
-    whiteSpace: "nowrap",
-    flexShrink: 0,
-  },
-
-  itemSubLine: {
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 700,
-    minWidth: 0,
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-  },
-
-  separator: {
-    color: "#8b7aa8",
-  },
-
-  itemCost: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 700,
-  },
-
-  itemDetailsLine: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "4px 8px",
-    color: "#e2d9f3",
-    fontSize: "11px",
-    fontWeight: 700,
-    lineHeight: 1.25,
-  },
-
-  itemDetailText: {
-    display: "inline-flex",
-    alignItems: "center",
-  },
-
-  itemMeta: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 700,
-  },
-};

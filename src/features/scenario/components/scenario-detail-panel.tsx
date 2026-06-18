@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { getScenarioImageSrc } from "../lib/get-scenario-image-src";
 import panelStyles from "./scenario-detail-panel.module.css";
 import {
@@ -26,13 +25,13 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
     const relatedFactions = getRelatedFactions(entity, entities);
 
     return (
-      <div style={styles.wrapper}>
+      <div className={panelStyles.wrapper}>
         <MainEntityCard entity={entity} />
 
         <SectionTitle>Facções Locais</SectionTitle>
 
         {relatedFactions.length > 0 ? (
-          <div className={panelStyles.smallGrid} style={styles.smallGrid}>
+          <div className={panelStyles.smallGrid}>
             {relatedFactions.map(({ faction, relationTypes }) => (
               <SmallFactionCard
                 key={faction.uid}
@@ -42,7 +41,7 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
             ))}
           </div>
         ) : (
-          <div style={styles.empty}>
+          <div className={panelStyles.empty}>
             Nenhuma facção relacionada a este local.
           </div>
         )}
@@ -53,13 +52,13 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
   const relatedLocations = getRelatedLocations(entity, entities);
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       <MainEntityCard entity={entity} />
 
       <SectionTitle>Presente em</SectionTitle>
 
       {relatedLocations.length > 0 ? (
-        <div style={styles.smallGrid}>
+        <div className={panelStyles.smallGrid}>
           {relatedLocations.map(({ location, fallbackName, relationTypes }) => (
             <SmallLocationCard
               key={location?.uid ?? fallbackName}
@@ -70,7 +69,7 @@ export function ScenarioDetailPanel({ entity, entities }: Props) {
           ))}
         </div>
       ) : (
-        <div style={styles.empty}>Nenhum local relacionado a esta facção.</div>
+        <div className={panelStyles.empty}>Nenhum local relacionado a esta facção.</div>
       )}
     </div>
   );
@@ -81,40 +80,40 @@ function MainEntityCard({ entity }: { entity: ScenarioEntity }) {
   const subtypeLabel = formatScenarioSubtype(entity.type, entity.subtype);
 
   return (
-    <article className={panelStyles.mainCard} style={styles.mainCard}>
-      <div className={panelStyles.mainImageFrame} style={styles.mainImageFrame}>
+    <article className={panelStyles.mainCard}>
+      <div className={panelStyles.mainImageFrame}>
         {imageSrc ? (
-          <img src={imageSrc} alt={entity.name} style={styles.mainImage} />
+          <img src={imageSrc} alt={entity.name} className={panelStyles.mainImage} />
         ) : (
-          <div style={styles.imagePlaceholder}>Sem imagem</div>
+          <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
         )}
       </div>
 
-      <div style={styles.mainContent}>
-        <div style={styles.badges}>
+      <div className={panelStyles.mainContent}>
+        <div className={panelStyles.badges}>
           <span
-            style={{
-              ...styles.typeBadge,
-              ...(entity.type === "location"
-                ? styles.locationBadge
-                : styles.factionBadge),
-            }}
+            className={[
+              panelStyles.typeBadge,
+              entity.type === "location"
+                ? panelStyles.locationBadge
+                : panelStyles.factionBadge,
+            ].join(" ")}
           >
             {formatScenarioEntityType(entity.type)}
           </span>
 
           {subtypeLabel ? (
-            <span style={styles.secondaryBadge}>{subtypeLabel}</span>
+            <span className={panelStyles.secondaryBadge}>{subtypeLabel}</span>
           ) : null}
         </div>
 
-        <h2 style={styles.mainTitle}>{entity.name}</h2>
+        <h2 className={panelStyles.mainTitle}>{entity.name}</h2>
 
         {entity.tagline ? (
-          <p style={styles.tagline}>“{entity.tagline}”</p>
+          <p className={panelStyles.tagline}>“{entity.tagline}”</p>
         ) : null}
 
-        <p style={styles.description}>
+        <p className={panelStyles.description}>
           {renderScenarioValue(entity.description)}
         </p>
       </div>
@@ -133,27 +132,27 @@ function SmallFactionCard({
   const subtypeLabel = formatScenarioSubtype(faction.type, faction.subtype);
 
   return (
-    <article style={styles.smallCard}>
+    <article className={panelStyles.smallCard}>
       <SmallImage imageSrc={imageSrc} alt={faction.name} />
 
-      <div style={styles.smallContent}>
-        <div style={styles.badges}>
-          <span style={{ ...styles.typeBadge, ...styles.factionBadge }}>
+      <div className={panelStyles.smallContent}>
+        <div className={panelStyles.badges}>
+          <span className={[panelStyles.typeBadge, panelStyles.factionBadge].join(" ")}>
             Facção
           </span>
 
           {subtypeLabel ? (
-            <span style={styles.secondaryBadge}>{subtypeLabel}</span>
+            <span className={panelStyles.secondaryBadge}>{subtypeLabel}</span>
           ) : null}
         </div>
 
-        <h3 style={styles.smallTitle}>{faction.name}</h3>
+        <h3 className={panelStyles.smallTitle}>{faction.name}</h3>
 
         {faction.tagline ? (
-          <p style={styles.smallTagline}>“{faction.tagline}”</p>
+          <p className={panelStyles.smallTagline}>“{faction.tagline}”</p>
         ) : null}
 
-        <p style={styles.smallDescription}>
+        <p className={panelStyles.smallDescription}>
           {renderScenarioValue(faction.description)}
         </p>
 
@@ -181,27 +180,27 @@ function SmallLocationCard({
     : null;
 
   return (
-    <article style={styles.smallCard}>
+    <article className={panelStyles.smallCard}>
       <SmallImage imageSrc={imageSrc} alt={location?.name ?? fallbackName} />
 
-      <div style={styles.smallContent}>
-        <div style={styles.badges}>
-          <span style={{ ...styles.typeBadge, ...styles.locationBadge }}>
+      <div className={panelStyles.smallContent}>
+        <div className={panelStyles.badges}>
+          <span className={[panelStyles.typeBadge, panelStyles.locationBadge].join(" ")}>
             Local
           </span>
 
           {subtypeLabel ? (
-            <span style={styles.secondaryBadge}>{subtypeLabel}</span>
+            <span className={panelStyles.secondaryBadge}>{subtypeLabel}</span>
           ) : null}
         </div>
 
-        <h3 style={styles.smallTitle}>{location?.name ?? fallbackName}</h3>
+        <h3 className={panelStyles.smallTitle}>{location?.name ?? fallbackName}</h3>
 
         {location?.tagline ? (
-          <p style={styles.smallTagline}>“{location.tagline}”</p>
+          <p className={panelStyles.smallTagline}>“{location.tagline}”</p>
         ) : null}
 
-        <p style={styles.smallDescription}>
+        <p className={panelStyles.smallDescription}>
           {location
             ? renderScenarioValue(location.description)
             : "Local referenciado pela facção, mas não encontrado na lista principal."}
@@ -221,11 +220,11 @@ function SmallImage({
   alt: string;
 }) {
   return (
-    <div style={styles.smallImageFrame}>
+    <div className={panelStyles.smallImageFrame}>
       {imageSrc ? (
-        <img src={imageSrc} alt={alt} style={styles.smallImage} />
+        <img src={imageSrc} alt={alt} className={panelStyles.smallImage} loading="lazy" />
       ) : (
-        <div style={styles.imagePlaceholder}>Sem imagem</div>
+        <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
       )}
     </div>
   );
@@ -233,10 +232,10 @@ function SmallImage({
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <div style={styles.sectionTitleWrapper}>
-      <div style={styles.sectionDivider} />
-      <h2 style={styles.sectionTitle}>{children}</h2>
-      <div style={styles.sectionDivider} />
+    <div className={panelStyles.sectionTitleWrapper}>
+      <div className={panelStyles.sectionDivider} />
+      <h2 className={panelStyles.sectionTitle}>{children}</h2>
+      <div className={panelStyles.sectionDivider} />
     </div>
   );
 }
@@ -247,9 +246,9 @@ function RelationBadges({ relationTypes }: { relationTypes: string[] }) {
   }
 
   return (
-    <div style={styles.relationBadges}>
+    <div className={panelStyles.relationBadges}>
       {relationTypes.map((relationType) => (
-        <span key={relationType} style={styles.relationBadge}>
+        <span key={relationType} className={panelStyles.relationBadge}>
           {relationType}
         </span>
       ))}
@@ -334,218 +333,3 @@ function getRelatedLocations(
       ),
     );
 }
-
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-  },
-
-  mainCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "12px",
-    overflow: "hidden",
-  },
-
-  mainImageFrame: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-  },
-
-  mainImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    minHeight: "160px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#8b7aa8",
-    fontSize: "13px",
-    fontStyle: "italic",
-  },
-
-  mainContent: {
-    padding: "26px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-
-  badges: {
-    display: "flex",
-    flexWrap: "wrap",
-    alignItems: "center",
-    gap: "8px",
-  },
-
-  typeBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    borderRadius: "999px",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  locationBadge: {
-    border: "1px solid rgba(74, 222, 128, 0.48)",
-    background: "rgba(20, 83, 45, 0.22)",
-    color: "#86efac",
-  },
-
-  factionBadge: {
-    border: "1px solid #7c3aed",
-    background: "#1c1826",
-    color: "#a855f7",
-  },
-
-  secondaryBadge: {
-    display: "inline-flex",
-    alignItems: "center",
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#8b7aa8",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-
-  mainTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "34px",
-    lineHeight: 1.05,
-  },
-
-  tagline: {
-    margin: 0,
-    color: "#8b7aa8",
-    fontSize: "16px",
-    lineHeight: 1.5,
-    fontStyle: "italic",
-  },
-
-  description: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "15px",
-    lineHeight: 1.65,
-    whiteSpace: "pre-line",
-  },
-
-  sectionTitleWrapper: {
-    margin: "34px 0 18px",
-    display: "grid",
-    gridTemplateColumns: "1fr auto 1fr",
-    alignItems: "center",
-    gap: "18px",
-  },
-
-  sectionDivider: {
-    height: "1px",
-    background:
-      "linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.7), transparent)",
-  },
-
-  sectionTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontFamily: `"Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif`,
-    fontSize: "28px",
-    fontWeight: 700,
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    textAlign: "center",
-    textShadow: "0 0 18px rgba(168, 85, 247, 0.25)",
-  },
-
-  smallGrid: {},
-
-  smallCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "360px",
-  },
-
-  smallImageFrame: {
-    width: "100%",
-    aspectRatio: "16 / 9",
-    background: "#0b0a0f",
-    borderBottom: "1px solid #3d2d5c",
-    overflow: "hidden",
-  },
-
-  smallImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-
-  smallContent: {
-    padding: "14px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    flex: 1,
-  },
-
-  smallTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "18px",
-    lineHeight: 1.15,
-  },
-
-  smallTagline: {
-    margin: 0,
-    color: "#8b7aa8",
-    fontSize: "13px",
-    lineHeight: 1.4,
-    fontStyle: "italic",
-  },
-
-  smallDescription: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "13px",
-    lineHeight: 1.5,
-    whiteSpace: "pre-line",
-    flex: 1,
-  },
-
-  relationBadges: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "6px",
-    marginTop: "auto",
-  },
-
-  relationBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    color: "#a855f7",
-    background: "#1c1826",
-    padding: "3px 8px",
-    fontSize: "11px",
-    fontWeight: 700,
-  },
-
-  empty: {
-    color: "#8b7aa8",
-    fontStyle: "italic",
-  },
-};

@@ -13,24 +13,412 @@
   color: var(--color-text-inverted, white);
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.backButton {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background-elevated);
+  color: var(--color-accent);
+  padding: 9px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.backButton:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-accent-strong);
+}
+
 .heroCard {
   display: grid;
   grid-template-columns: 1fr 2fr;
   min-height: 420px;
+  background: var(--color-background-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .imageFrame {
   min-height: 420px;
+  background: var(--color-background);
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
 }
 
 .image {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  display: block;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-style: italic;
 }
 
 .heroContent {
   display: grid;
   grid-template-rows: 1fr 1fr;
   min-height: 420px;
+}
+
+.heroInfoBlock {
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.heroStatsBlock {
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.typeBadge {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-accent);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.levelBadge {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-muted);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.secondaryBadge {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-background);
+  color: var(--color-text-muted);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.title {
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-size: 34px;
+  line-height: 1.05;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.traitBadge {
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionTitle {
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-family: "Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 18px var(--color-accent-glow-low);
+}
+
+.affinityGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.affinityItem {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.affinityLabel {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.affinityValue {
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.actionCard {
+  background: var(--color-background-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actionTypeBadge {
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.offensiveBadge {
+  border: 1px solid var(--color-danger-border);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+.supportBadge {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.actionTitle {
+  margin: 0;
+  color: var(--color-accent-strong);
+  font-size: 20px;
+  line-height: 1.15;
+}
+
+.actionDescription {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.actionInfoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: auto;
+}
+
+.info {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-background);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.infoLabel {
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.infoValue {
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.compactStats {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.compactStatRowFour {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compactStatRowThree {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.compactStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.compactStatLabel {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.compactStatValue {
+  color: var(--color-text);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.actionGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.actionGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.actionGroupTitle {
+  margin: 0;
+  color: var(--color-text);
+  font-family: "Cinzel", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 8px;
+}
+
+.villainBadge {
+  border: 1px solid rgba(248, 113, 113, 0.6);
+  border-radius: var(--radius-pill);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.villainInfo {
+  border-left: 3px solid rgba(248, 113, 113, 0.6);
+  background: var(--color-background-elevated);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.villainInfoItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.villainInfoLabel {
+  color: #f87171;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.villainInfoValue {
+  color: var(--color-danger);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.villainStrategy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.villainStrategyText {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre-line;
 }
 
 @media (max-width: 640px) {
@@ -53,5 +441,13 @@
 
   .image {
     object-fit: contain;
+  }
+
+  .actionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .affinityGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -10,7 +10,7 @@ export function ItemCardImage({ imageKey, alt }: ItemCardImageProps) {
 
   return (
     <div className="item-card__image-wrapper">
-      <img src={imageSrc} alt={alt} className="item-card__image" />
+      <img src={imageSrc} alt={alt} className="item-card__image" loading="lazy" />
     </div>
   );
 }

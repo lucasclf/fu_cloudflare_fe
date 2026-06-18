@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
 import { getNpcImageSrc } from "../lib/get-npc-image-src";
 import { renderNpcValue } from "../lib/npc-formatters";
 import type { NpcSummary } from "../types/npc";
+import panelStyles from "./npc-cards-panel.module.css";
 
 type Props = {
   npcs: NpcSummary[];
@@ -11,11 +11,11 @@ type Props = {
 
 export function NpcCardsPanel({ npcs, selectedNpcId, onSelectNpc }: Props) {
   if (npcs.length === 0) {
-    return <div style={styles.empty}>Nenhum NPC para exibir.</div>;
+    return <div className={panelStyles.empty}>Nenhum NPC para exibir.</div>;
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {npcs.map((npc) => (
         <NpcSummaryCard
           key={npc.id}
@@ -43,25 +43,29 @@ function NpcSummaryCard({
     <button
       type="button"
       onClick={onClick}
-      style={{
-        ...styles.card,
-        ...(selected ? styles.cardSelected : {}),
-      }}
+      className={[panelStyles.card, selected && panelStyles.cardSelected]
+        .filter(Boolean)
+        .join(" ")}
     >
-      <div style={styles.imageFrame}>
+      <div className={panelStyles.imageFrame}>
         {imageSrc ? (
-          <img src={imageSrc} alt={npc.name} style={styles.image} />
+          <img
+            src={imageSrc}
+            alt={npc.name}
+            className={panelStyles.image}
+            loading="lazy"
+          />
         ) : (
-          <div style={styles.imagePlaceholder}>Sem imagem</div>
+          <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
         )}
       </div>
 
-      <div style={styles.content}>
-        <h2 style={styles.title}>{npc.name}</h2>
+      <div className={panelStyles.content}>
+        <h2 className={panelStyles.title}>{npc.name}</h2>
 
-        <p style={styles.tagline}>“{renderNpcValue(npc.tagline)}”</p>
+        <p className={panelStyles.tagline}>“{renderNpcValue(npc.tagline)}”</p>
 
-        <div style={styles.infoGrid}>
+        <div className={panelStyles.infoGrid}>
           <Info label="Nível" value={npc.level} />
           <Info label="DES" value={npc.dexterity_die} />
           <Info label="AST" value={npc.insight_die} />
@@ -81,115 +85,9 @@ function Info({
   value: string | number | null;
 }) {
   return (
-    <div style={styles.info}>
-      <span style={styles.infoLabel}>{label}</span>
-      <span style={styles.infoValue}>{renderNpcValue(value)}</span>
+    <div className={panelStyles.info}>
+      <span className={panelStyles.infoLabel}>{label}</span>
+      <span className={panelStyles.infoValue}>{renderNpcValue(value)}</span>
     </div>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "18px",
-  },
-
-  card: {
-    minHeight: "260px",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    background: "#1c1826",
-    color: "inherit",
-    overflow: "hidden",
-    display: "grid",
-    gridTemplateRows: "180px 1fr",
-    cursor: "pointer",
-    padding: 0,
-    textAlign: "left",
-  },
-
-  cardSelected: {
-    borderColor: "#a855f7",
-    boxShadow: "0 0 0 1px rgba(168, 85, 247, 0.24)",
-  },
-
-  imageFrame: {
-    background: "#0b0a0f",
-    borderBottom: "1px solid #3d2d5c",
-    overflow: "hidden",
-  },
-
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    display: "block",
-    padding: "10px",
-    boxSizing: "border-box",
-  },
-
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#8b7aa8",
-    fontSize: "13px",
-    fontStyle: "italic",
-  },
-
-  content: {
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-
-  title: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "22px",
-    lineHeight: 1.15,
-  },
-
-  tagline: {
-    margin: 0,
-    color: "#8b7aa8",
-    fontSize: "13px",
-    lineHeight: 1.4,
-    fontStyle: "italic",
-  },
-
-  infoGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-    gap: "8px",
-    marginTop: "auto",
-  },
-
-  info: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "3px",
-  },
-
-  infoLabel: {
-    color: "#8b7aa8",
-    fontSize: "10px",
-    fontWeight: 800,
-  },
-
-  infoValue: {
-    color: "#e2d9f3",
-    fontSize: "14px",
-    fontWeight: 900,
-  },
-
-  empty: {
-    color: "#8b7aa8",
-    fontStyle: "italic",
-  },
-};

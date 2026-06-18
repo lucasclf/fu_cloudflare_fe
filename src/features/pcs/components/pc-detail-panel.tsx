@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import panelStyles from "./pc-detail-panel.module.css";
 import {
@@ -40,8 +40,8 @@ type CollapsibleSectionProps = {
 
 export function PcDetailPanel({ pc, onBackToList, onEdit }: Props) {
   return (
-    <div style={styles.wrapper}>
-      <button type="button" onClick={onBackToList} style={styles.backButton}>
+    <div className={panelStyles.wrapper}>
+      <button type="button" onClick={onBackToList} className={panelStyles.backButton}>
         ← Voltar para personagens
       </button>
       {onEdit && (
@@ -50,30 +50,30 @@ export function PcDetailPanel({ pc, onBackToList, onEdit }: Props) {
         </button>
       )}
 
-      <article className={panelStyles.heroCard} style={styles.heroCard}>
-        <div className={panelStyles.imageFrame} style={styles.imageFrame}>
+      <article className={panelStyles.heroCard}>
+        <div className={panelStyles.imageFrame}>
           {pc.img_key ? (
-            <img src={pc.img_key} alt={pc.name} style={styles.image} />
+            <img src={pc.img_key} alt={pc.name} className={panelStyles.image} />
           ) : (
-            <div style={styles.imagePlaceholder}>Sem imagem</div>
+            <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
           )}
         </div>
 
-        <div className={panelStyles.heroContent} style={styles.heroContent}>
-          <div style={styles.heroInfoBlock}>
-            <div style={styles.badges}>
-              <span style={styles.typeBadge}>Personagem</span>
-              <span style={styles.secondaryBadge}>Nível {pc.stats.level}</span>
-              <span style={styles.secondaryBadge}>
+        <div className={panelStyles.heroContent}>
+          <div className={panelStyles.heroInfoBlock}>
+            <div className={panelStyles.badges}>
+              <span className={panelStyles.typeBadge}>Personagem</span>
+              <span className={panelStyles.secondaryBadge}>Nível {pc.stats.level}</span>
+              <span className={panelStyles.secondaryBadge}>
                 {renderPcValue(pc.pronouns)}
               </span>
             </div>
 
-            <h2 style={styles.title}>{pc.name}</h2>
-            <p style={styles.tagline}>“{renderPcValue(pc.tagline)}”</p>
-            <p style={styles.description}>{renderPcValue(pc.description)}</p>
+            <h2 className={panelStyles.title}>{pc.name}</h2>
+            <p className={panelStyles.tagline}>“{renderPcValue(pc.tagline)}”</p>
+            <p className={panelStyles.description}>{renderPcValue(pc.description)}</p>
 
-            <div style={styles.identityGrid}>
+            <div className={panelStyles.identityGrid}>
               <Info label="Origem" value={pc.origin} />
               <Info label="Identidade" value={pc.identity} />
               <Info label="Tema" value={pc.theme} />
@@ -81,7 +81,7 @@ export function PcDetailPanel({ pc, onBackToList, onEdit }: Props) {
             </div>
           </div>
 
-          <div style={styles.heroStatsBlock}>
+          <div className={panelStyles.heroStatsBlock}>
             <PcStats pc={pc} />
           </div>
         </div>
@@ -108,49 +108,49 @@ function CollapsibleSection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section style={styles.collapsibleSection}>
+    <section className={panelStyles.collapsibleSection}>
       <button
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        style={styles.collapsibleHeader}
+        className={panelStyles.collapsibleHeader}
       >
-        <span style={styles.collapsibleHeaderMain}>
-          <span style={styles.collapsibleChevron}>{open ? "▾" : "▸"}</span>
-          <span style={styles.collapsibleTitle}>{title}</span>
+        <span className={panelStyles.collapsibleHeaderMain}>
+          <span className={panelStyles.collapsibleChevron}>{open ? "▾" : "▸"}</span>
+          <span className={panelStyles.collapsibleTitle}>{title}</span>
 
           {typeof count === "number" ? (
-            <span style={styles.collapsibleCount}>{count}</span>
+            <span className={panelStyles.collapsibleCount}>{count}</span>
           ) : null}
         </span>
 
-        <span style={styles.collapsibleAction}>
+        <span className={panelStyles.collapsibleAction}>
           {open ? "Fechar" : "Abrir"}
         </span>
       </button>
 
-      {open ? <div style={styles.collapsibleContent}>{children}</div> : null}
+      {open ? <div className={panelStyles.collapsibleContent}>{children}</div> : null}
     </section>
   );
 }
 
 function PcStats({ pc }: { pc: PcDetail }) {
   return (
-    <div style={styles.stats}>
-      <div style={styles.statRowFour}>
+    <div className={panelStyles.stats}>
+      <div className={panelStyles.statRowFour}>
         <Stat label="DES" value={pc.dexterity_die} />
         <Stat label="AST" value={pc.insight_die} />
         <Stat label="VIG" value={pc.might_die} />
         <Stat label="VON" value={pc.willpower_die} />
       </div>
 
-      <div style={styles.statRowThree}>
+      <div className={panelStyles.statRowThree}>
         <Stat label="PV" value={pc.stats.hp} />
         <Stat label="PM" value={pc.stats.mp} />
         <Stat label="PI" value={pc.stats.ip} />
       </div>
 
-      <div style={styles.statRowThree}>
+      <div className={panelStyles.statRowThree}>
         <Stat label="DEF" value={pc.stats.defense} />
         <Stat label="DEF M." value={pc.stats.magic_defense} />
         <Stat label="INI" value={pc.stats.initiative} />
@@ -191,9 +191,9 @@ function CapacitiesSection({ pc }: { pc: PcDetail }) {
       count={capacities.length + bonuses.length}
       defaultOpen={false}
     >
-      <div style={styles.badgeList}>
+      <div className={panelStyles.badgeList}>
         {[...bonuses, ...capacities].map((capacity) => (
-          <span key={capacity} style={styles.secondaryBadge}>
+          <span key={capacity} className={panelStyles.secondaryBadge}>
             {capacity}
           </span>
         ))}
@@ -211,13 +211,13 @@ function JobsSection({ jobs }: { jobs: PcJob[] }) {
     <CollapsibleSection title="Classes" count={jobs.length}>
       <div className={panelStyles.cardGridTwo}>
         {jobs.map((job) => (
-          <article key={job.id} style={styles.smallCard}>
-            <div style={styles.cardHeader}>
-              <h3 style={styles.cardTitle}>{job.name}</h3>
-              <span style={styles.secondaryBadge}>Nível {job.level}</span>
+          <article key={job.id} className={panelStyles.smallCard}>
+            <div className={panelStyles.cardHeader}>
+              <h3 className={panelStyles.cardTitle}>{job.name}</h3>
+              <span className={panelStyles.secondaryBadge}>Nível {job.level}</span>
             </div>
 
-            <p style={styles.tagline}>{renderPcValue(job.tagline)}</p>
+            <p className={panelStyles.tagline}>{renderPcValue(job.tagline)}</p>
           </article>
         ))}
       </div>
@@ -232,27 +232,27 @@ function PowersSection({ powers }: { powers: PcPower[] }) {
 
   return (
     <CollapsibleSection title="Poderes" count={powers.length}>
-      <div style={styles.list}>
+      <div className={panelStyles.list}>
         {powers.map((power) => (
-          <article key={power.id} style={styles.smallCard}>
-            <div style={styles.cardHeader}>
-              <h3 style={styles.cardTitle}>{power.name}</h3>
+          <article key={power.id} className={panelStyles.smallCard}>
+            <div className={panelStyles.cardHeader}>
+              <h3 className={panelStyles.cardTitle}>{power.name}</h3>
 
-              <div style={styles.badges}>
-                <span style={styles.secondaryBadge}>
+              <div className={panelStyles.badges}>
+                <span className={panelStyles.secondaryBadge}>
                   {formatPowerType(power.type)}
                 </span>
-                <span style={styles.secondaryBadge}>Nível {power.level}</span>
-                <span style={styles.secondaryBadge}>
+                <span className={panelStyles.secondaryBadge}>Nível {power.level}</span>
+                <span className={panelStyles.secondaryBadge}>
                   Máx. {power.max_level}
                 </span>
                 {isTruthyFlag(power.is_global) ? (
-                  <span style={styles.secondaryBadge}>Global</span>
+                  <span className={panelStyles.secondaryBadge}>Global</span>
                 ) : null}
               </div>
             </div>
 
-            <p style={styles.text}>{power.description}</p>
+            <p className={panelStyles.text}>{power.description}</p>
           </article>
         ))}
       </div>
@@ -314,33 +314,33 @@ function isMonsterSpell(spell: PcSpell): boolean {
 
 function SpellCard({ spell }: { spell: PcSpell | PcArcana }) {
   return (
-    <article style={styles.smallCard}>
-      <div style={styles.cardHeader}>
-        <h3 style={styles.cardTitle}>{spell.name}</h3>
+    <article className={panelStyles.smallCard}>
+      <div className={panelStyles.cardHeader}>
+        <h3 className={panelStyles.cardTitle}>{spell.name}</h3>
 
-        <div style={styles.badges}>
-          <span style={styles.secondaryBadge}>
+        <div className={panelStyles.badges}>
+          <span className={panelStyles.secondaryBadge}>
             {isMonsterSpell(spell) ? "Monstro" : "Classe"}
           </span>
 
           {isTruthyFlag(spell.is_offensive) ? (
-            <span style={styles.offensiveBadge}>Ofensiva</span>
+            <span className={panelStyles.offensiveBadge}>Ofensiva</span>
           ) : (
-            <span style={styles.secondaryBadge}>Suporte</span>
+            <span className={panelStyles.secondaryBadge}>Suporte</span>
           )}
 
           {spell.cost ? (
-            <span style={styles.secondaryBadge}>{spell.cost}</span>
+            <span className={panelStyles.secondaryBadge}>{spell.cost}</span>
           ) : null}
         </div>
       </div>
 
-      <div style={styles.identityGrid}>
+      <div className={panelStyles.identityGrid}>
         <Info label="Alvo" value={spell.target} />
         <Info label="Duração" value={spell.duration} />
       </div>
 
-      <p style={styles.text}>{spell.description}</p>
+      <p className={panelStyles.text}>{spell.description}</p>
     </article>
   );
 }
@@ -409,31 +409,32 @@ function ItemCard({
   const details = getItemDetails(item);
 
   return (
-    <article style={styles.itemCard}>
-      <div style={styles.itemImageFrame}>
+    <article className={panelStyles.itemCard}>
+      <div className={panelStyles.itemImageFrame}>
         <img
           src={getItemImageSrc(item.img_key)}
           alt={item.name}
-          style={styles.itemImage}
+          className={panelStyles.itemImage}
+          loading="lazy"
         />
       </div>
 
-      <div style={styles.itemContent}>
-        <div style={styles.cardHeader}>
-          <h3 style={styles.cardTitle}>{item.name}</h3>
+      <div className={panelStyles.itemContent}>
+        <div className={panelStyles.cardHeader}>
+          <h3 className={panelStyles.cardTitle}>{item.name}</h3>
 
-          <div style={styles.badges}>
-            <span style={styles.secondaryBadge}>
+          <div className={panelStyles.badges}>
+            <span className={panelStyles.secondaryBadge}>
               {formatItemType(item.item_type)}
             </span>
-            <span style={styles.secondaryBadge}>{headerLabel}</span>
+            <span className={panelStyles.secondaryBadge}>{headerLabel}</span>
           </div>
         </div>
 
         {details.length > 0 ? (
-          <div style={styles.itemDetailsLine}>
+          <div className={panelStyles.itemDetailsLine}>
             {details.map((detail) => (
-              <span key={detail} style={styles.itemDetailText}>
+              <span key={detail} className={panelStyles.itemDetailText}>
                 {detail}
               </span>
             ))}
@@ -441,7 +442,7 @@ function ItemCard({
         ) : null}
 
         {item.description ? (
-          <p style={styles.text}>{item.description}</p>
+          <p className={panelStyles.text}>{item.description}</p>
         ) : null}
       </div>
     </article>
@@ -478,33 +479,34 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
           return (
             <article
               key={`${bond.target_type}-${bond.target_id}-${index}`}
-              style={styles.bondCard}
+              className={panelStyles.bondCard}
             >
-              <div style={styles.bondImageFrame}>
+              <div className={panelStyles.bondImageFrame}>
                 {imageSrc ? (
                   <img
                     src={imageSrc}
                     alt={targetTitle}
-                    style={styles.bondImage}
+                    className={panelStyles.bondImage}
+                    loading="lazy"
                   />
                 ) : (
-                  <span style={styles.bondImagePlaceholder}>Sem imagem</span>
+                  <span className={panelStyles.bondImagePlaceholder}>Sem imagem</span>
                 )}
               </div>
 
-              <div style={styles.bondContent}>
-                <div style={styles.cardHeader}>
-                  <h3 style={styles.cardTitle}>{targetTitle}</h3>
+              <div className={panelStyles.bondContent}>
+                <div className={panelStyles.cardHeader}>
+                  <h3 className={panelStyles.cardTitle}>{targetTitle}</h3>
 
-                  <span style={styles.secondaryBadge}>
+                  <span className={panelStyles.secondaryBadge}>
                     {formatTargetType(bond.target_type)}
                   </span>
                 </div>
 
                 {axes.length > 0 ? (
-                  <div style={styles.badgeList}>
+                  <div className={panelStyles.badgeList}>
                     {axes.map((axis) => (
-                      <span key={axis} style={styles.secondaryBadge}>
+                      <span key={axis} className={panelStyles.secondaryBadge}>
                         {axis}
                       </span>
                     ))}
@@ -512,7 +514,7 @@ function BondsSection({ bonds }: { bonds: PcBond[] }) {
                 ) : null}
 
                 {bond.description ? (
-                  <p style={styles.text}>{bond.description}</p>
+                  <p className={panelStyles.text}>{bond.description}</p>
                 ) : null}
               </div>
             </article>
@@ -577,9 +579,9 @@ function Info({
   value: string | number | null | undefined;
 }) {
   return (
-    <div style={styles.info}>
-      <span style={styles.infoLabel}>{label}</span>
-      <span style={styles.infoValue}>{renderPcValue(value)}</span>
+    <div className={panelStyles.info}>
+      <span className={panelStyles.infoLabel}>{label}</span>
+      <span className={panelStyles.infoValue}>{renderPcValue(value)}</span>
     </div>
   );
 }
@@ -592,407 +594,9 @@ function Stat({
   value: string | number | null | undefined;
 }) {
   return (
-    <div style={styles.stat}>
-      <span style={styles.statLabel}>{label}</span>
-      <span style={styles.statValue}>{renderPcValue(value)}</span>
+    <div className={panelStyles.stat}>
+      <span className={panelStyles.statLabel}>{label}</span>
+      <span className={panelStyles.statValue}>{renderPcValue(value)}</span>
     </div>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "22px",
-  },
-
-  backButton: {
-    alignSelf: "flex-start",
-    border: "1px solid #3d2d5c",
-    borderRadius: "8px",
-    background: "#131018",
-    color: "#a855f7",
-    padding: "9px 12px",
-    cursor: "pointer",
-    fontSize: "13px",
-    fontWeight: 800,
-  },
-
-  heroCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "12px",
-    overflow: "hidden",
-  },
-
-  imageFrame: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    display: "block",
-    padding: "16px",
-    boxSizing: "border-box",
-  },
-
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#8b7aa8",
-    fontSize: "13px",
-    fontStyle: "italic",
-  },
-
-  heroContent: {},
-
-  heroInfoBlock: {
-    padding: "26px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-    borderBottom: "1px solid #3d2d5c",
-  },
-
-  heroStatsBlock: {
-    padding: "22px 26px",
-    display: "flex",
-    alignItems: "center",
-  },
-
-  title: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "34px",
-    lineHeight: 1.05,
-  },
-
-  tagline: {
-    margin: 0,
-    color: "#8b7aa8",
-    fontSize: "14px",
-    lineHeight: 1.5,
-    fontStyle: "italic",
-  },
-
-  description: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "15px",
-    lineHeight: 1.65,
-    whiteSpace: "pre-line",
-  },
-
-  badges: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-  },
-
-  badgeList: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-  },
-
-  typeBadge: {
-    border: "1px solid #7c3aed",
-    borderRadius: "999px",
-    background: "#1c1826",
-    color: "#a855f7",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  secondaryBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#8b7aa8",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  offensiveBadge: {
-    border: "1px solid rgba(248, 113, 113, 0.48)",
-    borderRadius: "999px",
-    background: "rgba(127, 29, 29, 0.22)",
-    color: "#fca5a5",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  identityGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: "8px",
-  },
-
-  info: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "8px",
-    background: "#0b0a0f",
-    padding: "8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-  },
-
-  infoLabel: {
-    color: "#8b7aa8",
-    fontSize: "10px",
-    fontWeight: 800,
-    textTransform: "uppercase",
-  },
-
-  infoValue: {
-    color: "#e2d9f3",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  stats: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-  },
-
-  statRowFour: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "10px",
-  },
-
-  statRowThree: {
-    display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "10px",
-  },
-
-  stat: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "5px",
-  },
-
-  statLabel: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 800,
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-  },
-
-  statValue: {
-    color: "#e2d9f3",
-    fontSize: "18px",
-    fontWeight: 900,
-    lineHeight: 1,
-  },
-
-  collapsibleSection: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    background: "#0b0a0f",
-    overflow: "hidden",
-  },
-
-  collapsibleHeader: {
-    width: "100%",
-    border: 0,
-    borderBottom: "1px solid #3d2d5c",
-    background: "#1c1826",
-    color: "#e2d9f3",
-    padding: "13px 16px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    cursor: "pointer",
-    textAlign: "left",
-  },
-
-  collapsibleHeaderMain: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-
-  collapsibleChevron: {
-    color: "#a855f7",
-    width: "16px",
-    display: "inline-flex",
-    justifyContent: "center",
-  },
-
-  collapsibleTitle: {
-    color: "#c084fc",
-    fontSize: "16px",
-    fontWeight: 800,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase",
-  },
-
-  collapsibleCount: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#8b7aa8",
-    padding: "2px 8px",
-    fontSize: "11px",
-    fontWeight: 800,
-  },
-
-  collapsibleAction: {
-    color: "#8b7aa8",
-    fontSize: "12px",
-    fontWeight: 800,
-    textTransform: "uppercase",
-  },
-
-  collapsibleContent: {
-    padding: "16px",
-  },
-
-  cardGridTwo: {},
-
-  list: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-
-  smallCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-
-  cardHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-  },
-
-  cardTitle: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "18px",
-    lineHeight: 1.15,
-  },
-
-  text: {
-    margin: 0,
-    color: "#e2d9f3",
-    fontSize: "14px",
-    lineHeight: 1.55,
-    whiteSpace: "pre-line",
-  },
-
-  itemCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "82px minmax(0, 1fr)",
-    minHeight: "120px",
-  },
-
-  itemImageFrame: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "8px",
-  },
-
-  itemImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    display: "block",
-  },
-
-  itemContent: {
-    padding: "12px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  itemDetailsLine: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "5px 9px",
-    color: "#e2d9f3",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-
-  itemDetailText: {
-    display: "inline-flex",
-  },
-
-  bondCard: {
-    background: "#131018",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "96px minmax(0, 1fr)",
-    minHeight: "128px",
-  },
-
-  bondImageFrame: {
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "8px",
-  },
-
-  bondImagePlaceholder: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontStyle: "italic",
-    textAlign: "center",
-    lineHeight: 1.2,
-  },
-
-  bondImage: {
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    display: "block",
-  },
-
-  bondContent: {
-    padding: "14px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-  },
-};

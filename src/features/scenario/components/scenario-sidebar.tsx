@@ -1,4 +1,5 @@
-import { useMemo, useState, type CSSProperties } from "react";
+import { useMemo, useState } from "react";
+import panelStyles from "./scenario-sidebar.module.css";
 import {
   formatRelationType,
   isFaction,
@@ -64,11 +65,11 @@ export function ScenarioSidebar({
   }, [entities]);
 
   if (locations.length === 0) {
-    return <div style={styles.empty}>Nenhum local encontrado.</div>;
+    return <div className={panelStyles.empty}>Nenhum local encontrado.</div>;
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div className={panelStyles.wrapper}>
       {locations.map((location) => {
         const relatedFactions = factionsByLocationUid.get(location.uid) ?? [];
         const expanded = expandedLocationUid === location.uid;
@@ -109,38 +110,38 @@ function LocationItem({
   onToggle,
 }: LocationItemProps) {
   return (
-    <div style={styles.locationBlock}>
+    <div className={panelStyles.locationBlock}>
       <button
         type="button"
         onClick={() => {
           onSelectEntity(location.uid);
           onToggle();
         }}
-        style={{
-          ...styles.locationButton,
-          ...(selectedEntityUid === location.uid
-            ? styles.locationButtonActive
-            : {}),
-        }}
+        className={[
+          panelStyles.locationButton,
+          selectedEntityUid === location.uid && panelStyles.locationButtonActive,
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
-        <span style={styles.locationContent}>
-          <span style={styles.locationName}>{location.name}</span>
+        <span className={panelStyles.locationContent}>
+          <span className={panelStyles.locationName}>{location.name}</span>
 
           {location.tagline ? (
-            <span style={styles.locationTagline}>{location.tagline}</span>
+            <span className={panelStyles.locationTagline}>{location.tagline}</span>
           ) : null}
         </span>
 
-        <span style={styles.locationMeta}>
+        <span className={panelStyles.locationMeta}>
           {relatedFactions.length}
-          <span aria-hidden="true" style={styles.chevron}>
+          <span aria-hidden="true" className={panelStyles.chevron}>
             {expanded ? "▾" : "▸"}
           </span>
         </span>
       </button>
 
       {expanded ? (
-        <div style={styles.factionList}>
+        <div className={panelStyles.factionList}>
           {relatedFactions.length > 0 ? (
             relatedFactions.map((faction) => (
               <FactionSubItem
@@ -152,7 +153,7 @@ function LocationItem({
               />
             ))
           ) : (
-            <div style={styles.noRelations}>Nenhuma facção relacionada.</div>
+            <div className={panelStyles.noRelations}>Nenhuma facção relacionada.</div>
           )}
         </div>
       ) : null}
@@ -184,17 +185,19 @@ function FactionSubItem({
     <button
       type="button"
       onClick={onSelect}
-      style={{
-        ...styles.factionSubItem,
-        ...(selected ? styles.factionSubItemActive : {}),
-      }}
+      className={[
+        panelStyles.factionSubItem,
+        selected && panelStyles.factionSubItemActive,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
-      <div style={styles.factionName}>{faction.name}</div>
+      <div className={panelStyles.factionName}>{faction.name}</div>
 
       {relationTypes.length > 0 ? (
-        <div style={styles.relationBadges}>
+        <div className={panelStyles.relationBadges}>
           {relationTypes.map((relationType) => (
-            <span key={relationType} style={styles.relationBadge}>
+            <span key={relationType} className={panelStyles.relationBadge}>
               {relationType}
             </span>
           ))}
@@ -203,134 +206,3 @@ function FactionSubItem({
     </button>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  wrapper: {
-    padding: "0 12px 16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  locationBlock: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "8px",
-    overflow: "hidden",
-    background: "#0b0a0f",
-  },
-
-  locationButton: {
-    width: "100%",
-    border: 0,
-    background: "transparent",
-    color: "#e2d9f3",
-    padding: "10px",
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    gap: "10px",
-    cursor: "pointer",
-    textAlign: "left",
-  },
-
-  locationContent: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "4px",
-    minWidth: 0,
-  },
-
-  locationName: {
-    color: "#e2d9f3",
-    fontSize: "13px",
-    fontWeight: 800,
-    lineHeight: 1.2,
-  },
-
-  locationTagline: {
-    color: "#8b7aa8",
-    fontSize: "12px",
-    lineHeight: 1.35,
-  },
-
-  locationMeta: {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    color: "#8b7aa8",
-    fontSize: "12px",
-    fontWeight: 700,
-    flexShrink: 0,
-  },
-
-  chevron: {
-    color: "#a855f7",
-    fontSize: "12px",
-  },
-
-  factionList: {
-    borderTop: "1px solid #3d2d5c",
-    background: "#131018",
-    padding: "8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  },
-
-  factionSubItem: {
-    border: 0,
-    borderLeft: "2px solid #7c3aed",
-    background: "transparent",
-    padding: "4px 0 4px 8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-    cursor: "pointer",
-    textAlign: "left",
-  },
-
-  factionName: {
-    color: "#e2d9f3",
-    fontSize: "12px",
-    fontWeight: 700,
-  },
-
-  relationBadges: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "5px",
-  },
-
-  relationBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    color: "#a855f7",
-    background: "#1c1826",
-    padding: "2px 7px",
-    fontSize: "10px",
-    fontWeight: 700,
-  },
-
-  noRelations: {
-    color: "#8b7aa8",
-    fontSize: "12px",
-    fontStyle: "italic",
-  },
-
-  empty: {
-    padding: "12px 16px 16px",
-    color: "#8b7aa8",
-    fontStyle: "italic",
-  },
-
-  locationButtonActive: {
-    background: "#1c1826",
-    boxShadow: "inset 3px 0 0 #a855f7",
-  },
-
-  factionSubItemActive: {
-    background: "#1c1826",
-    borderLeftColor: "#a855f7",
-    borderRadius: "0 6px 6px 0",
-  },
-};
