@@ -1,8 +1,11 @@
-import type { CSSProperties } from "react";
+import { LoadMoreButton } from "@/shared/components/load-more-button";
+import { usePaginatedList } from "@/shared/hooks/use-paginated-list";
 import { getMonsterImageSrc } from "../lib/get-monster-image-src";
 import { formatMonsterType } from "../lib/monster-formatters";
 import type { MonsterSummary } from "../types/monster";
 import panelStyles from "./monster-cards-panel.module.css";
+
+const PAGE_SIZE = 24;
 
 type Props = {
   monsters: MonsterSummary[];
@@ -15,21 +18,32 @@ export function MonsterCardsPanel({
   selectedMonsterId,
   onSelectMonster,
 }: Props) {
+  const { visibleItems, hasMore, remaining, loadMore } = usePaginatedList(
+    monsters,
+    PAGE_SIZE,
+  );
+
   if (monsters.length === 0) {
-    return <div style={styles.empty}>Nenhum monstro para exibir.</div>;
+    return <div className={panelStyles.empty}>Nenhum monstro para exibir.</div>;
   }
 
   return (
-    <div className={panelStyles.wrapper}>
-      {monsters.map((monster) => (
-        <MonsterSummaryCard
-          key={monster.id}
-          monster={monster}
-          selected={selectedMonsterId === monster.id}
-          onClick={() => onSelectMonster(monster.id)}
-        />
-      ))}
-    </div>
+    <>
+      <div className={panelStyles.wrapper}>
+        {visibleItems.map((monster) => (
+          <MonsterSummaryCard
+            key={monster.id}
+            monster={monster}
+            selected={selectedMonsterId === monster.id}
+            onClick={() => onSelectMonster(monster.id)}
+          />
+        ))}
+      </div>
+
+      {hasMore ? (
+        <LoadMoreButton remaining={remaining} onClick={loadMore} />
+      ) : null}
+    </>
   );
 }
 
@@ -50,31 +64,35 @@ function MonsterSummaryCard({
     <button
       type="button"
       onClick={onClick}
-      style={{
-        ...styles.card,
-        ...(selected ? styles.cardSelected : {}),
-      }}
+      className={[panelStyles.card, selected && panelStyles.cardSelected]
+        .filter(Boolean)
+        .join(" ")}
     >
-      <div style={styles.imageFrame}>
+      <div className={panelStyles.imageFrame}>
         {imageSrc ? (
-          <img src={imageSrc} alt={monster.name} style={styles.image} />
+          <img
+            src={imageSrc}
+            alt={monster.name}
+            className={panelStyles.image}
+            loading="lazy"
+          />
         ) : (
-          <div style={styles.imagePlaceholder}>Sem imagem</div>
+          <div className={panelStyles.imagePlaceholder}>Sem imagem</div>
         )}
       </div>
 
-      <div style={styles.content}>
-        <div style={styles.badges}>
-          <span style={styles.typeBadge}>
+      <div className={panelStyles.content}>
+        <div className={panelStyles.badges}>
+          <span className={panelStyles.typeBadge}>
             {formatMonsterType(monster.monster_type)}
           </span>
 
-          <span style={styles.levelBadge}>Nível {monster.level}</span>
+          <span className={panelStyles.levelBadge}>Nível {monster.level}</span>
         </div>
 
-        <h2 style={styles.title}>{monster.name}</h2>
+        <h2 className={panelStyles.title}>{monster.name}</h2>
 
-        <div style={styles.diceGrid}>
+        <div className={panelStyles.diceGrid}>
           <Die label="DES" value={monster.dexterity_die} />
           <Die label="AST" value={monster.insight_die} />
           <Die label="VIG" value={monster.might_die} />
@@ -87,131 +105,9 @@ function MonsterSummaryCard({
 
 function Die({ label, value }: { label: string; value: string }) {
   return (
-    <div style={styles.die}>
-      <span style={styles.dieLabel}>{label}</span>
-      <span style={styles.dieValue}>{value}</span>
+    <div className={panelStyles.die}>
+      <span className={panelStyles.dieLabel}>{label}</span>
+      <span className={panelStyles.dieValue}>{value}</span>
     </div>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  card: {
-    minHeight: "210px",
-    border: "1px solid #3d2d5c",
-    borderRadius: "10px",
-    background: "#131018",
-    color: "inherit",
-    overflow: "hidden",
-    display: "grid",
-    gridTemplateColumns: "34% 1fr",
-    cursor: "pointer",
-    padding: 0,
-    textAlign: "left",
-  },
-
-  cardSelected: {
-    borderColor: "#a855f7",
-    boxShadow: "0 0 0 1px rgba(168, 85, 247, 0.24)",
-  },
-
-  imageFrame: {
-    minHeight: "210px",
-    background: "#0b0a0f",
-    borderRight: "1px solid #3d2d5c",
-    overflow: "hidden",
-  },
-
-  image: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-
-  imagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    minHeight: "210px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#8b7aa8",
-    fontSize: "13px",
-    fontStyle: "italic",
-  },
-
-  content: {
-    padding: "16px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
-
-  badges: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "8px",
-  },
-
-  typeBadge: {
-    border: "1px solid #7c3aed",
-    borderRadius: "999px",
-    background: "#1c1826",
-    color: "#a855f7",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  levelBadge: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "999px",
-    background: "#0b0a0f",
-    color: "#8b7aa8",
-    padding: "4px 10px",
-    fontSize: "12px",
-    fontWeight: 800,
-  },
-
-  title: {
-    margin: 0,
-    color: "#c084fc",
-    fontSize: "22px",
-    lineHeight: 1.15,
-  },
-
-  diceGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "8px",
-    marginTop: "auto",
-  },
-
-  die: {
-    border: "1px solid #3d2d5c",
-    borderRadius: "8px",
-    background: "#0b0a0f",
-    padding: "8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "3px",
-    alignItems: "center",
-  },
-
-  dieLabel: {
-    color: "#8b7aa8",
-    fontSize: "11px",
-    fontWeight: 800,
-  },
-
-  dieValue: {
-    color: "#e2d9f3",
-    fontSize: "15px",
-    fontWeight: 900,
-  },
-
-  empty: {
-    color: "#8b7aa8",
-    fontStyle: "italic",
-  },
-};

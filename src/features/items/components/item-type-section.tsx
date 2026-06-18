@@ -1,7 +1,11 @@
 import { CollapsibleSection } from "@/shared/components/collapsible-section";
+import { LoadMoreButton } from "@/shared/components/load-more-button";
+import { usePaginatedList } from "@/shared/hooks/use-paginated-list";
 import { ITEMS_CATALOG_CONFIG } from "../config/items-catalog-config";
 import type { Item, ItemType } from "../types/item";
 import { ItemCard } from "./item-card";
+
+const PAGE_SIZE = 20;
 
 type ItemTypeSectionProps = {
   itemType: ItemType;
@@ -21,6 +25,10 @@ export function ItemTypeSection({
   editableItemIds,
 }: ItemTypeSectionProps) {
   const sectionId = `item-section-${itemType}`;
+  const { visibleItems, hasMore, remaining, loadMore } = usePaginatedList(
+    items,
+    PAGE_SIZE,
+  );
 
   return (
     <CollapsibleSection
@@ -31,13 +39,17 @@ export function ItemTypeSection({
       onToggle={() => onToggle(itemType)}
       contentClassName="item-cards-panel__cards"
     >
-      {items.map((item) => (
+      {visibleItems.map((item) => (
         <ItemCard
           key={item.id}
           item={item}
           onEdit={onEditItem && editableItemIds?.has(item.id) ? () => onEditItem(item) : undefined}
         />
       ))}
+
+      {hasMore ? (
+        <LoadMoreButton remaining={remaining} onClick={loadMore} />
+      ) : null}
     </CollapsibleSection>
   );
 }
