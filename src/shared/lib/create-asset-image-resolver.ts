@@ -1,3 +1,5 @@
+import { isExternalImageUrl } from "./is-external-image-url";
+
 const DEFAULT_IMAGE_EXTENSIONS = ["png", "jpg", "jpeg", "webp"] as const;
 
 type ImageExtension = (typeof DEFAULT_IMAGE_EXTENSIONS)[number];
@@ -24,6 +26,10 @@ export function createAssetImageResolver<TFallback extends string | null>({
   return function resolveAssetImage(
     assetKey: string | null | undefined,
   ): string | TFallback {
+    if (isExternalImageUrl(assetKey)) {
+      return assetKey as string;
+    }
+
     if (!assetKey || assetKey.trim().length === 0) {
       return placeholderSrc;
     }

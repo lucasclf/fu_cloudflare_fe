@@ -4,6 +4,8 @@ import { CatalogLayout } from "@/features/catalog/components/catalog-layout";
 import { ErrorState } from "@/shared/components/error-state";
 import { LoadingState } from "@/shared/components/loading-state";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
+import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
 import { usePublicScenarioEntities } from "@/features/scenario/hooks/use-public-scenario-entities";
 import { SCENARIO_CATALOG_CONFIG } from "@/features/scenario/config/scenario-catalog-config";
 import { ScenarioCardsPanel } from "@/features/scenario/components/scenario-cards-panel";
@@ -275,11 +277,13 @@ function LocationEditModal({ campaignId, entity, onClose, onSuccess }: LocationE
   const [name, setName] = useState(entity.name);
   const [tagline, setTagline] = useState(entity.tagline ?? "");
   const [description, setDescription] = useState(entity.description ?? "");
-  const [imgKey, setImgKey] = useState(entity.img_key ?? "");
+  const [imgUrl, setImgUrl] = useState<string | null>(entity.img_key ?? null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [locationType, setLocationType] = useState<LocationType>((entity.subtype as LocationType | null) ?? "other");
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { uploadFile } = useCampaignImageUpload(campaignId, "location");
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -298,7 +302,7 @@ function LocationEditModal({ campaignId, entity, onClose, onSuccess }: LocationE
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
-        img_key: imgKey.trim() || null,
+        img_key: imgUrl,
         location_type: locationType,
         visible_to_players: visibleToPlayers,
       });
@@ -310,7 +314,7 @@ function LocationEditModal({ campaignId, entity, onClose, onSuccess }: LocationE
     }
   }
 
-  const canSubmit = name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "";
+  const canSubmit = name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "" && !uploadingImage;
 
   return (
     <div
@@ -389,14 +393,14 @@ function LocationEditModal({ campaignId, entity, onClose, onSuccess }: LocationE
             </div>
 
             <div className="manage-form__field">
-              <label htmlFor="lo-img" className="manage-form__label">Chave de imagem</label>
-              <input
-                id="lo-img"
-                type="text"
-                className="manage-form__input"
-                value={imgKey}
-                onChange={(e) => setImgKey(e.target.value)}
-                placeholder="slug_da_imagem (opcional)"
+              <ImageUploadField
+                id="lo-image"
+                label="Imagem"
+                value={imgUrl}
+                onChange={setImgUrl}
+                onUploadFile={uploadFile}
+                uploading={uploadingImage}
+                onUploadingChange={setUploadingImage}
               />
             </div>
 
@@ -463,11 +467,13 @@ function FactionEditModal({ campaignId, entity, onClose, onSuccess }: FactionEdi
   const [name, setName] = useState(entity.name);
   const [tagline, setTagline] = useState(entity.tagline ?? "");
   const [description, setDescription] = useState(entity.description ?? "");
-  const [imgKey, setImgKey] = useState(entity.img_key ?? "");
+  const [imgUrl, setImgUrl] = useState<string | null>(entity.img_key ?? null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [factionType, setFactionType] = useState<FactionType>((entity.subtype as FactionType | null) ?? "other");
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { uploadFile } = useCampaignImageUpload(campaignId, "faction");
 
   // Location relations state
   const [locationOptions, setLocationOptions] = useState<LocationOption[]>([]);
@@ -524,7 +530,7 @@ function FactionEditModal({ campaignId, entity, onClose, onSuccess }: FactionEdi
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
-        img_key: imgKey.trim() || null,
+        img_key: imgUrl,
         faction_type: factionType,
         faction_location_relation: relations,
         visible_to_players: visibleToPlayers,
@@ -537,7 +543,7 @@ function FactionEditModal({ campaignId, entity, onClose, onSuccess }: FactionEdi
     }
   }
 
-  const canSubmit = name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "";
+  const canSubmit = name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "" && !uploadingImage;
 
   return (
     <div
@@ -616,14 +622,14 @@ function FactionEditModal({ campaignId, entity, onClose, onSuccess }: FactionEdi
             </div>
 
             <div className="manage-form__field">
-              <label htmlFor="fa-img" className="manage-form__label">Chave de imagem</label>
-              <input
-                id="fa-img"
-                type="text"
-                className="manage-form__input"
-                value={imgKey}
-                onChange={(e) => setImgKey(e.target.value)}
-                placeholder="slug_da_imagem (opcional)"
+              <ImageUploadField
+                id="fa-image"
+                label="Imagem"
+                value={imgUrl}
+                onChange={setImgUrl}
+                onUploadFile={uploadFile}
+                uploading={uploadingImage}
+                onUploadingChange={setUploadingImage}
               />
             </div>
 

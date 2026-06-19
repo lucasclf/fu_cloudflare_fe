@@ -1,3 +1,4 @@
+import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
 import type { ScenarioEntityType } from "../types/scenario";
 
 const scenarioImageModules = import.meta.glob(
@@ -57,6 +58,10 @@ export function getScenarioImageSrc(
   type: ScenarioEntityType,
   imgKey: string | null,
 ): string | null {
+  if (isExternalImageUrl(imgKey)) {
+    return imgKey;
+  }
+
   if (!imgKey) {
     return null;
   }

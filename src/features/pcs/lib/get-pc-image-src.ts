@@ -1,3 +1,5 @@
+import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
+
 const PC_PLACEHOLDER_SRC = new URL(
   "../../../assets/characters/pcs/placeholder.png",
   import.meta.url,
@@ -35,6 +37,10 @@ const pcImageByKey = Object.entries(pcImageModules).reduce<
 }, {});
 
 export function getPcImageSrc(imgKey: string | null): string {
+  if (isExternalImageUrl(imgKey)) {
+    return imgKey as string;
+  }
+
   if (!imgKey) {
     return PC_PLACEHOLDER_SRC;
   }
@@ -43,6 +49,10 @@ export function getPcImageSrc(imgKey: string | null): string {
 }
 
 export function getPcPortraitImageSrc(imgKey: string | null): string {
+  if (isExternalImageUrl(imgKey)) {
+    return imgKey as string;
+  }
+
   if (!imgKey) {
     return PC_PLACEHOLDER_SRC;
   }

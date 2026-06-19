@@ -1,9 +1,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createNpc } from "../../api/create-npc";
 import { usePublicItems } from "@/features/items/hooks/use-public-items";
-import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
+import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
 import type {
   AttributeDie,
   NpcSpecialRuleType,
@@ -78,6 +79,8 @@ export function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
     accessory: null,
   });
   const [specialRules, setSpecialRules] = useState<NpcSpecialRuleDraft[]>([]);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,10 +89,12 @@ export function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const mainHandOptions = allItems.filter((item) => item.itemType === "arma" || item.itemType === "escudo");
   const armorOptions = allItems.filter((item) => item.itemType === "armadura");
   const accessoryOptions = allItems.filter((item) => item.itemType === "acessorio");
+  const { uploadFile } = useCampaignImageUpload(campaignId, "npc");
 
   const canSubmit =
     name.trim() !== "" &&
     description.trim() !== "" &&
+    !uploadingImage &&
     inventory.every((i) => i.item_id > 0 && i.quantity >= 1) &&
     (!equipmentEnabled ||
       equipment.main_hand || equipment.off_hand || equipment.armor || equipment.accessory) &&
@@ -185,7 +190,7 @@ export function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         initiative: parseNum(initiative),
         defense: defenseMode === "dex_bonus" ? computeDieBonus(dexDie, defenseBonus) : parseNum(defense),
         magic_defense: magicDefenseMode === "ins_bonus" ? computeDieBonus(insDie, magicDefenseBonus) : parseNum(magicDefense),
-        img_key: toSnakeCaseKey(name.trim()) || null,
+        img_key: imgUrl,
         visible_to_players: visibleToPlayers,
         specialRules: specialRules.map((rule) => ({
           type: rule.type,
@@ -236,6 +241,18 @@ export function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             className="manage-form__input"
             value={tagline}
             onChange={(e) => setTagline(e.target.value)}
+          />
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="n-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
           />
         </div>
 
@@ -559,7 +576,7 @@ export function NpcFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         </div>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {submitting ? "Criando..." : "Criar NPC"}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

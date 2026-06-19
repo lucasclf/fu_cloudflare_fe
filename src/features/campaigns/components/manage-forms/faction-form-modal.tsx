@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createFaction } from "../../api/create-faction";
 import { listLocations } from "../../api/list-locations";
-import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
+import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
 import type {
   FactionType,
   FactionLocationRelationType,
@@ -41,8 +42,11 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [locations, setLocations] = useState<LocationOption[]>([]);
   const [relations, setRelations] = useState<{ location_id: number; relation_type: FactionLocationRelationType }[]>([]);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { uploadFile } = useCampaignImageUpload(campaignId, "faction");
 
   useEffect(() => {
     let cancelled = false;
@@ -68,7 +72,7 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
 
   const canSubmit =
     name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "" &&
-    duplicateRelationIndices.size === 0;
+    !uploadingImage && duplicateRelationIndices.size === 0;
 
   function addRelation() {
     if (locations.length === 0) return;
@@ -93,7 +97,7 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
-        img_key: toSnakeCaseKey(name.trim()) || null,
+        img_key: imgUrl,
         faction_type: factionType,
         faction_location_relation: relations,
         visible_to_players: visibleToPlayers,
@@ -123,6 +127,18 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
             onChange={(e) => setName(e.target.value)}
             required
             autoFocus
+          />
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="fac-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
           />
         </div>
 
@@ -238,7 +254,7 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
         </div>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {submitting ? "Criando..." : "Criar facção"}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

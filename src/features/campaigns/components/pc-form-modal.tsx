@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createPc } from "../api/create-pc";
 import { updatePc } from "../api/update-pc";
 import { listCampaignItems } from "../api/list-items";
@@ -11,6 +12,7 @@ import { getPublicJobCatalog } from "@/features/jobs/api/get-public-job-catalog"
 import { getPublicPowers } from "@/features/powers/api/get-public-powers";
 import { getPublicSpells } from "@/features/spells/api/get-public-spells";
 import { getPublicItems } from "@/features/items/api/get-public-items";
+import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
 import type {
   AttributeDie,
   BondTargetType,
@@ -170,8 +172,11 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
   const [campaignNpcs, setCampaignNpcs] = useState<NpcSummary[]>([]);
   const [campaignMonsters, setCampaignMonsters] = useState<MonsterSummary[]>([]);
 
+  const [imgUrl, setImgUrl] = useState<string | null>(initialPc?.img_key ?? null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { uploadFile } = useCampaignImageUpload(campaignId, "pc");
 
   const [levelsInitialized, setLevelsInitialized] = useState(!initialPc);
 
@@ -354,6 +359,7 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
     origin.trim() !== "" &&
     identity.trim() !== "" &&
     theme.trim() !== "" &&
+    !uploadingImage &&
     inventory.every((i) => i.item_id !== null && i.quantity >= 1) &&
     bonds.every((b) => b.target_type === "freeform" ? b.target_name.trim() !== "" : b.target_id !== null);
 
@@ -394,6 +400,7 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
         identity: identity.trim(),
         theme: theme.trim(),
         money: money.trim() === "" ? 0 : Number(money),
+        img_key: imgUrl,
         dexterity_die: dexDie,
         insight_die: insDie,
         might_die: mgtDie,
@@ -449,6 +456,18 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
         <div className="manage-form__field">
           <label htmlFor="pc-tagline" className="manage-form__label">Tagline</label>
           <input id="pc-tagline" type="text" className="manage-form__input" value={tagline} onChange={(e) => setTagline(e.target.value)} />
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="pc-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
+          />
         </div>
 
         <div className="manage-form__field">
@@ -753,7 +772,7 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
         <Button type="button" variant="ghost" onClick={addBond}>+ Adicionar vínculo</Button>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {initialPc ? (submitting ? "Salvando..." : "Salvar") : (submitting ? "Criando..." : "Criar personagem")}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

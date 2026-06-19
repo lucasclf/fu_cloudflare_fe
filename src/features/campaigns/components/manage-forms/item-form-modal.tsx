@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createItem } from "../../api/create-item";
-import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
+import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
 import type { ItemType, WeaponCategory, DamageType } from "../../types/campaign";
 import { FormModal, type FormProps } from "./form-modal";
 
@@ -97,11 +98,13 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [initiative, setInitiative] = useState("");
 
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const canSubmit = name.trim() !== "";
-  const imgKey = name.trim() ? toSnakeCaseKey(name) : "";
+  const { uploadFile } = useCampaignImageUpload(campaignId, "item");
+  const canSubmit = name.trim() !== "" && !uploadingImage;
   const isWeapon = itemType === "arma";
   const hasDefenseFields = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
   const canBeMartial = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
@@ -116,7 +119,7 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         name: name.trim(),
         item_type: itemType,
         description: description.trim() || null,
-        img_key: imgKey || null,
+        img_key: imgUrl,
         cost: cost.trim() === "" ? null : Number(cost),
         weapon_category: isWeapon ? weaponCategory : null,
         accuracy: isWeapon ? buildDiceFormula([accuracyDie1, accuracyDie2], accuracyBonus) : null,
@@ -158,7 +161,18 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
             required
             autoFocus
           />
-          {imgKey ? <p className="manage-form__hint">Chave de imagem: {imgKey}</p> : null}
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="it-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
+          />
         </div>
 
         <div className="manage-form__row">
@@ -407,7 +421,7 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
         </div>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {submitting ? "Criando..." : "Criar item"}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

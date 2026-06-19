@@ -1,0 +1,46 @@
+.image-upload-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.image-upload-field__label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.image-upload-field__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.image-upload-field__preview {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.image-upload-field__input {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  max-width: 100%;
+}
+
+.image-upload-field__hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin: 0;
+}
+
+.image-upload-field__error {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  margin: 0;
+}

@@ -1,3 +1,5 @@
+import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
+
 const monsterImageModules = import.meta.glob(
   "../../../assets/characters/monsters/*.{png,jpg,jpeg,webp}",
   {
@@ -33,6 +35,10 @@ const monsterImageByKey = Object.entries(monsterImageModules).reduce<
 }, {});
 
 export function getMonsterImageSrc(imgKey: string | null): string | null {
+  if (isExternalImageUrl(imgKey)) {
+    return imgKey;
+  }
+
   if (!imgKey) {
     return null;
   }

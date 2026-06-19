@@ -1,8 +1,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createLocation } from "../../api/create-location";
-import { toSnakeCaseKey } from "@/shared/lib/text-formatters";
+import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
 import type { LocationType } from "../../types/campaign";
 import { FormModal, type FormProps } from "./form-modal";
 
@@ -22,11 +23,14 @@ export function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps)
   const [description, setDescription] = useState("");
   const [locationType, setLocationType] = useState<LocationType>("other");
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { uploadFile } = useCampaignImageUpload(campaignId, "location");
   const canSubmit =
-    name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "";
+    name.trim() !== "" && tagline.trim() !== "" && description.trim() !== "" && !uploadingImage;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -38,7 +42,7 @@ export function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps)
         name: name.trim(),
         tagline: tagline.trim(),
         description: description.trim(),
-        img_key: toSnakeCaseKey(name.trim()) || null,
+        img_key: imgUrl,
         location_type: locationType,
         visible_to_players: visibleToPlayers,
       });
@@ -67,6 +71,18 @@ export function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps)
             onChange={(e) => setName(e.target.value)}
             required
             autoFocus
+          />
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="loc-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
           />
         </div>
 
@@ -129,7 +145,7 @@ export function LocationFormModal({ campaignId, onClose, onSuccess }: FormProps)
         </div>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {submitting ? "Criando..." : "Criar local"}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

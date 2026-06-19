@@ -1,7 +1,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
+import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createMonster } from "../../api/create-monster";
+import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
 import type {
   AttributeDie,
   MonsterType,
@@ -181,8 +183,11 @@ export function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) 
   const [affinities, setAffinities] = useState<CreateMonsterAffinitiesInput>(DEFAULT_MONSTER_AFFINITIES);
   const [actions, setActions] = useState<MonsterActionFormState[]>([]);
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { uploadFile } = useCampaignImageUpload(campaignId, "monster");
 
   function addTrait() {
     setTraits((prev) => (prev.length >= 4 ? prev : [...prev, ""]));
@@ -245,6 +250,7 @@ export function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) 
     initiative !== "" &&
     defense !== "" &&
     magicDefense !== "" &&
+    !uploadingImage &&
     traits.every((trait) => trait.trim() !== "") &&
     actions.every((action) =>
       action.name.trim() !== "" &&
@@ -273,6 +279,7 @@ export function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) 
         initiative: Number(initiative),
         defense: Number(defense),
         magic_defense: Number(magicDefense),
+        img_key: imgUrl,
         is_villain: isVillain,
         ultima_points: isVillain ? Number(ultimaPoints) : 0,
         traits: traits.map((trait) => ({ trait: trait.trim() })),
@@ -313,6 +320,18 @@ export function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) 
             onChange={(e) => setName(e.target.value)}
             required
             autoFocus
+          />
+        </div>
+
+        <div className="manage-form__field">
+          <ImageUploadField
+            id="mo-image"
+            label="Imagem"
+            value={imgUrl}
+            onChange={setImgUrl}
+            onUploadFile={uploadFile}
+            uploading={uploadingImage}
+            onUploadingChange={setUploadingImage}
           />
         </div>
 
@@ -688,7 +707,7 @@ export function MonsterFormModal({ campaignId, onClose, onSuccess }: FormProps) 
         </div>
 
         <div className="manage-form__actions">
-          <Button type="submit" variant="primary" disabled={submitting || !canSubmit}>
+          <Button type="submit" variant="primary" disabled={submitting || uploadingImage || !canSubmit}>
             {submitting ? "Criando..." : "Criar monstro"}
           </Button>
           <Button type="button" variant="ghost" onClick={onClose} disabled={submitting}>

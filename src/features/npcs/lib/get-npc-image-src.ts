@@ -1,3 +1,5 @@
+import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
+
 const npcImageModules = import.meta.glob(
   "../../../assets/characters/npcs/*.{png,jpg,jpeg,webp}",
   {
@@ -30,6 +32,10 @@ const npcImageByKey = Object.entries(npcImageModules).reduce<
 }, {});
 
 export function getNpcImageSrc(imgKey: string | null): string | null {
+  if (isExternalImageUrl(imgKey)) {
+    return imgKey;
+  }
+
   if (!imgKey) {
     return null;
   }

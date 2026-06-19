@@ -131,6 +131,20 @@ export type UserSearchResult = {
   email: string;
 };
 
+// ─── Upload de imagens (Cloudinary) ────────────────────────────────────────
+
+export type UploadEntityType =
+  | "npc" | "pc" | "monster" | "item" | "location" | "faction";
+
+export type UploadSignatureDto = {
+  timestamp: number;
+  signature: string;
+  api_key: string;
+  cloud_name: string;
+  upload_preset: string;
+  folder: string;
+};
+
 // ─── Entity Creation Inputs ───────────────────────────────────────────────────
 
 export type AttributeDie = "d6" | "d8" | "d10" | "d12";
@@ -248,6 +262,7 @@ export type CreatePcInput = {
   insight_die: AttributeDie;
   might_die: AttributeDie;
   willpower_die: AttributeDie;
+  img_key?: string | null;
   jobs?: CreatePcJobInput[];
   powers?: CreatePcPowerInput[];
   spells?: number[];
@@ -340,6 +355,7 @@ export type CreateMonsterInput = {
   initiative: number;
   defense: number;
   magic_defense: number;
+  img_key?: string | null;
   is_villain?: boolean;
   ultima_points?: number;
   traits: { trait: string }[];
