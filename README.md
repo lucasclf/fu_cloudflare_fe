@@ -37,6 +37,7 @@ O catálogo dentro de uma campanha mescla o conteúdo global com o conteúdo exc
 - Convidar jogadores por nickname/e-mail, aceitar/recusar convite, cancelar convite enviado
 - Administração: criar sessões, NPCs, personagens, locais, facções, monstros e itens exclusivos da campanha
 - Edição das entidades criadas, a partir do catálogo da campanha
+- Upload de imagem própria para NPC, PC, monstro, item, local e facção (ver [Upload de imagens](#upload-de-imagens) abaixo)
 - Visão reduzida para jogadores (sem estatísticas administrativas, com acesso ao próprio personagem)
 
 ### Autenticação
@@ -156,6 +157,21 @@ Os formulários de login e cadastro validam os campos no cliente (obrigatoriedad
 ## Paginação de catálogos longos
 
 Categorias com muitas entidades (bestiário, itens) usam paginação client-side via `shared/hooks/use-paginated-list.ts`: a lista filtrada inteira já está em memória (a busca/filtro continua operando sobre ela), mas só uma página é renderizada por vez, com um botão "Carregar mais" (`shared/components/load-more-button.tsx`). A paginação reseta para a primeira página automaticamente quando o filtro muda.
+
+## Upload de imagens
+
+Entidades de campanha (NPC, PC, monstro, item, local, facção) podem ter uma imagem enviada pelo próprio usuário, em vez de só usar as imagens fixas empacotadas em `src/assets`. O arquivo vai **direto do navegador para o Cloudinary** — nunca passa pelo Worker do FUDB, que só assina a requisição (endpoint `POST /v1/campaigns/:campaignId/uploads/signature`, documentado na seção "Upload de Imagens (Cloudinary)" do README do FUDB).
+
+Fluxo, de dentro para fora:
+
+1. `shared/components/image-upload-field.tsx` — componente de UI genérico (input de arquivo + preview + validação de tipo/tamanho client-side: PNG/JPEG/WebP, até 5MB). Não conhece Cloudinary nem campanhas — recebe um `onUploadFile(file) => Promise<string>` de fora.
+2. `features/campaigns/hooks/use-campaign-image-upload.ts` — hook que fornece esse `onUploadFile`: pede a assinatura ao FUDB (`features/campaigns/api/get-upload-signature.ts`) e sobe o arquivo (`shared/lib/upload-to-cloudinary.ts`), retornando a `secure_url`.
+3. O formulário guarda essa URL em estado local e a envia como `img_key` no create/update da entidade — substituindo a geração automática de chave (`toSnakeCaseKey`) que existia antes para NPC/Item/Local/Facção, e adicionando o campo do zero para PC/Monstro (que não tinham nenhum tratamento de imagem).
+4. Os resolvers de imagem (`features/*/lib/get-*-image-src.ts` e `shared/lib/create-asset-image-resolver.ts`) checam primeiro se o valor parece uma URL (`shared/lib/is-external-image-url.ts`) — se sim, usam direto; senão, caem no comportamento antigo de buscar no `import.meta.glob` dos assets empacotados. Isso mantém o catálogo global (curado, com chaves fixas) funcionando exatamente como antes.
+
+Os 10 formulários que lidam com imagem (criação de NPC/Item/Local/Facção/PC/Monstro em `features/campaigns/components/manage-forms/`, edição de NPC/Item/PC/Monstro e os modais de edição de Local/Facção em `campaign-scenario-catalog-view.tsx`) seguem o mesmo padrão — desabilitam o submit enquanto o upload está em andamento.
+
+> Não há schema/migration nova no FUDB: a coluna `img_key` já era `TEXT` livre em todas as 6 tabelas, então passou a guardar uma URL completa em vez de uma chave de asset.
 
 ## Testes
 
