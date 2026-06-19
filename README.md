@@ -171,8 +171,6 @@ Fluxo, de dentro para fora:
 
 Os 10 formulários que lidam com imagem (criação de NPC/Item/Local/Facção/PC/Monstro em `features/campaigns/components/manage-forms/`, edição de NPC/Item/PC/Monstro e os modais de edição de Local/Facção em `campaign-scenario-catalog-view.tsx`) seguem o mesmo padrão — desabilitam o submit enquanto o upload está em andamento.
 
-> Não há schema/migration nova no FUDB: a coluna `img_key` já era `TEXT` livre em todas as 6 tabelas, então passou a guardar uma URL completa em vez de uma chave de asset.
-
 ## Testes
 
 ```bash
