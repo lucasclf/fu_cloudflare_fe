@@ -40,6 +40,7 @@ describe("httpGet", () => {
     expect(result).toEqual([{ id: 1, name: "Espada" }]);
     expect(fetchMock).toHaveBeenCalledWith("https://api.test/items", {
       method: "GET",
+      credentials: "include",
       signal: undefined,
     });
   });
@@ -60,6 +61,7 @@ describe("httpGet", () => {
 
     expect(fetchMock).toHaveBeenCalledWith("https://api.test/items", {
       method: "GET",
+      credentials: "include",
       signal: controller.signal,
     });
   });

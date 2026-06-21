@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { Button } from "@/shared/components/button";
 import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createItem } from "../../api/create-item";
-import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../../hooks/use-form-image-upload";
 import type { ItemType, WeaponCategory, DamageType } from "../../types/campaign";
 import { FormModal, type FormProps } from "./form-modal";
 
@@ -98,12 +98,10 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
   const [initiative, setInitiative] = useState("");
 
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { uploadFile } = useCampaignImageUpload(campaignId, "item");
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "item");
   const canSubmit = name.trim() !== "" && !uploadingImage;
   const isWeapon = itemType === "arma";
   const hasDefenseFields = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
@@ -167,11 +165,7 @@ export function ItemFormModal({ campaignId, onClose, onSuccess }: FormProps) {
           <ImageUploadField
             id="it-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 

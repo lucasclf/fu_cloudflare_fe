@@ -44,6 +44,7 @@ describe("createPublicListFetcher", () => {
     expect(String(url)).toMatch(/\/public\/items$/);
     expect(init).toEqual({
       method: "GET",
+      credentials: "include",
       signal: undefined,
     });
   });
@@ -84,6 +85,7 @@ describe("createPublicListFetcher", () => {
 
     expect(init).toEqual({
       method: "GET",
+      credentials: "include",
       signal: controller.signal,
     });
   });

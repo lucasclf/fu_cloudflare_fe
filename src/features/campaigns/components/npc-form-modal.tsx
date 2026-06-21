@@ -5,7 +5,7 @@ import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createNpc } from "../api/create-npc";
 import { updateNpc } from "../api/update-npc";
 import { usePublicItems } from "@/features/items/hooks/use-public-items";
-import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../hooks/use-form-image-upload";
 import type {
   AttributeDie,
   NpcSpecialRuleType,
@@ -184,17 +184,16 @@ export function NpcFormModal({ campaignId, onClose, onSuccess, initialNpc, npcId
         : [],
     })) ?? []
   );
-  const [imgUrl, setImgUrl] = useState<string | null>(initialNpc?.img_key ?? null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "npc", initialNpc?.img_key ?? null);
 
   const { data: items } = usePublicItems(true);
   const allItems = items ?? [];
   const mainHandOptions = allItems.filter((item) => item.itemType === "arma" || item.itemType === "escudo");
   const armorOptions = allItems.filter((item) => item.itemType === "armadura");
   const accessoryOptions = allItems.filter((item) => item.itemType === "acessorio");
-  const { uploadFile } = useCampaignImageUpload(campaignId, "npc");
 
   const canSubmit =
     name.trim() !== "" &&
@@ -359,11 +358,7 @@ export function NpcFormModal({ campaignId, onClose, onSuccess, initialNpc, npcId
           <ImageUploadField
             id="n-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 

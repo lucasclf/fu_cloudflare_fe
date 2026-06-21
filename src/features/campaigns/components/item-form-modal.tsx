@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/button";
 import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createItem } from "../api/create-item";
 import { updateItem } from "../api/update-item";
-import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../hooks/use-form-image-upload";
 import type { ItemType, WeaponCategory, DamageType, CreateItemInput } from "../types/campaign";
 import type { Item } from "@/features/items/types/item";
 import "../pages/campaign-manage-page.css";
@@ -160,12 +160,10 @@ export function ItemFormModal({ campaignId, initialItem, onClose, onSuccess }: I
   const [initiative, setInitiative] = useState(initialItem?.initiative ?? "");
 
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
-  const [imgUrl, setImgUrl] = useState<string | null>(initialItem?.imageKey ?? null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { uploadFile } = useCampaignImageUpload(campaignId, "item");
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "item", initialItem?.imageKey ?? null);
   const canSubmit = name.trim() !== "" && !uploadingImage;
   const isWeapon = itemType === "arma";
   const hasDefenseFields = itemType === "arma" || itemType === "armadura" || itemType === "escudo";
@@ -235,11 +233,7 @@ export function ItemFormModal({ campaignId, initialItem, onClose, onSuccess }: I
           <ImageUploadField
             id="it-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 

@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/button";
 import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createFaction } from "../../api/create-faction";
 import { listLocations } from "../../api/list-locations";
-import { useCampaignImageUpload } from "../../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../../hooks/use-form-image-upload";
 import type {
   FactionType,
   FactionLocationRelationType,
@@ -42,11 +42,9 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
   const [locations, setLocations] = useState<LocationOption[]>([]);
   const [relations, setRelations] = useState<{ location_id: number; relation_type: FactionLocationRelationType }[]>([]);
-  const [imgUrl, setImgUrl] = useState<string | null>(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { uploadFile } = useCampaignImageUpload(campaignId, "faction");
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "faction");
 
   useEffect(() => {
     let cancelled = false;
@@ -134,11 +132,7 @@ export function FactionFormModal({ campaignId, onClose, onSuccess }: FormProps) 
           <ImageUploadField
             id="fac-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 

@@ -1,4 +1,5 @@
-import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
+import { createAssetImageResolver } from "@/shared/lib/create-asset-image-resolver";
+import { normalizeSearchText } from "@/shared/lib/text-formatters";
 
 const PC_PLACEHOLDER_SRC = new URL(
   "../../../assets/characters/pcs/placeholder.png",
@@ -13,56 +14,32 @@ const pcImageModules = import.meta.glob(
   },
 ) as Record<string, string>;
 
-function normalizeImageKey(value: string): string {
-  return value
-    .replace(/\.(png|jpg|jpeg|webp)$/i, "")
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+export const getPcImageSrc = createAssetImageResolver({
+  assetModules: pcImageModules,
+  assetsRoot: "../../../assets/characters/pcs",
+  placeholderSrc: PC_PLACEHOLDER_SRC,
+  candidateAssetKeys: createPcImageCandidateKeys,
+});
+
+export const getPcPortraitImageSrc = createAssetImageResolver({
+  assetModules: pcImageModules,
+  assetsRoot: "../../../assets/characters/pcs",
+  placeholderSrc: PC_PLACEHOLDER_SRC,
+  candidateAssetKeys: createPcPortraitCandidateKeys,
+});
+
+function toNormalizedKeyAndFileName(assetKey: string): { normalized: string; fileName: string } {
+  const normalized = normalizeSearchText(assetKey);
+  const fileName = normalized.split("/").pop() ?? normalized;
+  return { normalized, fileName };
 }
 
-function getFileName(path: string): string {
-  const parts = path.split("/");
-  const fileName = parts[parts.length - 1];
-
-  return normalizeImageKey(fileName);
+function createPcImageCandidateKeys(assetKey: string): string[] {
+  const { normalized, fileName } = toNormalizedKeyAndFileName(assetKey);
+  return [...new Set([normalized, fileName])];
 }
 
-const pcImageByKey = Object.entries(pcImageModules).reduce<
-  Record<string, string>
->((acc, [path, image]) => {
-  acc[getFileName(path)] = image;
-  return acc;
-}, {});
-
-export function getPcImageSrc(imgKey: string | null): string {
-  if (isExternalImageUrl(imgKey)) {
-    return imgKey as string;
-  }
-
-  if (!imgKey) {
-    return PC_PLACEHOLDER_SRC;
-  }
-
-  return pcImageByKey[normalizeImageKey(imgKey)] ?? PC_PLACEHOLDER_SRC;
-}
-
-export function getPcPortraitImageSrc(imgKey: string | null): string {
-  if (isExternalImageUrl(imgKey)) {
-    return imgKey as string;
-  }
-
-  if (!imgKey) {
-    return PC_PLACEHOLDER_SRC;
-  }
-
-  const normalizedKey = normalizeImageKey(imgKey);
-  const portraitKey = `${normalizedKey}_portrait`;
-
-  return (
-    pcImageByKey[portraitKey] ??
-    pcImageByKey[normalizedKey] ??
-    PC_PLACEHOLDER_SRC
-  );
+function createPcPortraitCandidateKeys(assetKey: string): string[] {
+  const { normalized, fileName } = toNormalizedKeyAndFileName(assetKey);
+  return [...new Set([`${fileName}_portrait`, normalized, fileName])];
 }

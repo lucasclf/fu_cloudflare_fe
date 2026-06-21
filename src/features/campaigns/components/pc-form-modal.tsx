@@ -12,7 +12,7 @@ import { getPublicJobCatalog } from "@/features/jobs/api/get-public-job-catalog"
 import { getPublicPowers } from "@/features/powers/api/get-public-powers";
 import { getPublicSpells } from "@/features/spells/api/get-public-spells";
 import { getPublicItems } from "@/features/items/api/get-public-items";
-import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../hooks/use-form-image-upload";
 import type {
   AttributeDie,
   BondTargetType,
@@ -172,11 +172,9 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
   const [campaignNpcs, setCampaignNpcs] = useState<NpcSummary[]>([]);
   const [campaignMonsters, setCampaignMonsters] = useState<MonsterSummary[]>([]);
 
-  const [imgUrl, setImgUrl] = useState<string | null>(initialPc?.img_key ?? null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { uploadFile } = useCampaignImageUpload(campaignId, "pc");
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "pc", initialPc?.img_key ?? null);
 
   const [levelsInitialized, setLevelsInitialized] = useState(!initialPc);
 
@@ -462,11 +460,7 @@ export function PcFormModal({ campaignId, onClose, onSuccess, initialPc, pcId }:
           <ImageUploadField
             id="pc-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 

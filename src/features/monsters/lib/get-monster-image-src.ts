@@ -1,4 +1,5 @@
-import { isExternalImageUrl } from "@/shared/lib/is-external-image-url";
+import { createAssetImageResolver } from "@/shared/lib/create-asset-image-resolver";
+import { normalizeSearchText } from "@/shared/lib/text-formatters";
 
 const monsterImageModules = import.meta.glob(
   "../../../assets/characters/monsters/*.{png,jpg,jpeg,webp}",
@@ -8,40 +9,15 @@ const monsterImageModules = import.meta.glob(
   },
 ) as Record<string, string>;
 
-function removeImageExtension(value: string): string {
-  return value.replace(/\.(png|jpg|jpeg|webp)$/i, "");
-}
+export const getMonsterImageSrc = createAssetImageResolver({
+  assetModules: monsterImageModules,
+  assetsRoot: "../../../assets/characters/monsters",
+  placeholderSrc: null,
+  candidateAssetKeys: createCharacterImageCandidateKeys,
+});
 
-function normalizeImageKey(value: string): string {
-  return removeImageExtension(value.trim().replaceAll("\\", "/"))
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
-}
-
-function getFileName(value: string): string {
-  const parts = normalizeImageKey(value).split("/");
-  return parts[parts.length - 1];
-}
-
-const monsterImageByKey = Object.entries(monsterImageModules).reduce<
-  Record<string, string>
->((acc, [path, image]) => {
-  const fileName = getFileName(path);
-
-  acc[fileName] = image;
-
-  return acc;
-}, {});
-
-export function getMonsterImageSrc(imgKey: string | null): string | null {
-  if (isExternalImageUrl(imgKey)) {
-    return imgKey;
-  }
-
-  if (!imgKey) {
-    return null;
-  }
-
-  return monsterImageByKey[normalizeImageKey(imgKey)] ?? null;
+function createCharacterImageCandidateKeys(assetKey: string): string[] {
+  const normalized = normalizeSearchText(assetKey);
+  const fileName = normalized.split("/").pop() ?? normalized;
+  return [...new Set([normalized, fileName])];
 }

@@ -4,7 +4,7 @@ import { Button } from "@/shared/components/button";
 import { ImageUploadField } from "@/shared/components/image-upload-field";
 import { createMonster } from "../api/create-monster";
 import { updateMonster } from "../api/update-monster";
-import { useCampaignImageUpload } from "../hooks/use-campaign-image-upload";
+import { useFormImageUpload } from "../hooks/use-form-image-upload";
 import type {
   AttributeDie,
   MonsterType,
@@ -289,11 +289,9 @@ export function MonsterFormModal({
     })) ?? [],
   );
   const [visibleToPlayers, setVisibleToPlayers] = useState(false);
-  const [imgUrl, setImgUrl] = useState<string | null>(initialMonster?.img_key ?? null);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { uploadFile } = useCampaignImageUpload(campaignId, "monster");
+  const { imgUrl, uploading: uploadingImage, imageFieldProps } = useFormImageUpload(campaignId, "monster", initialMonster?.img_key ?? null);
 
   function addTrait() {
     setTraits((prev) => (prev.length >= 4 ? prev : [...prev, ""]));
@@ -439,11 +437,7 @@ export function MonsterFormModal({
           <ImageUploadField
             id="mo-image"
             label="Imagem"
-            value={imgUrl}
-            onChange={setImgUrl}
-            onUploadFile={uploadFile}
-            uploading={uploadingImage}
-            onUploadingChange={setUploadingImage}
+            {...imageFieldProps}
           />
         </div>
 
